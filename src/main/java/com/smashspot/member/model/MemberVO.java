@@ -13,10 +13,6 @@ public class MemberVO {
 	}
 
 	
-
-	
-
-
 	
 
 }
