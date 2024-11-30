@@ -4,6 +4,7 @@ public class MemberVO {
 	private Integer memId;
 	private String memName;
 	
+	
 	public Integer getMemId() {
 		return memId;
 	}
@@ -21,6 +22,8 @@ public class MemberVO {
 	}
 
 	
+
+
 	
 
 }
