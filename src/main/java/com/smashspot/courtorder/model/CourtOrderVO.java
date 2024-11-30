@@ -2,6 +2,6 @@ package com.smashspot.courtorder.model;
 
 public class CourtOrderVO {
 	private Boolean OrderStatus;
-	private int OrderPrice;
+	private Boolean OrderStatuss;
 
 }
