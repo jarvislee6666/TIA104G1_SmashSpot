@@ -19,8 +19,8 @@
 		<property name="hibernate.current_session_context_class">thread</property>
 	
 	
-	<!-- 下面依大家各個class的名稱更新(ex:entity.AdmVO) -->	
-		<mapping class="entity.AdmVO"/>
+	<!-- 下面依大家各個class的名稱更新(ex:com.smashspot.admin.model.AdmVO) -->	
+		<mapping class="com.smashspot.admin.model.AdmVO"/>
 		<mapping class="entity.Dept"/>
 		<mapping class="entity.Book"/>
 		<mapping class="entity.BookIsbn"/>
