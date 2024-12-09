@@ -9,6 +9,26 @@
 		<welcome-file>index.xhtml</welcome-file>
 		<welcome-file>index.htm</welcome-file>
 		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+        <welcome-file>default.htm</welcome-file>
+        <welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 	
+	<resource-ref>
+    <description>DB Connection</description>
+    <res-ref-name>jdbc/TestDB3</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  
+  <servlet>
+    <servlet-name>AdmServlet</servlet-name>
+    <servlet-class>com.admin.controller.AdmServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdmServlet</servlet-name>
+    <url-pattern>/back_end/adm/adm.do</url-pattern>
+  </servlet-mapping>
+  
+  
 </web-app>
