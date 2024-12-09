@@ -3,7 +3,11 @@ package com.smashspot.admin.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -14,10 +18,19 @@ import javax.persistence.Table;
 @NamedQuery(name = "getAllEmps", query = "from Adm where adm_id > :adm_id order by adm_id desc")
 public class AdmVO{
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "adm_id", updatable = false)	
 	private Integer admid;//admin_id
+	
+	@Column(name = "adm_email")
 	private String admemail;//admin_email
+	
+	@Column(name = "adm_email")
 	private String admpassword;//admin_password
+	
 	private String admname;//admin_name
+	
 	private String admphone;//admin_phone
 	private Date hrdate;//hire_date
 	private Timestamp updtime;//update_time
