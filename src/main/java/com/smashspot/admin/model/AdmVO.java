@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 
@@ -26,17 +28,32 @@ public class AdmVO{
 	@Column(name = "adm_email")
 	private String admemail;//admin_email
 	
-	@Column(name = "adm_email")
+	@Column(name = "adm_password")
 	private String admpassword;//admin_password
 	
+	@Column(name = "adm_name")
 	private String admname;//admin_name
 	
+	@Column(name = "adm_phone")
 	private String admphone;//admin_phone
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name = "hr_date")
 	private Date hrdate;//hire_date
+	
+	@Column(name = "upd_time")
 	private Timestamp updtime;//update_time
+	
+	@Column(name = "adm_sta")
 	private Boolean admsta;//admin_state
+	
+	@Column(name = "adm_bday")
 	private Date admbday;//admin_birthday
+	
+	@Column(name = "supvsr")
 	private Boolean supvsr;//supervisor
+	
+	
 	
 	public Integer getAdmid() {
 		return admid;
