@@ -23,7 +23,7 @@
   
   <servlet>
     <servlet-name>AdmServlet</servlet-name>
-    <servlet-class>com.admin.controller.AdmServlet</servlet-class>
+    <servlet-class>com.smashspot.admin.controller.AdmServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>AdmServlet</servlet-name>
