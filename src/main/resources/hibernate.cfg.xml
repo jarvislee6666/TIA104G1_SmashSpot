@@ -3,28 +3,26 @@
 		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-    <session-factory>
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.password">123456</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tia104g1_smashspot?serverTimezone=Asia/Taipei</property>
-        <property name="hibernate.connection.username">root</property>
-        
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+	<session-factory>
+		<property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tia104g1_smashspot?serverTimezone=Asia/Taipei</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">123456</property>
+
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 		
 		<property name="hibernate.show_sql">true</property>
 		
 		<property name="hibernate.hbm2ddl.auto">validate</property>
 		
 		<property name="hibernate.current_session_context_class">thread</property>
-	
-	
-	<!-- 下面依大家各個class的名稱更新(ex:com.smashspot.admin.model.AdmVO) -->	
-		<mapping class="com.smashspot.admin.model.AdmVO"/>
-		<mapping class="entity.Dept"/>
+		
+        <mapping class="com.smashspot.admin.model.AdmVO"/>
+  <!--  <mapping class="entity.Dept"/>
 		<mapping class="entity.Book"/>
 		<mapping class="entity.BookIsbn"/>
 		<mapping class="entity.OrderMaster"/>
 		<mapping class="entity.OrderDetail1"/>
-		<mapping class="entity.OrderDetail2"/>
-    </session-factory>
+		<mapping class="entity.OrderDetail2"/>-->
+	</session-factory>
 </hibernate-configuration>
