@@ -6,7 +6,7 @@ import com.smashspot.admin.model.AdmVO;
 public class AdmHibernateDAO {
 
 	public static void main(String[] args) throws Exception {
-		AdmDAO dao = new AdmDAOHibernateImpl();
+		AdmDAO dao = new AdmDAOImpl();
 
 //		// 新增
 //		Emp emp1 = new Emp();

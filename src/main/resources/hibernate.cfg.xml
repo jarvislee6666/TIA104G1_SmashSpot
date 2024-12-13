@@ -17,6 +17,7 @@
 		
 		<property name="hibernate.current_session_context_class">thread</property>
 		
+		
         <mapping class="com.smashspot.admin.model.AdmVO"/>
   <!--  <mapping class="entity.Dept"/>
 		<mapping class="entity.Book"/>
