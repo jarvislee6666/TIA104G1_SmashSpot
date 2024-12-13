@@ -17,7 +17,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "admin")
-@NamedQuery(name = "getAllEmps", query = "from Adm where adm_id > :adm_id order by adm_id desc")
+@NamedQuery(name = "getAllEmps", query = "from AdmVO where adm_id > :adm_id order by adm_id desc")
 public class AdmVO{
 
 	@Id
@@ -37,11 +37,10 @@ public class AdmVO{
 	@Column(name = "adm_phone")
 	private String admphone;//admin_phone
 	
-	@Temporal(TemporalType.DATE)
 	@Column(name = "hr_date")
 	private Date hrdate;//hire_date
 	
-	@Column(name = "upd_time")
+	@Column(name = "upd_time", updatable = false, insertable = false)
 	private Timestamp updtime;//update_time
 	
 	@Column(name = "adm_sta")
@@ -53,7 +52,9 @@ public class AdmVO{
 	@Column(name = "supvsr")
 	private Boolean supvsr;//supervisor
 	
-	
+	public AdmVO() {
+		super();
+	}
 	
 	public Integer getAdmid() {
 		return admid;
