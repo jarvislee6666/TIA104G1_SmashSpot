@@ -1,0 +1,2 @@
+INDEX VERSION 1.134+C:\TIA104_Workspace\TIA104G1_SmashSpot\.metadata\.plugins\org.eclipse.jdt.core
+1865797976.index
