@@ -2,16 +2,19 @@ package com.smashspot.admin.model;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import com.smashspot.stadium.model.StadiumVO;
 
 
 
@@ -24,6 +27,10 @@ public class AdmVO{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "adm_id", updatable = false)	
 	private Integer admid;//admin_id
+	
+	@OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
+	
+	private Set<StadiumVO> stadium;
 	
 	@Column(name = "adm_email")
 	private String admemail;//admin_email
@@ -115,6 +122,14 @@ public class AdmVO{
 	}
 	public void setSupvsr(Boolean supvsr) {
 		this.supvsr = supvsr;
+	}
+
+	public Set<StadiumVO> getStadium() {
+		return stadium;
+	}
+
+	public void setStadium(Set<StadiumVO> stadium) {
+		this.stadium = stadium;
 	}
 	
 	
