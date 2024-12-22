@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Table(name = "product")
 public class ProductsVO {
+	// pr test
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pro_id", updatable = false)
