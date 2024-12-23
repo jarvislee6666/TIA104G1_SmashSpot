@@ -27,16 +27,16 @@ import com.smashspot.stadium.model.StadiumVO;
 public class LocationVO implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
-	private Set<StadiumVO> Stadium; 
+	@OneToMany(mappedBy = "locationVO", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
+	private Set<StadiumVO> stadium; 
 	
 	
 	public Set<StadiumVO> getStadium() {
-		return Stadium;
+		return this.stadium;
 	}
 
 	public void setStadium(Set<StadiumVO> stadium) {
-		Stadium = stadium;
+		this.stadium = stadium;
 	}
 
 	@Id
