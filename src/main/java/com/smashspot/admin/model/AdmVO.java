@@ -153,6 +153,7 @@ public class AdmVO{
 //	public void setStadium(Set<StadiumVO> stadium) {
 //		this.stadiumVO = stadiumVO;
 //	}
+
 	
 	
 	

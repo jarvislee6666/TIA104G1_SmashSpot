@@ -25,44 +25,44 @@ import com.smashspot.stadium.model.StadiumVO;
 @Entity
 @Table(name = "location")
 public class LocationVO implements java.io.Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	@OneToMany(mappedBy = "locationVO", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
-	private Set<StadiumVO> stadium; 
-	
-	
-	public Set<StadiumVO> getStadium() {
-		return this.stadium;
-	}
+ private static final long serialVersionUID = 1L;
+ 
+ @OneToMany(mappedBy = "locationVO", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
+ private Set<StadiumVO> stadium; 
+ 
+ 
+ public Set<StadiumVO> getStadium() {
+  return this.stadium;
+ }
 
-	public void setStadium(Set<StadiumVO> stadium) {
-		this.stadium = stadium;
-	}
+ public void setStadium(Set<StadiumVO> stadium) {
+  this.stadium = stadium;
+ }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "loc_id", updatable = false)	
-	private Integer locId;//loc_id
-	
-	@Column(name = "region")
-	private String region;//region
+ @Id
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+ @Column(name = "loc_id", updatable = false) 
+ private Integer locId;//loc_id
+ 
+ @Column(name = "region")
+ private String region;//region
 
-	public Integer getLocId() {
-		return locId;
-	}
+ public Integer getLocId() {
+  return locId;
+ }
 
-	public void setLocId(Integer locId) {
-		this.locId = locId;
-	}
+ public void setLocId(Integer locId) {
+  this.locId = locId;
+ }
 
-	public String getRegion() {
-		return region;
-	}
+ public String getRegion() {
+  return region;
+ }
 
-	public void setRegion(String region) {
-		this.region = region;
-	}
-	
-	
+ public void setRegion(String region) {
+  this.region = region;
+ }
+ 
+ 
 
 }

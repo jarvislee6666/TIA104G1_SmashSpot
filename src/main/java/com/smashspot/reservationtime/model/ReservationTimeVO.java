@@ -9,10 +9,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.smashspot.stadium.model.StadiumVO;
 
 @Entity
 @Table(name = "reservation_time")
@@ -23,8 +27,18 @@ public class ReservationTimeVO {
 	@Column(name = "rsv_time_id", updatable = false)	
     private Integer rsvtimeid;    // 預約時段編號
 	
-	@Column(name = "stm_id")
-    private Integer stdmid;       // 場館編號
+	@ManyToOne
+	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
+	private StadiumVO stadium;
+
+	
+	public StadiumVO getStadium() {
+		return stadium;
+	}
+	public void setStadium(StadiumVO stadium) {
+		this.stadium = stadium;
+	}
+	
 	
 	@Column(name = "dates")
     private Date dates;           // 日期
@@ -41,12 +55,7 @@ public class ReservationTimeVO {
 	public void setRsvtimeid(Integer rsvtimeid) {
 		this.rsvtimeid = rsvtimeid;
 	}
-	public Integer getStdmid() {
-		return stdmid;
-	}
-	public void setStdmid(Integer stdmid) {
-		this.stdmid = stdmid;
-	}
+
 	public Date getDates() {
 		return dates;
 	}
