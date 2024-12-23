@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,21 +50,22 @@ public class StadiumVO implements java.io.Serializable {
  private String stdmPicBase64;
  
  // 新增的欄位//add by 麒安
-// @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
-// private Set<ReservationTimeVO> reservationTimes; 
+ private Set<ReservationTimeVO> reservationTime; 
 // 
-// 
-// public Set<ReservationTimeVO> getReservationTimes() {
-//  return reservationTimes;
-// }
-// public void setReservationTimes(Set<ReservationTimeVO> reservationTimes) {
-//  this.reservationTimes = reservationTimes;
-// }
+   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
+ @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+ public Set<ReservationTimeVO> getReservationTime() {
+  return reservationTime;
+ }
+ public void setReservationTime(Set<ReservationTimeVO> reservationTime) {
+  this.reservationTime = reservationTime;
+ }
  
  
-// @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   
+//
 // private Set<StadiumLikeVO> StadiumLike; 
 // 
+// @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   
 // public Set<StadiumLikeVO> getStadiumLike() {
 //  return StadiumLike;
 // }
