@@ -210,7 +210,7 @@ public class StadiumVO implements java.io.Serializable {
 //  return admVO;
 // }
 // public void setAdmVO(AdmVO admVO) {
-//  this.admVo = admVO;
+//  this.admVO = admVO;
 // }
  
  //開閉館時間的驗證邏輯待修~~~
