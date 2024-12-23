@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.smashspot.admin.model.*;
 
-import util.HibernateUtil_CompositeQuery;
+import util.HibernateUtil_CompositeQuery_Adm;
 
 
 @Service("admService")
@@ -35,7 +35,7 @@ public class AdmService {
 	}
 	
 	public List<AdmVO> getAll(Map<String, String[]> map) {
-		return HibernateUtil_CompositeQuery.getAllC(map,sessionFactory.openSession());
+		return HibernateUtil_CompositeQuery_Adm.getAllC(map,sessionFactory.openSession());
 	}
 
 }

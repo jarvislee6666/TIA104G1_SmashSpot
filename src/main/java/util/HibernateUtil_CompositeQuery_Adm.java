@@ -21,7 +21,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import com.smashspot.admin.model.AdmVO;
 
 
-public class HibernateUtil_CompositeQuery {
+public class HibernateUtil_CompositeQuery_Adm {
 	public static Predicate get_aPredicate_For_AnyDB(CriteriaBuilder builder, Root<AdmVO> root, String columnName, String value) {
 
 		Predicate predicate = null;
@@ -30,6 +30,8 @@ public class HibernateUtil_CompositeQuery {
 			predicate = builder.equal(root.get(columnName), Integer.valueOf(value));
 		else if ("admsta".equals(columnName) || "supvsr".equals(columnName)) // 用於Boolean
 			predicate = builder.equal(root.get(columnName), Double.valueOf(value));
+		else if ("ename".equals(columnName)) // 用於varchar
+			predicate = builder.like(root.get(columnName), "%" + value + "%");
 		
 		return predicate;
 	}
@@ -62,7 +64,7 @@ public class HibernateUtil_CompositeQuery {
 			}
 			System.out.println("predicateList.size()="+predicateList.size());
 			criteriaQuery.where(predicateList.toArray(new Predicate[predicateList.size()]));
-			criteriaQuery.orderBy(builder.asc(root.get("empno")));
+			criteriaQuery.orderBy(builder.asc(root.get("admid")));
 			// 【●最後完成創建 javax.persistence.Query●】
 			Query query = session.createQuery(criteriaQuery); //javax.persistence.Query; //Hibernate 5 開始 取代原 org.hibernate.Query 介面
 			list = query.getResultList();

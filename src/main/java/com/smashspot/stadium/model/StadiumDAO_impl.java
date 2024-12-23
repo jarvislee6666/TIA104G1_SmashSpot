@@ -25,7 +25,7 @@ public class StadiumDAO_impl implements StadiumDAO_interface {
 	private SessionFactory factory;
 
 	public StadiumDAO_impl() {
-		factory = HibernateUtil_CompositeQuery.getSessionFactory();
+		factory = HibernateUtil_CompositeQuery_Adm.getSessionFactory();
 	}
 	
 	// Session 為 not thread-safe，所以此方法在各個增刪改查方法裡呼叫
