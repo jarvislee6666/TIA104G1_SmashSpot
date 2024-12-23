@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.smashspot.admin.model.AdmVO;
+import com.smashspot.location.model.LocationVO;
 import com.smashspot.reservationtime.model.ReservationTimeVO;
 import com.smashspot.stadiumlike.StadiumLikeVO;
 
@@ -27,7 +28,7 @@ public class StadiumVO implements java.io.Serializable {
 	private Integer stdmId;
 	private String stdmName;
 	private String stdmAddr;
-	private Integer locId;
+	private LocationVO locationVO;
 	private Double longitude;
 	private Double latitude;
 	private String stdmIntro;
@@ -35,34 +36,34 @@ public class StadiumVO implements java.io.Serializable {
 	private Integer courtPrice;
 	private Boolean oprSta;
 	private byte[] stdmPic;
-	private AdmVO admin;
+	private AdmVO admVO;
 	private Integer openTime;
 	private Integer closeTime;
 	private Timestamp stdmStartTime;
 	private String stdmPicBase64;
 	
 	// 新增的欄位//add by 麒安
-	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
-	private Set<ReservationTimeVO> reservationTimes; 
+//	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
+//	private Set<ReservationTimeVO> reservationTimes; 
+//	
+//	
+//	public Set<ReservationTimeVO> getReservationTimes() {
+//		return reservationTimes;
+//	}
+//	public void setReservationTimes(Set<ReservationTimeVO> reservationTimes) {
+//		this.reservationTimes = reservationTimes;
+//	}
 	
 	
-	public Set<ReservationTimeVO> getReservationTimes() {
-		return reservationTimes;
-	}
-	public void setReservationTimes(Set<ReservationTimeVO> reservationTimes) {
-		this.reservationTimes = reservationTimes;
-	}
-	
-	
-	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   
-	private Set<StadiumLikeVO> StadiumLike; 
-	
-	public Set<StadiumLikeVO> getStadiumLike() {
-		return StadiumLike;
-	}
-	public void setStadiumLike(Set<StadiumLikeVO> stadiumLike) {
-		StadiumLike = stadiumLike;
-	}
+//	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   
+//	private Set<StadiumLikeVO> StadiumLike; 
+//	
+//	public Set<StadiumLikeVO> getStadiumLike() {
+//		return StadiumLike;
+//	}
+//	public void setStadiumLike(Set<StadiumLikeVO> stadiumLike) {
+//		StadiumLike = stadiumLike;
+//	}
 	
 	//改了念芸的第117行
 	//	@JoinColumn(name = "loc_id", referencedColumnName="loc_id")
@@ -116,11 +117,11 @@ public class StadiumVO implements java.io.Serializable {
 	// @JoinColumn(name = "") 場館PK待加
 	@JoinColumn(name = "loc_id", referencedColumnName="loc_id")
 	@ManyToOne
-	public Integer getLocId() {
-		return locId;
+	public LocationVO getLocationVO() {
+		return this.locationVO;
 	}
-	public void setLocId(Integer locId) {
-		this.locId = locId;
+	public void setLocationVO(LocationVO locationVO) {
+		this.locationVO = locationVO;
 	}
 	
 	
@@ -195,15 +196,15 @@ public class StadiumVO implements java.io.Serializable {
 	
 	//【此處預設為 @ManyToOne(fetch=FetchType.EAGER) --> 是指 lazy="false"之意】【注意: 此處的預設值與XML版 (p.127及p.132) 的預設值相反】
 	//【如果修改為 @ManyToOne(fetch=FetchType.LAZY)  --> 則指 lazy="true" 之意】
-	@JoinColumn(name = "adm_id", referencedColumnName="adm_id")
-	//@Column(name = "adm_id")
-	@ManyToOne
-	public AdmVO getAdmVO() {
-		return admin;
-	}
-	public void setAdmVO(AdmVO admin) {
-		this.admin = admin;
-	}
+//	@JoinColumn(name = "adm_id", referencedColumnName="adm_id")
+//	//@Column(name = "adm_id")
+//	@ManyToOne
+//	public AdmVO getAdmVO() {
+//		return admVO;
+//	}
+//	public void setAdmVO(AdmVO admVO) {
+//		this.admVo = admVO;
+//	}
 	
 	//開閉館時間的驗證邏輯待修~~~
 	@Column(name = "open_time")
