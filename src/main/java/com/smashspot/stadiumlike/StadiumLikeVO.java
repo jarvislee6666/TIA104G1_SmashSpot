@@ -17,7 +17,6 @@ import javax.persistence.TemporalType;
 @Table(name = "stadium_like")
 public class StadiumLikeVO {
 	
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stdm_like_id", nullable = false, updatable = false)
