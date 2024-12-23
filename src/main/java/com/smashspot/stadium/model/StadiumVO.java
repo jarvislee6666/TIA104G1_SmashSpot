@@ -14,6 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.reservationtime.model.ReservationTimeVO;
@@ -90,8 +96,8 @@ public class StadiumVO implements java.io.Serializable {
 	
 	
 	@Column(name = "stdm_name")
-	// @NotEmpty(message="場館名稱: 請勿空白")
-	// @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,20}$", message = "場館名稱: 只能是中、英文字母、數字和_ , 且長度必需在2到20之間")
+	@NotEmpty(message="場館名稱: 請勿空白")
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,20}$", message = "場館名稱: 只能是中、英文字母、數字和_ , 且長度必需在2到20之間")
 	public String getStdmName() {
 		return stdmName;
 	}
@@ -101,8 +107,8 @@ public class StadiumVO implements java.io.Serializable {
 	
 	
 	@Column(name = "stdm_addr")
-	// @NotEmpty(message="場館地址: 請勿空白")
-	// @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,50}$", message = "場館地址: 只能是中、英文字母、數字和_ , 且長度必需在2到50之間")
+	@NotEmpty(message="場館地址: 請勿空白")
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,50}$", message = "場館地址: 只能是中、英文字母、數字和_ , 且長度必需在2到50之間")
 	public String getStdmAddr() {
 		return stdmAddr;
 	}
@@ -143,8 +149,8 @@ public class StadiumVO implements java.io.Serializable {
 	
 	
 	@Column(name = "stdm_intro")
-	// @NotEmpty(message="場館簡介: 請勿空白")
-	// @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]$", message = "場館簡介: 只能是中、英文字母、數字和_ ,")
+	@NotEmpty(message="場館簡介: 請勿空白")
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]$", message = "場館簡介: 只能是中、英文字母、數字和_ ,")
 	public String getStdmIntro() {
 		return stdmIntro;
 	}
@@ -154,7 +160,7 @@ public class StadiumVO implements java.io.Serializable {
 	
 	
 	@Column(name = "court_count")
-	// @NotNull(message="球場數量請填數字")
+	@NotNull(message="球場數量請填數字")
 	public Integer getCourtCount() {
 		return courtCount;
 	}
@@ -164,8 +170,8 @@ public class StadiumVO implements java.io.Serializable {
 	
 	
 	@Column(name = "court_price")
-	// @NotNull(message="球場價格請填數字")
-	// @Min(10)
+	@NotNull(message="球場價格請填數字")
+	@Min(10)
 	public Integer getCourtPrice() {
 		return courtPrice;
 	}
@@ -184,7 +190,8 @@ public class StadiumVO implements java.io.Serializable {
 	
 	
 	@Column(name = "stdm_pic")
-//	@NotEmpty(message="場館照片: 請上傳照片") --> 由Controller.java 處理錯誤信息
+	@NotEmpty(message="場館照片: 請上傳照片") 
+	//--> 由Controller.java 處理錯誤信息
 	public byte[] getStdmPic() {
 		return stdmPic;
 	}
@@ -207,9 +214,9 @@ public class StadiumVO implements java.io.Serializable {
 	
 	//開閉館時間的驗證邏輯待修~~~
 	@Column(name = "open_time")
-	// @NotNull(message="開館時間請填數字")
-	// @DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
-	// @DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
+	@NotNull(message="開館時間請填數字")
+	@DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
+	@DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
 	public Integer getOpenTime() {
 		return openTime;
 	}
@@ -219,9 +226,9 @@ public class StadiumVO implements java.io.Serializable {
 
 
 	@Column(name = "close_time")
-	// @NotNull(message="閉館時間請填數字")
-	// @DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
-	// @DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
+	@NotNull(message="閉館時間請填數字")
+	@DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
+	@DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
 	public Integer getCloseTime() {
 		return closeTime;
 	}
