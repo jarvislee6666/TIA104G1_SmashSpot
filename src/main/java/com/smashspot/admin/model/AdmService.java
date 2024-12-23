@@ -2,22 +2,40 @@ package com.smashspot.admin.model;
 
 import java.util.List;
 import java.util.Map;
+
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
 import com.smashspot.admin.model.*;
 
+import util.HibernateUtil_CompositeQuery;
 
 
-public interface AdmService {
+@Service("admService")
+public class AdmService {
 	
-	AdmVO addAdm(AdmVO adm);
+	@Autowired
+	AdmRepository repository;
 	
-	AdmVO updateAdm(AdmVO adm);
+	@Autowired
+    private SessionFactory sessionFactory;
+	
+	public void addAdm(AdmVO admVO) {
+		repository.save(admVO);
+	}
 		
-	AdmVO getAdmByAdmid(Integer admid);
+	public void updateAdm(AdmVO admVO) {
+		repository.save(admVO);
+	}
 	
-	List<AdmVO> getAllAdms(int currentPage);
+	public List<AdmVO> getAll() {
+		return repository.findAll();
+	}
 	
-	int getPageTotal();
-	
-	List<AdmVO> getAdmsByCompositeQuery(Map<String, String[]> map);
+	public List<AdmVO> getAll(Map<String, String[]> map) {
+		return HibernateUtil_CompositeQuery.getAllC(map,sessionFactory.openSession());
+	}
 
 }

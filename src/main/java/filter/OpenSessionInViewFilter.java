@@ -11,14 +11,14 @@ import javax.servlet.annotation.WebFilter;
 
 import org.hibernate.SessionFactory;
 
-import util.HibernateUtil;
+import util.HibernateUtil_CompositeQuery;
 
 @WebFilter(urlPatterns = { "/*" })
 public class OpenSessionInViewFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-		SessionFactory factory = HibernateUtil.getSessionFactory();
+		SessionFactory factory = HibernateUtil_CompositeQuery.getSessionFactory();
 		try {
 			System.out.println("filter open transaction");
 			factory.getCurrentSession().beginTransaction();
