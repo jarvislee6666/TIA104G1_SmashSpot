@@ -11,6 +11,8 @@ public class MemberVO {
 	public void setMemId(Integer memId) {
 		this.memId = memId;
 	}
+	
+	// ddd
 
 	
 	
