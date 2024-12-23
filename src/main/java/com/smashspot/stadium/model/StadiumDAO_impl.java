@@ -19,6 +19,7 @@ import org.hibernate.SessionFactory;
 import com.smashspot.stadium.model.*;
 import util.*;
 
+//測試測試
 public class StadiumDAO_impl implements StadiumDAO_interface {
 	// SessionFactory 為 thread-safe，可宣告為屬性讓請求執行緒們共用
 	private SessionFactory factory;
