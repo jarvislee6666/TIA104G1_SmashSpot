@@ -10,7 +10,7 @@
             --border: #e2e8f0;
         }
 
-        body {
+        .body {
             background-color: var(--background);
             min-height: 100vh;
         }
@@ -109,12 +109,12 @@
         }
 
         .btn-add {
-            background-color: var(--primary);
+            background-color: #0d6efd;
             color: white;
         }
 
         .btn-add:hover {
-            background-color: var(--primary-hover);
+            background-color: #0d6efd;
             color: white;
         }
 
