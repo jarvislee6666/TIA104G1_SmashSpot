@@ -25,7 +25,7 @@ import org.hibernate.SessionFactory;
 import com.smashspot.admin.model.*;
 
 
-import util.HibernateUtil;
+import util.HibernateUtil_CompositeQuery;
 
 
 
@@ -34,7 +34,7 @@ public class AdmDAOImpl implements AdmDAO{
 	private SessionFactory factory;
 
 	public AdmDAOImpl() {
-		factory = HibernateUtil.getSessionFactory();
+		factory = HibernateUtil_CompositeQuery.getSessionFactory();
 	}
 	
 	private Session getSession() {
