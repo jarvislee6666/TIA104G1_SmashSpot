@@ -25,7 +25,7 @@ public class ReservationTimeVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "rsv_time_id", updatable = false)	
-    private Integer rsvtimeid;    // 預約時段編號
+    private Integer rsvTimeId;    // 預約時段編號
 	
 	@ManyToOne
 	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
@@ -50,10 +50,10 @@ public class ReservationTimeVO {
     private String rsvava;        // 可預約數量
     
 	public Integer getRsvtimeid() {
-		return rsvtimeid;
+		return rsvTimeId;
 	}
 	public void setRsvtimeid(Integer rsvtimeid) {
-		this.rsvtimeid = rsvtimeid;
+		this.rsvTimeId = rsvtimeid;
 	}
 
 	public Date getDates() {

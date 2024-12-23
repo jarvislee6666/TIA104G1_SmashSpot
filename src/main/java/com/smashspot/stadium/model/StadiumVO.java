@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,21 +50,22 @@ public class StadiumVO implements java.io.Serializable {
  private String stdmPicBase64;
  
  // 新增的欄位//add by 麒安
-// @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
-// private Set<ReservationTimeVO> reservationTimes; 
+ private Set<ReservationTimeVO> reservationTime; 
 // 
-// 
-// public Set<ReservationTimeVO> getReservationTimes() {
-//  return reservationTimes;
-// }
-// public void setReservationTimes(Set<ReservationTimeVO> reservationTimes) {
-//  this.reservationTimes = reservationTimes;
-// }
+   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
+ @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+ public Set<ReservationTimeVO> getReservationTime() {
+  return reservationTime;
+ }
+ public void setReservationTime(Set<ReservationTimeVO> reservationTime) {
+  this.reservationTime = reservationTime;
+ }
  
  
-// @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   
+//
 // private Set<StadiumLikeVO> StadiumLike; 
 // 
+// @OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)   
 // public Set<StadiumLikeVO> getStadiumLike() {
 //  return StadiumLike;
 // }
@@ -203,15 +205,15 @@ public class StadiumVO implements java.io.Serializable {
  
  //【此處預設為 @ManyToOne(fetch=FetchType.EAGER) --> 是指 lazy="false"之意】【注意: 此處的預設值與XML版 (p.127及p.132) 的預設值相反】
  //【如果修改為 @ManyToOne(fetch=FetchType.LAZY)  --> 則指 lazy="true" 之意】
-// @JoinColumn(name = "adm_id", referencedColumnName="adm_id")
-// //@Column(name = "adm_id")
-// @ManyToOne
-// public AdmVO getAdmVO() {
-//  return admVO;
-// }
-// public void setAdmVO(AdmVO admVO) {
-//  this.admVo = admVO;
-// }
+ @JoinColumn(name = "adm_id", referencedColumnName="adm_id")
+ //@Column(name = "adm_id")
+ @ManyToOne
+ public AdmVO getAdmVO() {
+  return admVO;
+ }
+ public void setAdmVO(AdmVO admVO) {
+  this.admVO = admVO;
+ }
  
  //開閉館時間的驗證邏輯待修~~~
  @Column(name = "open_time")

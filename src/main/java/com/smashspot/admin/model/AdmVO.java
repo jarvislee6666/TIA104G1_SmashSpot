@@ -36,9 +36,9 @@ public class AdmVO{
 	@Column(name = "adm_id", updatable = false)	
 	private Integer admid;//admin_id
 	
-//	@OneToMany(mappedBy = "admVO", cascade = CascadeType.ALL)
-//	
-//	private Set<StadiumVO> stadiumVO;
+	@OneToMany(mappedBy = "admVO", cascade = CascadeType.ALL)
+	
+	private Set<StadiumVO> stadiumVO;
 	
 	@Column(name = "adm_email")
 	@NotEmpty(message="管理員email: 請勿空白")
