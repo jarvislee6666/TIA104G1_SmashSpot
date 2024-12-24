@@ -6,6 +6,7 @@ import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +28,7 @@ public class ReservationTimeVO {
 	@Column(name = "rsv_time_id", updatable = false)	
     private Integer rsvTimeId;    // 預約時段編號
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
 	private StadiumVO stadium;
 
