@@ -7,10 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.smashspot.stadium.model.StadiumVO;
 
 
 @Entity
@@ -25,8 +29,18 @@ public class StadiumLikeVO {
     @Column(name = "mem_id", nullable = false)
     private Integer memId; // 會員編號 (FK)
 
-    @Column(name = "stdm_id", nullable = false)
-    private Integer stdmId; // 場館編號 (FK)
+//    @Column(name = "stdm_id", nullable = false)
+//    private Integer stdmId; // 場館編號 (FK)
+	@ManyToOne
+	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
+	private StadiumVO stadium;
+	
+	public StadiumVO getStadium() {
+		return stadium;
+	}
+	public void setStadium(StadiumVO stadium) {
+		this.stadium = stadium;
+	}
 
     // 無參數建構子
     public StadiumLikeVO() {
@@ -49,20 +63,20 @@ public class StadiumLikeVO {
         this.memId = memId;
     }
 
-    public Integer getStdmId() {
-        return stdmId;
-    }
-
-    public void setStdmId(Integer stdmId) {
-        this.stdmId = stdmId;
-    }
+//    public Integer getStdmId() {
+//        return stdmId;
+//    }
+//
+//    public void setStdmId(Integer stdmId) {
+//        this.stdmId = stdmId;
+//    }
 
     @Override
     public String toString() {
         return "StadiumLikeVO{" +
                 "stdmLikeId=" + stdmLikeId +
                 ", memId=" + memId +
-                ", stdmId=" + stdmId +
+                ", stdmId=" + (stadium != null ? stadium.getStdmId() : "null") +
                 '}';
     }
 
