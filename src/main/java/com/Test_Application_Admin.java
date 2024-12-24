@@ -82,20 +82,20 @@ public class Test_Application_Admin implements CommandLineRunner {
 //		System.out.println("\n---------------------");
       
     	
-//		● 查詢-getAll (多方emp2.hbm.xml必須設為lazy="false")(優!)
-//    	List<AdmVO> list = repository.findAll();
-//		for (AdmVO aEmp : list) {
-//			System.out.print(aEmp.getAdmid() + ",");
-//			System.out.print(aEmp.getAdmemail() + ",");
-//			System.out.print(aEmp.getAdmpassword() + ",");
-//			System.out.print(aEmp.getAdmname() + ",");
-//			System.out.print(aEmp.getAdmphone() + ",");
-//			System.out.print(aEmp.getHrdate() + ",");
-//			System.out.print(aEmp.getUpdtime() + ",");
-//			System.out.print(aEmp.getAdmsta() + ",");
-//			System.out.print(aEmp.getAdmbday() + ",");
-//			System.out.print(aEmp.getSupvsr() + ",");
-//		}
+    	//		● 查詢-getAll (多方emp2.hbm.xml必須設為lazy="false")(優!)
+    	List<AdmVO> list = repository.findAll();
+		for (AdmVO aEmp : list) {
+			System.out.print(aEmp.getAdmid() + ",");
+			System.out.print(aEmp.getAdmemail() + ",");
+			System.out.print(aEmp.getAdmpassword() + ",");
+			System.out.print(aEmp.getAdmname() + ",");
+			System.out.print(aEmp.getAdmphone() + ",");
+			System.out.print(aEmp.getHrdate() + ",");
+			System.out.print(aEmp.getUpdtime() + ",");
+			System.out.print(aEmp.getAdmsta() + ",");
+			System.out.print(aEmp.getAdmbday() + ",");
+			System.out.print(aEmp.getSupvsr() + ",");
+		}
 
 
 		//● 複合查詢-getAll(map) 配合 req.getParameterMap()方法 回傳 java.util.Map<java.lang.String,java.lang.String[]> 之測試

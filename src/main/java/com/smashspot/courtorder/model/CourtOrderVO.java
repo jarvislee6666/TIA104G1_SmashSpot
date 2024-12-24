@@ -1,32 +1,63 @@
 package com.smashspot.courtorder.model;
 
-import java.sql.Timestamp; 
+import java.sql.Timestamp;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
+import com.smashspot.stadium.model.StadiumVO;
+
 
 @Entity
 @Table(name = "court_order")
-public class CourtOrderVO implements java.io.Serializable {
+public class CourtOrderVO {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "court_ord_id", updatable = false)	
     private Integer courtordid;
 	
+	@ManyToOne
+	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
+	private StadiumVO stadium;
+	
+	@OneToMany(mappedBy = "courtOrder", cascade = CascadeType.ALL) 
+	private Set<CourtOrderDetailVO> courtOrderDetail;
+
+	
+	public Set<CourtOrderDetailVO> getCourtOrderDetail() {
+		return courtOrderDetail;
+	}
+	public void setCourtOrderDetail(Set<CourtOrderDetailVO> courtOrderDetail) {
+		courtOrderDetail = courtOrderDetail;
+	}
+	 
+
+
+	
+	public StadiumVO getStadium() {
+		return stadium;
+	}
+	public void setStadium(StadiumVO stadium) {
+		this.stadium = stadium;
+	}
+	
 	@Column(name = "mem_id")
     private Integer memid;          
-	
-	@Column(name = "stdm_id")
-    private Integer stdmid;        
+    
 	
 	@Column(name = "rsv_sta")
     private Boolean ordsta; 
@@ -60,14 +91,6 @@ public class CourtOrderVO implements java.io.Serializable {
 
 	public void setMemid(Integer memid) {
 		this.memid = memid;
-	}
-
-	public Integer getStdmid() {
-		return stdmid;
-	}
-
-	public void setStdmid(Integer stdmid) {
-		this.stdmid = stdmid;
 	}
 
 	public Boolean getOrdsta() {
