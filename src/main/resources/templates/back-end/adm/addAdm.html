@@ -68,55 +68,76 @@
 					<div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
 
 				<form th:action="@{/adm/insert}" method="post" th:object="${admVO}" enctype="multipart/form-data">
-						
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" th:field="*{admemail}" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">名稱</label>
-                        <input type="text" th:field="*{admname}" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">電話</label>
-                        <input type="tel" th:field="*{admphone}" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">生日</label>
-                        <input type="date" th:field="*{admbday}" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">雇用日期</label>
-                        <input type="date" th:field="*{hrdate}" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">密碼</label>
-                        <input type="password" th:field="*{admpassword}" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">確認密碼</label>
-                        <input type="password" name="confirmPassword" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" th:field="*{supvsr}">
-                            <label class="form-check-label">是否為高級權限者</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-				    <a href="/adm/listAllAdm" class="btn btn-secondary">取消</a>
-				    <button type="submit" class="btn btn-primary">註冊</button>
-				</div>
-            </form>       
+    <div class="modal-body">
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" th:field="*{admemail}" class="form-control" th:class="${#fields.hasErrors('admemail')} ? 'form-control is-invalid' : 'form-control'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('admemail')}" th:errors="*{admemail}"></div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">名稱</label>
+            <input type="text" th:field="*{admname}" class="form-control" th:class="${#fields.hasErrors('admname')} ? 'form-control is-invalid' : 'form-control'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('admname')}" th:errors="*{admname}"></div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">電話</label>
+            <input type="tel" th:field="*{admphone}" class="form-control" th:class="${#fields.hasErrors('admphone')} ? 'form-control is-invalid' : 'form-control'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('admphone')}" th:errors="*{admphone}"></div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">生日</label>
+            <input type="date" th:field="*{admbday}" class="form-control" th:class="${#fields.hasErrors('admbday')} ? 'form-control is-invalid' : 'form-control'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('admbday')}" th:errors="*{admbday}"></div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">雇用日期</label>
+            <input type="date" th:field="*{hrdate}" class="form-control" th:class="${#fields.hasErrors('hrdate')} ? 'form-control is-invalid' : 'form-control'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('hrdate')}" th:errors="*{hrdate}"></div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">密碼</label>
+            <input type="password" th:field="*{admpassword}" class="form-control" th:class="${#fields.hasErrors('admpassword')} ? 'form-control is-invalid' : 'form-control'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('admpassword')}" th:errors="*{admpassword}"></div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">確認密碼</label>
+            <input type="password" name="confirmPassword" class="form-control" id="confirmPassword">
+            <div class="invalid-feedback" id="confirmPasswordError"></div>
+        </div>
+        
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" th:field="*{supvsr}">
+                <label class="form-check-label">是否為高級權限者</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="/adm/listAllAdm" class="btn btn-secondary">取消</a>
+        <button type="submit" class="btn btn-primary">註冊</button>
+    </div>
+</form>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.querySelector('[name="admpassword"]').value;
+    const confirmPassword = document.querySelector('[name="confirmPassword"]').value;
+    const confirmPasswordInput = document.querySelector('#confirmPassword');
+    const confirmPasswordError = document.querySelector('#confirmPasswordError');
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        confirmPasswordInput.classList.add('is-invalid');
+        confirmPasswordError.textContent = '密碼與確認密碼不符';
+    }
+});
+</script>
 
 </body>
 </html>
