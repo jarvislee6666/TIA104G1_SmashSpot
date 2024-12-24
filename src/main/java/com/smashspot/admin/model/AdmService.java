@@ -44,5 +44,18 @@ public class AdmService {
 //		return optional.get();
 		return optional.orElse(null);  // public T orElse(T other) : 如果值存在就回傳其值，否則回傳other的值
 	}
+	
+	public AdmVO findByEmail(String email) {
+        return repository.findByAdmemail(email);
+    }
+    
+    public AdmVO findByPhone(String phone) {
+        return repository.findByAdmphone(phone);
+    }
+    
+    public AdmVO findByPassword(String password) {
+        return repository.findByAdmpassword(password);
+    }
+	
 
 }
