@@ -30,8 +30,6 @@ public class HibernateUtil_CompositeQuery_Adm {
 			predicate = builder.equal(root.get(columnName), Integer.valueOf(value));
 		else if ("admsta".equals(columnName) || "supvsr".equals(columnName)) // 用於Boolean
 			predicate = builder.equal(root.get(columnName), Double.valueOf(value));
-		else if ("ename".equals(columnName)) // 用於varchar
-			predicate = builder.like(root.get(columnName), "%" + value + "%");
 		
 		return predicate;
 	}
