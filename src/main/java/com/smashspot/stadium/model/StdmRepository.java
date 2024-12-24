@@ -15,6 +15,6 @@ public interface StdmRepository extends JpaRepository<StadiumVO, Integer>{
 	void deleteByStdmId(int stdmId);
 
 	//● (自訂)條件查詢
-	@Query(value = "from StdmVO where stdmId=?1 and stdmName like?2 and locId=?3 order by stdmId")
+	@Query(value = "from StadiumVO where stdmId=?1 and stdmName like?2 and locId=?3 order by stdmId")
 	List<StadiumVO> findByOthers(int stdmId , String stdmName , int locId);
 }

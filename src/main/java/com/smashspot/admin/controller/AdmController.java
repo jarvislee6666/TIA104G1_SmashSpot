@@ -111,5 +111,7 @@ public class AdmController {
 		model.addAttribute("admListData", list); // for listAllAdm.html 第85行用
 		return "back-end/emp/listAllAdm";
 	}
+	
+	
 
 }
