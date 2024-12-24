@@ -26,12 +26,14 @@ public class HibernateUtil_CompositeQuery_Adm {
 
 		Predicate predicate = null;
 
-		if ("empno".equals(columnName)) // 用於Integer
-			predicate = builder.equal(root.get(columnName), Integer.valueOf(value));
-		else if ("admsta".equals(columnName) || "supvsr".equals(columnName)) // 用於Boolean
-			predicate = builder.equal(root.get(columnName), Double.valueOf(value));
-		
-		return predicate;
+		if ("admname".equals(columnName)) {
+	        // 姓名模糊查詢
+	        predicate = builder.like(root.get(columnName), "%" + value + "%");
+	    } else if ("admsta".equals(columnName) || "supvsr".equals(columnName)) {
+	        // Boolean 值查詢
+	        predicate = builder.equal(root.get(columnName), Boolean.valueOf(value));
+	    }
+	    return predicate;
 	}
 
 	@SuppressWarnings("unchecked")

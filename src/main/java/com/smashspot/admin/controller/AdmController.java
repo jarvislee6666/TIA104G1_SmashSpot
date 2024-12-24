@@ -1,6 +1,8 @@
 package com.smashspot.admin.controller;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +37,36 @@ public class AdmController {
 	@Autowired
 	AdmService admSvc;
 	
-	@GetMapping("addAdm")
+	@GetMapping("/listAllAdm")
+		public String listAllAdm(
+		        @RequestParam(required = false) String admname,
+		        @RequestParam(required = false) String admsta,
+		        @RequestParam(required = false) String supvsr,
+		        Model model) {
+	    
+	    Map<String, String[]> map = new HashMap<>();
+	    if (admname != null && !admname.trim().isEmpty()) {
+	        map.put("admname", new String[]{admname});
+	    }
+	    if (admsta != null && !admsta.trim().isEmpty()) {
+	        map.put("admsta", new String[]{admsta});
+	    }
+	    if (supvsr != null && !supvsr.trim().isEmpty()) {
+	        map.put("supvsr", new String[]{supvsr});
+	    }
+	    
+	    List<AdmVO> admList;
+	    if (map.isEmpty()) {
+	        admList = admSvc.getAll();
+	    } else {
+	        admList = admSvc.getAll(map);
+	    }
+	    
+	    model.addAttribute("admVO", new AdmVO());
+	    model.addAttribute("admList", admList);
+	    return "back-end/adm/listAllAdm";
+	}
+	@GetMapping("/addAdm")
 	public String addAdm(ModelMap model) {
 		AdmVO admVO = new AdmVO();
 		model.addAttribute("admVO", admVO);
@@ -43,22 +74,20 @@ public class AdmController {
 	}
 	
 	@PostMapping("insert")
-	public String insert(@Valid AdmVO admVO, BindingResult result, ModelMap model) 
-			throws IOException {
+	public String insert(@Valid AdmVO admVO, BindingResult result, ModelMap model
+			) throws IOException {
 
 		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
 		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
-		if (result.hasErrors()) {
-			return "back-end/adm/addAdm";
-		}
+		
 		/*************************** 2.開始新增資料 *****************************************/
 		// EmpService empSvc = new EmpService();
 		admSvc.addAdm(admVO);
 		/*************************** 3.新增完成,準備轉交(Send the Success view) **************/
 		List<AdmVO> list = admSvc.getAll();
-		model.addAttribute("empListData", list);
+		model.addAttribute("admListData", list);
 		model.addAttribute("success", "- (新增成功)");
-		return "redirect:/adm/listAllAdm"; // 新增成功後重導至IndexController_inSpringBoot.java的第58行@GetMapping("/emp/listAllEmp")
+		return "redirect:/emp/listAllAdm"; // 新增成功後重導至IndexController_inSpringBoot.java的第58行@GetMapping("/emp/listAllEmp")
 	}
 	
 	@PostMapping("getOne_For_Update")

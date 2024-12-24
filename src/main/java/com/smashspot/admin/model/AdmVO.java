@@ -98,8 +98,7 @@ public class AdmVO{
 	}
 	
 	@Column(name = "hr_date")
-	@NotEmpty(message="雇用日期: 請勿空白")	
-	@FutureOrPresent(message = "日期必須是今日(含)或之後")
+	@NotNull(message="雇用日期: 請勿空白")	
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	public Date getHrdate() {
 		return hrdate;
@@ -125,7 +124,7 @@ public class AdmVO{
 	}
 	
 	@Column(name = "adm_bday")
-	@NotEmpty(message="雇用日期: 請勿空白")	
+	@NotNull(message="生日日期: 請勿空白")	
 	@Past(message="日期必須是在今日(含)之前")
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	public Date getAdmbday() {
