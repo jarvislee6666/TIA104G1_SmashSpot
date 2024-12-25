@@ -134,7 +134,7 @@
 						<td th:text="${admVO.admsta ? '正常' : '停用'}"></td>
 						<td th:text="${admVO.supvsr ? '高級' : '一般'}"></td>
 						<td>
-							<button class="btn btn-sm btn-outline-secondary">編輯</button>
+							<a th:href="@{/adm/updateAdm(admid=${admVO.admid})}" class="btn btn-sm btn-outline-secondary">編輯</a>
 						</td>
 					</tr>
 					</c:forEach>

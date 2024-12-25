@@ -129,7 +129,7 @@ public class AdmController {
 	    }
 	}
 	
-	@PostMapping("getOne_For_Update")
+	@GetMapping("/updateAdm")
 	public String getOne_For_Update(@RequestParam("admid") String admid, ModelMap model) {
 		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
 		/*************************** 2.開始查詢資料 *****************************************/
@@ -138,27 +138,22 @@ public class AdmController {
 
 		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
 		model.addAttribute("admVO", admVO);
-		return "back-end/adm/update_adm_input"; // 查詢完成後轉交update_emp_input.html
+		return "back-end/adm/updateAdm"; // 查詢完成後轉交update_emp_input.html
 	}
 	
 	@PostMapping("update")
-	public String update(@Valid AdmVO admVO, BindingResult result, ModelMap model)
-			throws IOException {
+	public String update(@Valid AdmVO admVO, BindingResult result, ModelMap model){
 
-		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
-		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
 		if (result.hasErrors()) {
-			return "back-end/adm/update_adm_input";
-		}
-		/*************************** 2.開始修改資料 *****************************************/
-		// EmpService empSvc = new EmpService();
-		admSvc.updateAdm(admVO);
-
-		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
-		model.addAttribute("success", "- (修改成功)");
-		admVO = admSvc.getOneAdm(Integer.valueOf(admVO.getAdmid()));
-		model.addAttribute("admVO", admVO);
-		return "back-end/adm/listAllAdm"; // 修改成功後轉交listAllAdm.html
+	        return "back-end/adm/updateAdm";
+	    }
+	    
+		AdmVO original = admSvc.getOneAdm(admVO.getAdmid());
+	    original.setAdmsta(admVO.getAdmsta());
+	    original.setSupvsr(admVO.getSupvsr());
+	    
+	    admSvc.updateAdm(original);
+	    return "redirect:/adm/listAllAdm";
 	}
 
 	public BindingResult removeFieldError(AdmVO admVO, BindingResult result, String removedFieldname) {
