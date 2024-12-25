@@ -1,0 +1,114 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* main {
+  margin-top: 9rem; 可視頁面調整 
+  flex: 1 0 auto;
+} */
+
+/* ================ 以上為全局設定 ================ */
+
+.nav-container {
+  display: flex;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 0.1rem 0;
+  background: #fff;
+  margin-bottom: 20px;
+}
+
+.navbar-brand img {
+  height: 6rem;
+  width: 6rem;
+}
+
+.nav-list {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-item {
+  padding: 0 20px;
+}
+
+.nav-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.nav-link:hover {
+  color: #0066cc;
+}
+
+@media (max-width: 992px) {
+  .nav-container {
+    padding: 10px 15px;
+  }
+
+  .navbar {
+    position: relative;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    align-items: flex-start;
+    display: none; /* Hidden by default */
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .navbar-toggler {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    display: block;
+    border: 2px solid rgb(180, 180, 180);
+    background: none;
+    z-index: 1001;
+  }
+
+  .nav-item {
+    width: 100%;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e6e6e6;
+  }
+
+  .nav-list.show {
+    display: flex;
+  }
+
+  .nav-link {
+    display: block;
+    width: 100%;
+  }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 576px) {
+  .navbar-brand img {
+    width: 50px;
+    height: 50px;
+  }
+}

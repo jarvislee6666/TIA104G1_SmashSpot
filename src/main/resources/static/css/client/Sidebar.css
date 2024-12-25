@@ -1,0 +1,40 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* main {
+  margin-top: 9rem; 可視頁面調整 
+  flex: 1 0 auto;
+} */
+
+/* ================ 以上為全局設定 ================ */
+
+.action-button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #0d6efd;
+  border-radius: 4px;
+  background: white;
+  color: #0d6efd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.action-button:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+  text-decoration: none;
+}
