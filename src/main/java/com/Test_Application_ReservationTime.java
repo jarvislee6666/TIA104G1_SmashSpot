@@ -131,6 +131,37 @@ public class Test_Application_ReservationTime implements CommandLineRunner {
 //			}
 //		} else System.out.print("查無資料\n");
 //		System.out.println("--------------------------------");
+		
+        // --------------------------------------------
+        //  新增：呼叫 findReservationByStdmIdAndWeeks()
+        // --------------------------------------------
+        // 您可以根據實際需求，給予以下參數
+        Integer stdmIdTest = 1;    // 假設要查 "stdm_id = 1" 的場地
+        Integer startWeekTest = 0; // 從本週開始
+        Integer endWeekTest = 0;   // 查到下週(或更多週)
+
+        List<Object[]> results = repository.findReservationByStdmIdAndWeeks(
+                stdmIdTest, 
+                startWeekTest, 
+                endWeekTest
+        );
+
+        System.out.println("=== 查詢 findReservationByStdmIdAndWeeks() 結果 ===");
+        // 根據 SQL SELECT 的欄位順序: [0]=stdm_id, [1]=stdm_name, [2]=dates, [3]=rsv_ava, [4]=booked
+        for (Object[] row : results) {
+            // 可以直接印出 row
+            // System.out.println(Arrays.toString(row));
+
+            // 或者逐一取出並印出
+            System.out.println(
+                "stdm_id=" + row[0] + ", " +
+                "stdm_name=" + row[1] + ", " +
+                "dates=" + row[2] + ", " +
+                "rsv_ava=" + row[3] + ", " +
+                "booked=" + row[4]
+            );
+        }
+		
 
     }
 }

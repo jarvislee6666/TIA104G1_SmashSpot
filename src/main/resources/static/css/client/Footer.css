@@ -1,0 +1,88 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* main {
+  margin-top: 9rem; 可視頁面調整 
+  flex: 1 0 auto;
+} */
+
+/* ================ 以上為全局設定 ================ */
+
+footer {
+  background-color: #7d7d7d;
+  padding: 0.7rem 0;
+  flex-shrink: 0;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-logo {
+  height: 6rem;
+  width: 6rem;
+  object-fit: contain;
+}
+
+.footer-text {
+  color: #e0e0e0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.social-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.social-icons-row {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 10px;
+}
+
+.social-icons a {
+  color: #333;
+  font-size: 24px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.social-icons a:hover {
+  color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-contact {
+    margin-left: 0;
+    margin-top: 15px;
+  }
+  .social-icons {
+    margin-top: 15px;
+  }
+}
