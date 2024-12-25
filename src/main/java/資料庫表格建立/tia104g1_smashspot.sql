@@ -108,7 +108,7 @@ INSERT INTO stadium_like (
 
 
 
-
+--	1225念芸: 修改open_time、close_time欄位順序、調整INSERT指令內容
 
 CREATE TABLE stadium (
 	stdm_id	     	  INT AUTO_INCREMENT NOT NULL,
@@ -123,10 +123,11 @@ CREATE TABLE stadium (
 	opr_sta  		  BOOLEAN NOT NULL,
 	stdm_pic   		  MEDIUMBLOB,
 	adm_id            INT NOT NULL,
+	open_time         TIME NOT NULL,
+	close_time        TIME NOT NULL,
 	stdm_start_time   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	open_time TIME NOT NULL,
-	close_time TIME NOT NULL,
-	
+
+
 	
 	CONSTRAINT fk_location_stadium_loc_id	
          FOREIGN KEY (loc_id) REFERENCES location (loc_id),
@@ -136,11 +137,11 @@ CREATE TABLE stadium (
 	PRIMARY KEY (stdm_id)
 ) AUTO_INCREMENT = 1;
 
-INSERT INTO stadium (stdm_name, stdm_addr, loc_id, longitude, latitude, stdm_intro, court_count, court_price, opr_sta, stdm_pic, adm_id, open_time, close_time)
+INSERT INTO stadium (stdm_name, stdm_addr, loc_id, longitude, latitude, stdm_intro, court_count, court_price, opr_sta, stdm_pic, adm_id, opentime, closetime)
 VALUES
-('飆汗羽球_信義總部', '110台北市信義區松勤街100號', 1, 121.56672000, 25.03189000, '北市最牛羽球館，給你最極致的羽球饗宴', 7, 600, 1, NULL, 1, '08:00:00', '20:00:00'),
-('飆汗羽球_大甲格鬥館', '437台中市大甲區中山路一段876號', 4, 120.62902000, 24.34826000, '呼風喚羽大甲格鬥館', 5, 450, 1, NULL, 1, '08:00:00', '22:00:00'),
-('飆汗羽球_東泰分館', '334桃園市八德區東泰街201號', 3, 121.27369000, 24.97413000, '桃園最大羽球館(目前閉館維護中)', 8, 250, 0, NULL, 1, '08:00:00', '20:00:00');
+('飆汗羽球_信義總部', '110台北市信義區松勤街100號', 1, 121.56672000, 25.03189000, '北市最牛羽球館，給你最極致的羽球饗宴', 10, 600, 1, NULL, 101, 8, 22),
+('飆汗羽球_大甲格鬥館', '437台中市大甲區中山路一段876號', 2, 120.62902000, 24.34826000, '呼風喚羽大甲格鬥館', 5, 450, 1, NULL, 102, 10, 20),
+('飆汗羽球_東泰分館', '334桃園市八德區東泰街201號', 3, 121.27369000, 24.97413000, '桃園最大羽球館(目前閉館維護中)', 15, 250, 0, NULL, 103, 9, 21);
 
 
 
