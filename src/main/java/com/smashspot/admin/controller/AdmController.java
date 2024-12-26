@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,6 +176,23 @@ public class AdmController {
 		return "back-end/emp/listAllAdm";
 	}
 	
+	@GetMapping("/login")
+    public String loginPage() {
+        return "back-end/adm/loginAdm";
+    }
 	
+	@PostMapping("/login")
+    public String login(@RequestParam String admemail, 
+                       @RequestParam String admpassword,
+                       HttpSession session,
+                       Model model) {
+        AdmVO adm = admSvc.login(admemail, admpassword);
+        if (adm != null) {
+            session.setAttribute("loginAdm", adm);
+            return "redirect:/adm/listAllAdm";
+        }
+        model.addAttribute("error", "帳號或密碼錯誤");
+        return "back-end/adm/loginAdm";
+    }
 
 }
