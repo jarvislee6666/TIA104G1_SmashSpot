@@ -56,6 +56,14 @@ public class AdmService {
     public AdmVO findByPassword(String password) {
         return repository.findByAdmpassword(password);
     }
+    
+    public AdmVO login(String email, String password) {
+        AdmVO adm = repository.findByAdmemail(email);
+        if (adm != null && adm.getAdmpassword().equals(password)) {
+            return adm;
+        }
+        return null;
+    }
 	
 
 }
