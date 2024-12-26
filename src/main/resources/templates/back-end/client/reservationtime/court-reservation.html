@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>球場預約系統</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	rel="stylesheet">
+<style>
+body {
+	margin: 0;
+	font-family: sans-serif;
+}
+
+.status-available {
+	background-color: rgba(13, 110, 253, 0.1);
+	color: #0d6efd;
+}
+
+.status-limited {
+	background-color: rgba(255, 193, 7, 0.1);
+	color: #ffc107;
+}
+
+.status-full {
+	background-color: rgba(108, 117, 125, 0.1);
+	color: #6c757d;
+}
+
+.status-reserve {
+	background-color: #f9e8f4ea !important;
+	color: #fe0391;
+}
+
+.court-cell {
+	cursor: pointer;
+	transition: transform 0.2s;
+	border-radius: 4px;
+	padding: 10px;
+}
+
+.court-cell:hover {
+	transform: scale(1.05);
+}
+
+.court-cell.selected {
+	outline: 2px solid #0d6efd;
+}
+</style>
+</head>
+<body>
+	<div class="container my-4">
+		<h2>飆汗羽球館 - 場地預約</h2>
+
+
+		<!-- 週次選擇區 -->
+		<div class="mb-4">
+			<div>
+				<a th:if="${week > 0}" class="btn btn-outline-primary me-2"
+					th:href="@{/reservation/week(stdmId=${stdmId}, week=${week - 1})}">
+					上一週 </a> <a th:if="${week <= 0}"
+					class="btn btn-outline-primary me-2 disabled" href="#"> 上一週 </a> <span
+					th:text="${#dates.format(startDate, 'yyyy/MM/dd')} + ' ~ ' + ${#dates.format(endDate, 'yyyy/MM/dd')}">
+				</span> <a th:if="${week < 4}" class="btn btn-outline-primary ms-2"
+					th:href="@{/reservation/week(stdmId=${stdmId}, week=${week + 1})}">
+					下一週 </a> <a th:if="${week >= 4}"
+					class="btn btn-outline-primary ms-2 disabled" href="#"> 下一週 </a>
+			</div>
+		</div>
+
+		<!-- 預約表格 -->
+		<div class="card">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered text-center">
+						<thead>
+							<tr>
+								<!-- 第一格：時段 -->
+								<th>時段</th>
+
+								<!-- Sunday 欄位 -->
+								<th style="color: red;">
+									<!-- 固定文字：SUN -->
+									<div>SUN</div> <!-- 從 reservationList[0] 拿日期 -->
+									<div
+										th:text="${#calendars.format(reservationList[0].date, 'yyyy-MM-dd')}"></div>
+								</th>
+
+								<!-- Monday 欄位 -->
+								<th style="color: blue;">
+									<div>MON</div>
+									<div
+										th:text="${#calendars.format(reservationList[1].date, 'yyyy-MM-dd')}"></div>
+								</th>
+
+								<!-- Tuesday -->
+								<th style="color: blue;">
+									<div>TUE</div>
+									<div
+										th:text="${#calendars.format(reservationList[2].date, 'yyyy-MM-dd')}"></div>
+								</th>
+
+								<!-- Wednesday -->
+								<th style="color: blue;">
+									<div>WED</div>
+									<div
+										th:text="${#calendars.format(reservationList[3].date, 'yyyy-MM-dd')}"></div>
+								</th>
+
+								<!-- Thursday -->
+								<th style="color: blue;">
+									<div>THU</div>
+									<div
+										th:text="${#calendars.format(reservationList[4].date, 'yyyy-MM-dd')}"></div>
+								</th>
+
+								<!-- Friday -->
+								<th style="color: blue;">
+									<div>FRI</div>
+									<div
+										th:text="${#calendars.format(reservationList[5].date, 'yyyy-MM-dd')}"></div>
+								</th>
+
+								<!-- Saturday -->
+								<th style="color: red;">
+									<div>SAT</div>
+									<div
+										th:text="${#calendars.format(reservationList[6].date, 'yyyy-MM-dd')}"></div>
+								</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<!-- 08:00-10:00 -->
+							<tr>
+								<td>08:00-10:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,4,5)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'08:00-10:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- 10:00-12:00 -->
+							<tr>
+								<td>10:00-12:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,5,6)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'10:00-12:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- 12:00-14:00 -->
+							<tr>
+								<td>12:00-14:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,6,7)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'12:00-14:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- 14:00-16:00 -->
+							<tr>
+								<td>14:00-16:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,7,8)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'14:00-16:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- 16:00-18:00 -->
+							<tr>
+								<td>16:00-18:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,8,9)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'16:00-18:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- 18:00-20:00 -->
+							<tr>
+								<td>18:00-20:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,9,10)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'18:00-20:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- 20:00-22:00 -->
+							<tr>
+								<td>20:00-22:00</td>
+								<td th:each="resvo : ${reservationList}">
+									<div
+										th:with="available=${#strings.substring(resvo.leftover,10,11)},
+							                     isExpired=${#dates.createNow() > resvo.date},
+							                     isFuture=${resvo.date.time > futureLimit.time}"
+										th:data-date="${#calendars.format(resvo.date, 'yyyy-MM-dd')}"
+										th:data-time="'20:00-22:00'" th:data-available="${available}"
+										th:class="${'court-cell ' + 
+							                       (isExpired ? 'status-unavailable' : 
+							                        (isFuture ? 'status-unavailable' : 
+							                         (available == 'x' ? 'status-unavailable' :
+							                          (available > '3' ? 'status-available' : 
+							                           (available > '0' ? 'status-limited' : 'status-full')))))}">
+										<div th:if="${isExpired}" class="fw-bold">已過期</div>
+										<div th:if="${isFuture}" class="fw-bold">尚未開放</div>
+										<div th:if="${available == 'x'}" class="fw-bold">不開放</div>
+										<div th:if="${!isExpired && !isFuture && available != 'x'}">
+											<div class="fw-bold"
+												th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
+											<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<!-- 複製其他時段... -->
+						</tbody>
+					</table>
+				</div>
+
+				<!-- 圖例說明 -->
+				<div class="d-flex gap-4 mt-3">
+					<div class="d-flex align-items-center">
+						<div class="rounded me-2 status-available"
+							style="width: 20px; height: 20px;"></div>
+						<small>充足 (>3)</small>
+					</div>
+					<div class="d-flex align-items-center">
+						<div class="rounded me-2 status-limited"
+							style="width: 20px; height: 20px;"></div>
+						<small>即將滿場 (≤3)</small>
+					</div>
+					<div class="d-flex align-items-center">
+						<div class="rounded me-2 status-full"
+							style="width: 20px; height: 20px;"></div>
+						<small>預約額滿</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 預約按鈕 -->
+		<div class="text-center mt-3" id="bookingButtonContainer"
+			style="display: none;">
+			<button class="btn btn-primary" onclick="showBookingModal()">
+				<i class="fas fa-calendar-check me-1"></i> 確認預約
+			</button>
+		</div>
+
+		<!-- 預約 Modal -->
+		<div class="modal fade" id="bookingModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">確認預約資訊</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body">
+						<!-- 詳細內容... -->
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-bs-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary"
+							onclick="submitBooking()">確認預約</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+        let selectedTimeSlots = [];
+        const PRICE_PER_SLOT = 600;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.court-cell').forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const available = this.dataset.available;
+                    if (available > 0) {
+                        const date = this.dataset.date;
+                        const timeSlot = this.dataset.time;
+                        selectTimeSlot(this, date, timeSlot, available);
+                    }
+                });
+            });
+        });
+
+        function selectTimeSlot(element, date, timeSlot) {
+            const isSelected = element.classList.toggle('selected');
+            
+            if (isSelected) {
+                selectedTimeSlots.push({ date, timeSlot, count: 1 });
+            } else {
+                selectedTimeSlots = selectedTimeSlots.filter(
+                    slot => slot.date !== date || slot.timeSlot !== timeSlot
+                );
+            }
+
+            updateBookingButton();
+        }
+
+        function updateBookingButton() {
+            const container = document.getElementById('bookingButtonContainer');
+            container.style.display = selectedTimeSlots.length > 0 ? 'block' : 'none';
+        }
+
+        function showBookingModal() {
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+        }
+
+        function submitBooking() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
+            modal.hide();
+            
+            alert('預約成功！');
+            
+            selectedTimeSlots = [];
+            updateBookingButton();
+            document.querySelectorAll('.court-cell.selected').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -136,7 +136,7 @@ public class Test_Application_ReservationTime implements CommandLineRunner {
         //  新增：呼叫 findReservationByStdmIdAndWeeks()
         // --------------------------------------------
         // 您可以根據實際需求，給予以下參數
-        Integer stdmIdTest = 1;    // 假設要查 "stdm_id = 1" 的場地
+        Integer stdmIdTest = 2;    // 假設要查 "stdm_id = 1" 的場地
         Integer startWeekTest = 0; // 從本週開始
         Integer endWeekTest = 0;   // 查到下週(或更多週)
 
