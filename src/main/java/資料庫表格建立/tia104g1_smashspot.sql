@@ -85,6 +85,40 @@ INSERT INTO location (
 ('嘉義市');
 
 
+--	1225念芸: 修改open_time、close_time欄位順序、調整INSERT指令內容
+
+CREATE TABLE stadium (
+	stdm_id	     	  INT AUTO_INCREMENT NOT NULL,
+	stdm_name	  	  VARCHAR(20) NOT NULL,
+	stdm_addr	  	  VARCHAR(50) NOT NULL,
+	loc_id            INT NOT NULL,
+	longitude         DECIMAL(11, 8) NOT NULL,
+	latitude          DECIMAL(10, 8) NOT NULL,
+	stdm_intro  	  TEXT NOT NULL,
+	court_count       INT NOT NULL,
+	court_price       INT NOT NULL,
+	opr_sta  		  BOOLEAN NOT NULL,
+	stdm_pic   		  MEDIUMBLOB,
+	adm_id            INT NOT NULL,
+	opentime         INT NOT NULL,
+	closetime        INT NOT NULL,
+	stdm_start_time   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+
+	
+	CONSTRAINT fk_location_stadium_loc_id	
+         FOREIGN KEY (loc_id) REFERENCES location (loc_id),
+     CONSTRAINT fk_admin_stadium_admin_id
+         FOREIGN KEY (adm_id) REFERENCES admin (adm_id),
+	CONSTRAINT stadium_PRIMARY_KEY 
+	PRIMARY KEY (stdm_id)
+) AUTO_INCREMENT = 1;
+
+INSERT INTO stadium (stdm_name, stdm_addr, loc_id, longitude, latitude, stdm_intro, court_count, court_price, opr_sta, stdm_pic, adm_id, opentime, closetime)
+VALUES
+('飆汗羽球_信義總部', '110台北市信義區松勤街100號', 1, 121.56672000, 25.03189000, '北市最牛羽球館，給你最極致的羽球饗宴', 10, 600, 1, NULL, 1, 8, 22),
+('飆汗羽球_大甲格鬥館', '437台中市大甲區中山路一段876號', 2, 120.62902000, 24.34826000, '呼風喚羽大甲格鬥館', 5, 450, 1, NULL, 2, 10, 20),
+('飆汗羽球_東泰分館', '334桃園市八德區東泰街201號', 3, 121.27369000, 24.97413000, '桃園最大羽球館(目前閉館維護中)', 15, 250, 0, NULL, 2, 9, 21); -- 岳亭1226: 修改adm_id的值，以便順利insert，根據上面admin table，id應該只有1、2
 
 
 -- 創建場館收藏清單表格
@@ -105,46 +139,6 @@ INSERT INTO stadium_like (
 (1, 2),
 (1, 3),
 (2, 1);
-
-
-
---	1225念芸: 修改open_time、close_time欄位順序、調整INSERT指令內容
-
-CREATE TABLE stadium (
-	stdm_id	     	  INT AUTO_INCREMENT NOT NULL,
-	stdm_name	  	  VARCHAR(20) NOT NULL,
-	stdm_addr	  	  VARCHAR(50) NOT NULL,
-	loc_id            INT NOT NULL,
-	longitude         DECIMAL(11, 8) NOT NULL,
-	latitude          DECIMAL(10, 8) NOT NULL,
-	stdm_intro  	  TEXT NOT NULL,
-	court_count       INT NOT NULL,
-	court_price       INT NOT NULL,
-	opr_sta  		  BOOLEAN NOT NULL,
-	stdm_pic   		  MEDIUMBLOB,
-	adm_id            INT NOT NULL,
-	open_time         TIME NOT NULL,
-	close_time        TIME NOT NULL,
-	stdm_start_time   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-
-	
-	CONSTRAINT fk_location_stadium_loc_id	
-         FOREIGN KEY (loc_id) REFERENCES location (loc_id),
-     CONSTRAINT fk_admin_stadium_admin_id
-         FOREIGN KEY (adm_id) REFERENCES admin (adm_id),
-	CONSTRAINT stadium_PRIMARY_KEY 
-	PRIMARY KEY (stdm_id)
-) AUTO_INCREMENT = 1;
-
-INSERT INTO stadium (stdm_name, stdm_addr, loc_id, longitude, latitude, stdm_intro, court_count, court_price, opr_sta, stdm_pic, adm_id, opentime, closetime)
-VALUES
-('飆汗羽球_信義總部', '110台北市信義區松勤街100號', 1, 121.56672000, 25.03189000, '北市最牛羽球館，給你最極致的羽球饗宴', 10, 600, 1, NULL, 1, 8, 22),
-('飆汗羽球_大甲格鬥館', '437台中市大甲區中山路一段876號', 2, 120.62902000, 24.34826000, '呼風喚羽大甲格鬥館', 5, 450, 1, NULL, 2, 10, 20),
-('飆汗羽球_東泰分館', '334桃園市八德區東泰街201號', 3, 121.27369000, 24.97413000, '桃園最大羽球館(目前閉館維護中)', 15, 250, 0, NULL, 2, 9, 21); -- 岳亭1226: 修改adm_id的值，以便順利insert，根據上面admin table，id應該只有1、2
-
-
-
 
 
 -- 創建預約時段總覽表格
@@ -169,8 +163,6 @@ INSERT INTO reservation_time (
 (2, '2024-03-15', 'xxxx3242000x', 'xxxx5555555x'),
 (2, '2024-03-16', 'xxxx330000x', 'xxxx5555555x'),
 (2, '2024-03-17', 'xxxx0000000x', 'xxxx5555555x');
-
-
 
 
 
@@ -205,8 +197,6 @@ INSERT INTO court_order (
 
 
 
-
-
 -- 創建場地訂單明細表格
 CREATE TABLE court_order_detail (
     ord_dtl_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -229,7 +219,17 @@ INSERT INTO court_order_detail (
 (3, '2024-03-19', 'xxx00100000x');
 
 
+CREATE TABLE product_classification (
+	pro_class_id	INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+	cate_name	varchar(20) not null
+);
 
+INSERT INTO product_classification (cate_name) VALUES 
+('羽毛球拍'),
+('羽毛球'),
+('羽毛球鞋'),
+('羽毛球服裝'),
+('羽毛球配件');
 
 CREATE TABLE product (
 	pro_id	INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -282,24 +282,6 @@ INSERT INTO product (
 '勝利專業羽毛球拍', 1500);
 
 
-
-
-CREATE TABLE product_classification (
-	pro_class_id	INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-	cate_name	varchar(20) not null
-);
-
-INSERT INTO product_classification (cate_name) VALUES 
-('羽毛球拍'),
-('羽毛球'),
-('羽毛球鞋'),
-('羽毛球服裝'),
-('羽毛球配件');
-
-
-
-
-
 CREATE TABLE favorites_list (
 	favor_list_id	INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 	mem_id	INT not null,
@@ -313,9 +295,6 @@ INSERT INTO favorites_list (mem_id, pro_id) VALUES
 (1, 2),
 (1, 3),
 (2, 1);
-
-
-
 
 
 CREATE TABLE bid (
@@ -339,9 +318,6 @@ INSERT INTO bid (mem_id, pro_id, bid_amt) VALUES
 (1, 4, 1500),
 (1, 5, 1500)
 ;
-
-
-
 
 
 CREATE TABLE orders(

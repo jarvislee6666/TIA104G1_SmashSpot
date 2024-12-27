@@ -48,7 +48,7 @@ public class StadiumVO implements java.io.Serializable {
 	private Integer openTime;
 	private Integer closeTime;
 	private Timestamp stdmStartTime;
-	private String stdmPicBase64;
+//	private String stdmPicBase64;
 
 	// 新增的欄位//add by 麒安
 	private Set<ReservationTimeVO> reservationTime;
@@ -225,7 +225,7 @@ public class StadiumVO implements java.io.Serializable {
 	}
 
 	// 開閉館時間的驗證邏輯待修~~~
-	@Column(name = "open_time")
+	@Column(name = "opentime")
 	@NotNull(message = "開館時間請填數字")
 	@DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
 	@DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
@@ -237,7 +237,7 @@ public class StadiumVO implements java.io.Serializable {
 		this.openTime = openTime;
 	}
 
-	@Column(name = "close_time")
+	@Column(name = "closetime")
 	@NotNull(message = "閉館時間請填數字")
 	@DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
 	@DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
@@ -258,16 +258,16 @@ public class StadiumVO implements java.io.Serializable {
 		this.stdmStartTime = stdmStartTime;
 	}
 
-	// 圖片格式先以Base64處理，0205版本無下面getter/setter
-	public String getStdmPicBase64() {
-		return stdmPicBase64;
-	}
-
-	public void setStdmPicBase64(byte[] stdmPic) {
-		if (stdmPic != null) {
-			this.stdmPicBase64 = Base64.getEncoder().encodeToString(stdmPic);
-		}
-
-	}
+//	// 圖片格式先以Base64處理，0205版本無下面getter/setter
+//	public String getStdmPicBase64() {
+//		return stdmPicBase64;
+//	}
+//
+//	public void setStdmPicBase64(byte[] stdmPic) {
+//		if (stdmPic != null) {
+//			this.stdmPicBase64 = Base64.getEncoder().encodeToString(stdmPic);
+//		}
+//
+//	}
 
 }
