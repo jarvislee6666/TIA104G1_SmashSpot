@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -191,8 +192,14 @@ public class AdmController {
             session.setAttribute("loginAdm", adm);
             return "redirect:/adm/listAllAdm";
         }
-        model.addAttribute("error", "帳號或密碼錯誤");
+        model.addAttribute("error", true);
         return "back-end/adm/loginAdm";
     }
+	
+	@PostMapping("/logout")
+	public String logout(HttpSession session) {
+	    session.invalidate();
+	    return "redirect:/adm/loginAdm";
+	}
 
 }

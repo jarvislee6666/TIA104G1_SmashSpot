@@ -226,7 +226,7 @@ public class StadiumVO implements java.io.Serializable {
 	}
 
 	// 開閉館時間的驗證邏輯待修~~~
-	@Column(name = "open_time")
+	@Column(name = "opentime")
 	@NotNull(message = "開館時間請填數字")
 	@DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
 	@DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
@@ -238,7 +238,7 @@ public class StadiumVO implements java.io.Serializable {
 		this.openTime = openTime;
 	}
 
-	@Column(name = "close_time")
+	@Column(name = "closetime")
 	@NotNull(message = "閉館時間請填數字")
 	@DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
 	@DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
