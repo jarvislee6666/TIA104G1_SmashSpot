@@ -1,5 +1,6 @@
 package com.smashspot.stadium.model;
 
+import java.beans.Transient;//麒安test
 import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class StadiumVO implements java.io.Serializable {
 	private Integer openTime;
 	private Integer closeTime;
 	private Timestamp stdmStartTime;
-	private String stdmPicBase64;
+//	private String stdmPicBase64;
 
 	// 新增的欄位//add by 麒安
 	private Set<ReservationTimeVO> reservationTime;
@@ -258,16 +259,16 @@ public class StadiumVO implements java.io.Serializable {
 		this.stdmStartTime = stdmStartTime;
 	}
 
-	// 圖片格式先以Base64處理，0205版本無下面getter/setter
-	public String getStdmPicBase64() {
-		return stdmPicBase64;
-	}
-
-	public void setStdmPicBase64(byte[] stdmPic) {
-		if (stdmPic != null) {
-			this.stdmPicBase64 = Base64.getEncoder().encodeToString(stdmPic);
-		}
-
-	}
+//	// 圖片格式先以Base64處理，0205版本無下面getter/setter
+//	public String getStdmPicBase64() {
+//		return stdmPicBase64;
+//	}
+//
+//	public void setStdmPicBase64(byte[] stdmPic) {
+//		if (stdmPic != null) {
+//			this.stdmPicBase64 = Base64.getEncoder().encodeToString(stdmPic);
+//		}
+//
+//	}
 
 }

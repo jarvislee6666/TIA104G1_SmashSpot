@@ -13,7 +13,7 @@ import com.smashspot.reservationtime.model.ReservationTimeVO;
 
 import util.HibernateUtil_CompositeQuery_Adm;
 
-@Service("reservationTimeService")
+@Service("ReservationTimeService")
 public class ReservationTimeService {
 	
     @Autowired

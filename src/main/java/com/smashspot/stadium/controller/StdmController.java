@@ -66,7 +66,7 @@ public class StdmController {
 		} else {
 			for (MultipartFile multipartFile : parts) {
 				byte[] buf = multipartFile.getBytes();
-				stdmVO.setStdmPicBase64(buf);
+				stdmVO.setStdmPic(buf);
 			}
 		}
 		if (result.hasErrors() || parts[0].isEmpty()) {
