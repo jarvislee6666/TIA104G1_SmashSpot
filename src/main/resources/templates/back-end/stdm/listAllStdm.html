@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>全部場館列表 - listAllStdm.html</title>
+<head th:insert="~{/back-end/stdm/included-fragment}"></head>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+</style>
+<body>
+
+	<div class="loading-overlay">
+		<div class="loading-spinner"></div>
+	</div>
+
+	<nav class="navbar navbar-light mb-4">
+		<div class="container-fluid">
+			<div class="navbar-content">
+				<a class="navbar-brand" href="#">管理員後台</a>
+				<div class="nav-buttons">
+					<a class="nav-link" href="#"> <i class="fas fa-users me-2"></i>員工帳號管理
+					</a> <a class="nav-link" href="#"> <i
+						class="fas fa-ticket-alt me-2"></i>優惠券管理
+					</a> <a class="nav-link" href="#"> <i class="fas fa-store me-2"></i>商城管理
+					</a> <a class="nav-link active" href="#"> <i
+						class="fas fa-map-marker-alt me-2"></i>場地管理
+					</a> <a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>論壇管理
+					</a> <a class="nav-link" href="#"> <i class="fas fa-headset me-2"></i>客服中心
+					</a> <a class="nav-link" href="#"> <i
+						class="fas fa-user-circle me-2"></i>會員帳號管理
+					</a>
+				</div>
+				<div class="d-flex align-items-center border-start ps-4">
+					<div class="nav-item me-3">
+						<span class="nav-link"> <i class="fas fa-user me-1"></i> <span
+							th:text="${session.loginAdm.admname}"></span>
+						</span>
+					</div>
+					<form th:action="@{/adm/logout}" method="post"
+						style="display: inline;">
+						<button type="submit" class="btn btn-outline-secondary btn-sm">
+							<i class="fas fa-sign-out-alt me-1"></i>登出
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 mb-4">
+				<div class="card">
+					<div class="card-body p-0">
+						<div class="nav flex-column nav-pills">
+							<a class="nav-link" href="#"> <i
+								class="fas fa-plus-circle me-2"></i>場館刊登
+							</a> <a class="nav-link active" href="#"> <i
+								class="fas fa-list me-2"></i>場館刊登列表
+							</a> <a class="nav-link" href="#"> <i class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> <a class="nav-link" href="#"> <i
+								class="fas fa-chart-line me-2"></i>場館成效統計
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-10">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title mb-4">場地刊登列表</h5>
+						<form th:action="@{/stdm/listAllStdm}" method="get">
+
+							<!-- 搜尋區域 -->
+							<div class="search-section mb-4">
+								<div class="row g-3">
+									<div class="col-md-3">
+										<input type="text" class="form-control" placeholder="場地名稱">
+									</div>
+									<div class="col-md-3">
+										<input type="date" class="form-control">
+									</div>
+									<div class="col-md-2 d-flex align-items-end">
+										<button type="submit" class="btn btn-primary w-100">搜尋</button>
+									</div>
+								</div>
+							</div>
+						</form>
+
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>場地名稱</th>
+										<th>上架日期</th>
+										<th>連絡電話</th>
+										<th>球場數量</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="stadium, iterStat : ${stadiumList}">
+										<td th:text="${iterStat.count}">1</td>
+										<td th:text="${stadium.stdmName}">彰化羽球館</td>
+										<td
+											th:text="${#dates.format(stadium.stdmStartTime, 'yyyy/MM/dd')}">2023/12/12</td>
+										<td th:text="${stadium.locationVO.locPhone}">0988888888</td>
+										<td th:text="${stadium.courtCount}">6</td>
+										<td>
+											<button class="btn btn-sm btn-outline-primary me-2"
+												th:attr="data-id=${stadium.stdmId}" data-bs-toggle="modal"
+												data-bs-target="#editVenueModal">編輯</button>
+
+											<form th:action="@{/stdm/delete}" method="post"
+												style="display: inline">
+												<input type="hidden" name="stdmId"
+													th:value="${stadium.stdmId}" />
+												<button class="btn btn-sm btn-outline-secondary"
+													type="submit">下架</button>
+											</form>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<div class="d-flex justify-content-center mt-4"
+								th:if="${totalPages > 1}">
+								<nav>
+									<ul class="pagination">
+										<li class="page-item"
+											th:classappend="${currentPage == 1} ? 'disabled'"><a
+											th:href="@{/stdm/listAllStdm(page=${currentPage - 1})}"
+											class="page-link"> <span>&laquo;</span>
+										</a></li>
+										<li th:each="i : ${#numbers.sequence(1, totalPages)}"
+											th:class="${i==currentPage} ? 'page-item active' : 'page-item'">
+											<a class="page-link"
+											th:href="@{/stdm/listAllStdm(page=${i})}">[[${i}]]</a>
+										</li>
+										<li class="page-item"
+											th:classappend="${currentPage == totalPages} ? 'disabled'">
+											<a th:href="@{/stdm/listAllStdm(page=${currentPage + 1})}"
+											class="page-link"> <span>&raquo;</span>
+										</a>
+										</li>
+									</ul>
+								</nav>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="editVenueModal" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">編輯場地資訊</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<form id="editVenueForm">
+						<div class="mb-3">
+							<label class="form-label">球館名稱</label> <input type="text"
+								class="form-control" name="venueName">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">球館地址</label> <input type="text"
+								class="form-control" name="venueAddress">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">場地數量</label> <input type="number"
+								class="form-control" name="courtCount">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">球館圖片上傳</label>
+							<div class="input-group">
+								<input type="file" class="form-control" accept="image/*">
+								<button class="btn btn-outline-secondary" type="button">選擇檔案</button>
+							</div>
+							<div id="imagePreview" class="mt-2"></div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">場租費</label>
+							<div class="input-group">
+								<input type="number" class="form-control" name="price">
+								<span class="input-group-text">元/小時</span>
+							</div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">選擇休館日期</label>
+							<div class="calendar-wrapper">
+								<div class="month-picker">
+									<button class="btn btn-outline-secondary" id="prevMonth">&lt;</button>
+									<span id="currentMonth" class="mx-3">2024年 1月</span>
+									<button class="btn btn-outline-secondary" id="nextMonth">&gt;</button>
+								</div>
+								<div class="calendar mt-2">
+									<table class="table table-bordered text-center">
+										<thead>
+											<tr>
+												<th>日</th>
+												<th>一</th>
+												<th>二</th>
+												<th>三</th>
+												<th>四</th>
+												<th>五</th>
+												<th>六</th>
+											</tr>
+										</thead>
+										<tbody id="calendarBody">
+											<!-- JavaScript will populate this -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary">確認修改</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 添加確認對話框的 Modal -->
+	<div class="modal fade" id="delistConfirmModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">確認下架</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<p>
+						確定要下架「<span id="venueNameToDelete"></span>」嗎？
+					</p>
+					<p class="text-danger">注意：下架後該場地將不會出現在用戶搜尋結果中。</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-danger"
+						onclick="handleDelist()">確認下架</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<!-- <script src="js/main.js"></script>-->
+	<!-- 跳窗的CSS -->
+	<script>
+        class Calendar {
+            constructor() {
+                this.currentDate = new Date();
+                this.selectedDates = new Set();
+                this.editMode = false;
+                this.init();
+            }
+
+            init() {
+                this.setDefaultMondays();
+                this.renderCalendar();
+                this.addEditButton();
+            }
+
+            addEditButton() {
+                const editButton = document.createElement('button');
+                editButton.className = 'btn btn-outline-primary ms-2';
+                editButton.setAttribute('type', 'button');
+                editButton.innerHTML = '<i class="fas fa-edit me-1"></i>編輯休館日';
+                editButton.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.toggleEditMode();
+                };
+                document.querySelector('.month-picker').appendChild(editButton);
+            }
+
+            toggleEditMode() {
+                this.editMode = !this.editMode;
+                const editButton = document.querySelector('.month-picker .btn-outline-primary, .month-picker .btn-primary');
+                if (this.editMode) {
+                    editButton.classList.remove('btn-outline-primary');
+                    editButton.classList.add('btn-primary');
+                    editButton.innerHTML = '<i class="fas fa-check me-1"></i>完成編輯';
+                    this.addEditingHint();
+                } else {
+                    editButton.classList.remove('btn-primary');
+                    editButton.classList.add('btn-outline-primary');
+                    editButton.innerHTML = '<i class="fas fa-edit me-1"></i>編輯休館日';
+                    this.removeEditingHint();
+                }
+                this.renderCalendar();
+                this.updateCellsEditability();
+            }
+
+            addEditingHint() {
+                const hintDiv = document.createElement('div');
+                hintDiv.className = 'editing-hint text-muted small mt-2';
+                hintDiv.innerHTML = '點擊日期格子可選擇或取消選擇休館日';
+                const calendarWrapper = document.querySelector('.calendar-wrapper');
+                const existingHint = calendarWrapper.querySelector('.editing-hint');
+                if (!existingHint) {
+                    calendarWrapper.insertBefore(hintDiv, calendarWrapper.querySelector('.calendar'));
+                }
+            }
+
+            removeEditingHint() {
+                const hint = document.querySelector('.editing-hint');
+                if (hint) {
+                    hint.remove();
+                }
+            }
+
+            updateCellsEditability() {
+                const cells = document.querySelectorAll('#calendarBody td:not(.empty)');
+                cells.forEach(cell => {
+                    if (this.editMode) {
+                        cell.style.cursor = 'pointer';
+                    } else {
+                        cell.style.cursor = 'default';
+                    }
+                });
+            }
+
+            setDefaultMondays() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                const lastDate = new Date(year, month + 1, 0).getDate();
+
+                for (let date = 1; date <= lastDate; date++) {
+                    const currentDate = new Date(year, month, date);
+                    if (currentDate.getDay() === 1) {
+                        const dateStr = this.formatDate(currentDate);
+                        this.selectedDates.add(dateStr);
+                    }
+                }
+            }
+
+            formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // 修改 Calendar 類的 renderCalendar 方法
+            renderCalendar() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                const firstDay = new Date(year, month, 1).getDay();
+                const lastDate = new Date(year, month + 1, 0).getDate();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // 設置為當天 00:00:00
+
+                document.getElementById('currentMonth').textContent = 
+                    `${year}年 ${month + 1}月`;
+
+                let html = '';
+                let date = 1;
+                
+                for (let i = 0; i < 6; i++) {
+                    html += '<tr>';
+                    for (let j = 0; j < 7; j++) {
+                        if (i === 0 && j < firstDay) {
+                            html += '<td class="empty"></td>';
+                        } else if (date > lastDate) {
+                            html += '<td class="empty"></td>';
+                        } else {
+                            const currentDate = new Date(year, month, date);
+                            const dateStr = this.formatDate(currentDate);
+                            const isSelected = this.selectedDates.has(dateStr);
+                            const isMonday = currentDate.getDay() === 1;
+                            const isToday = currentDate.getTime() === today.getTime();
+                            const isPast = currentDate < today;
+                            
+                            const classes = [
+                                isSelected ? 'selected' : '',
+                                isToday ? 'today' : '',
+                                isMonday ? 'monday' : '',
+                                this.editMode && !isPast ? 'editable' : '',
+                                isPast ? 'past' : ''
+                            ].filter(Boolean).join(' ');
+
+                            const styles = [
+                                isSelected && !isPast ? 'background-color: #0d6efd; color: white;' : '',
+                                !isSelected && isMonday && !isPast ? 'background-color: #f8f9fa;' : '',
+                                isPast ? 'background-color: #e9ecef; color: #6c757d; cursor: not-allowed;' : '',
+                                !this.editMode || isPast ? 'cursor: default;' : ''
+                            ].filter(Boolean).join(';');
+
+                            const title = isPast ? '無法選擇過去日期' : 
+                                        (isMonday && !isSelected ? '預設公休日（可更改）' : '');
+
+                            html += `<td 
+                                data-date="${dateStr}"
+                                class="${classes}"
+                                style="${styles}"
+                                title="${title}"
+                                ${isPast ? 'disabled' : ''}
+                            >${date}</td>`;
+                            date++;
+                        }
+                    }
+                    html += '</tr>';
+                    if (date > lastDate) break;
+                }
+                
+                document.getElementById('calendarBody').innerHTML = html;
+            }
+
+
+            handleMonthChange(increment) {
+                this.currentDate.setMonth(this.currentDate.getMonth() + increment);
+                this.selectedDates.clear();
+                this.setDefaultMondays();
+                this.renderCalendar();
+            }
+
+            // 修改 toggleDate 方法，加入日期檢查
+            toggleDate(dateStr) {
+                if (!this.editMode) return;
+                
+                const selectedDate = new Date(dateStr);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // 如果是過去日期，不允許修改
+                if (selectedDate < today) {
+                    return;
+                }
+                
+                if (this.selectedDates.has(dateStr)) {
+                    this.selectedDates.delete(dateStr);
+                } else {
+                    this.selectedDates.add(dateStr);
+                }
+                this.renderCalendar();
+            }
+
+            getSelectedDates() {
+                return Array.from(this.selectedDates);
+            }
+
+            clearSelection() {
+                this.selectedDates.clear();
+                this.renderCalendar();
+            }
+        }
+
+        // 初始化與事件監聽
+        document.addEventListener('DOMContentLoaded', function() {
+            let calendar;
+            let calendarClickHandler;
+
+            // 修改確認按鈕的事件處理
+            const confirmEditButton = document.querySelector('#editVenueModal .modal-footer .btn-primary');
+            if (confirmEditButton) {
+                confirmEditButton.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 獲取表單數據
+                    const form = document.getElementById('editVenueForm');
+                    const formData = new FormData(form);
+
+                    // 加入選中的休館日期
+                    if (calendar) {
+                        const selectedDates = calendar.getSelectedDates();
+                        formData.append('closedDates', JSON.stringify(selectedDates));
+                    }
+
+                    try {
+                        // 顯示載入中狀態
+                        confirmEditButton.disabled = true;
+                        confirmEditButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>處理中...';
+
+                        // 模擬 API 調用（實際使用時替換為真實的 API 端點）
+                        // const response = await fetch('/api/venue/update', {
+                        //     method: 'POST',
+                        //     body: formData
+                        // });
+                        
+                        // 模擬 API 成功回應
+                        await new Promise(resolve => setTimeout(resolve, 500));
+
+                        // 顯示成功訊息
+                        alert('修改成功！');
+
+                        // 關閉 Modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('editVenueModal'));
+                        if (modal) {
+                            modal.hide();
+                        } else {
+                            // 如果無法獲取 modal 實例，直接使用 jQuery 關閉
+                            $('#editVenueModal').modal('hide');
+                        }
+
+                        // 可以選擇重新載入列表
+                        // location.reload();
+
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('提交失敗，請稍後再試');
+                    } finally {
+                        // 恢復按鈕狀態
+                        confirmEditButton.disabled = false;
+                        confirmEditButton.innerHTML = '確認修改';
+                    }
+                });
+            }
+
+            document.getElementById('editVenueModal').addEventListener('show.bs.modal', function() {
+                calendar = new Calendar();
+                
+                calendarClickHandler = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.target.tagName === 'TD' && !e.target.classList.contains('empty')) {
+                        const dateStr = e.target.dataset.date;
+                        if (calendar && calendar.editMode) {
+                            calendar.toggleDate(dateStr);
+                        }
+                    }
+                };
+
+                document.getElementById('calendarBody').addEventListener('click', calendarClickHandler);
+
+                const resetButton = document.createElement('button');
+                resetButton.className = 'btn btn-outline-secondary ms-2';
+                resetButton.setAttribute('type', 'button');
+                resetButton.innerHTML = '<i class="fas fa-redo me-1"></i>重設預設休館日';
+                resetButton.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (calendar) {
+                        calendar.clearSelection();
+                        calendar.setDefaultMondays();
+                        calendar.renderCalendar();
+                    }
+                };
+                document.querySelector('.month-picker').appendChild(resetButton);
+            });
+
+            document.getElementById('editVenueModal').addEventListener('hide.bs.modal', function() {
+                if (calendarClickHandler) {
+                    document.getElementById('calendarBody').removeEventListener('click', calendarClickHandler);
+                }
+                const monthPicker = document.querySelector('.month-picker');
+                const buttons = monthPicker.querySelectorAll('button:not(#prevMonth):not(#nextMonth)');
+                buttons.forEach(button => button.remove());
+                
+                calendar = null;
+                calendarClickHandler = null;
+            });
+
+            document.getElementById('prevMonth').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (calendar) {
+                    calendar.handleMonthChange(-1);
+                }
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (calendar) {
+                    calendar.handleMonthChange(1);
+                }
+            });
+        });
+
+        // 表單提交處理
+        const editVenueForm = document.getElementById('editVenueForm');
+        if (editVenueForm) {
+            editVenueForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('表單提交被攔截');
+            });
+        }
+
+        
+        // 載入場地資料
+        function loadVenueData(venueId) {
+            // 模擬 API 調用
+            const demoData = {
+                name: '金牌羽球館',
+                address: '台北市XX區XX路XX號',
+                courtCount: 12,
+                price: 600
+            };
+            
+            fillFormData(demoData);
+        }
+        
+        // 填充表單資料
+        function fillFormData(data) {
+            const form = document.getElementById('editVenueForm');
+            form.querySelector('[name="venueName"]').value = data.name;
+            form.querySelector('[name="venueAddress"]').value = data.address;
+            form.querySelector('[name="courtCount"]').value = data.courtCount;
+            form.querySelector('[name="price"]').value = data.price;
+        }
+        
+        // 處理表單提交
+        function handleSubmit(formData) {
+            // 模擬 API 調用
+            console.log('提交的資料:', Object.fromEntries(formData));
+            
+            // 關閉 Modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editVenueModal'));
+            modal.hide();
+            
+            // 顯示成功訊息
+            alert('修改成功！');
+        }
+        </script>
+
+	<!-- 添加對應的 JavaScript 代碼 -->
+	<script>
+            function confirmDelist(button) {
+                // 獲取場地名稱
+                const venueName = button.closest('tr').querySelector('td:nth-child(2)').textContent;
+                
+                // 顯示確認對話框
+                if (confirm(`確定要下架「${venueName}」嗎？`)) {
+                    // 如果用戶點擊確認，可以在這裡添加下架的操作
+                    alert('下架成功！');
+                    button.closest('tr').remove(); // 從表格中移除該行
+                }
+            }
+            </script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>新增場館資料 - addStdm.html</title>
+<head th:insert="~{/back-end/stdm/included-fragment}"></head>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+</style>
+<body>
+<!-- Loading overlay -->
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-light mb-4">
+        <div class="container-fluid">
+            <div class="navbar-content">
+                <a class="navbar-brand" href="#">管理員後台</a>
+                <div class="nav-buttons">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-users me-2"></i>員工帳號管理
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-ticket-alt me-2"></i>優惠券管理
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-store me-2"></i>商城管理
+                    </a>
+                    <a class="nav-link active" th:href="@{/stdm/addStdm}">
+                        <i class="fas fa-map-marker-alt me-2"></i>場地管理
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-comments me-2"></i>論壇管理
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-headset me-2"></i>客服中心
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-user-circle me-2"></i>會員帳號管理
+                    </a>
+                </div>
+                <div class="d-flex align-items-center border-start ps-4">
+                    <div class="nav-item me-3">
+                        <span class="nav-link">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:if="${session.loginAdm}" th:text="${session.loginAdm.admname}"></span>
+                        </span>
+                    </div>
+                    <form th:action="@{/adm/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i>登出
+                    </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 側邊欄 -->
+            <div class="col-md-2 mb-4">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="nav flex-column nav-pills">
+                            <a class="nav-link active" th:href="@{/stdm/addStdm}">
+                                <i class="fas fa-plus-circle me-2"></i>場館刊登
+                            </a>
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-list me-2"></i>場館刊登列表
+                            </a>
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-history me-2"></i>預約訂單紀錄
+                            </a>
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-chart-line me-2"></i>場館成效統計
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主要內容區 -->
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">場館刊登</h5>
+                        <div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
+                        
+                        
+                        <form id="venueForm" class="venue-form" th:action="@{/stdm/insert}" method="post" th:object="${stadiumVO}" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <label class="form-label">場館名稱</label>
+                                <input type="text" th:field="*{stdmName}" class="form-control" th:class="${#fields.hasErrors('stdmName')} ? 'form-control is-invalid' : 'form-control'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('stdmName')}" th:errors="*{stdmName}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">場館地址</label>
+                                <input type="text" th:field="*{stdmAddr}" class="form-control" th:class="${#fields.hasErrors('stdmAddr')} ? 'form-control is-invalid' : 'form-control'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('stdmAddr')}" th:errors="*{stdmAddr}"></div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">場館簡介</label>
+                                <input type="text" th:field="*{stdmIntro}" class="form-control" th:class="${#fields.hasErrors('stdmIntro')} ? 'form-control is-invalid' : 'form-control'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('stdmIntro')}" th:errors="*{stdmIntro}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">場地數量</label>
+                                <input type="number"th:field="*{courtCount}" class="form-control" th:class="${#fields.hasErrors('courtCount')} ? 'form-control is-invalid' : 'form-control'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('courtCount')}" th:errors="*{courtCount}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">球館圖片上傳</label>
+                                <div class="input-group">
+                                    <input type="file" th:field="*{stdmPic}" class="form-control" onclick="previewImage()" multiple="multiple" onchange="hideContent('stdmPic.errors');">
+                                    <span class="error" th:utext="${errorMessage}" id="upFiles.errors">${errorMessage}</span>
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">請上傳球館圖片</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">場租費</label>
+                                <div class="input-group">
+                                    <input type="number" th:field="*{courtPrice}" class="form-control" th:class="${#fields.hasErrors('courtPrice')} ? 'form-control is-invalid' : 'form-control'">
+                                    <span class="input-group-text">元/小時</span>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('courtPrice')}" th:errors="*{courtPrice}"></div>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                           		<a th:href="@{/stdm/listAllStdm}" class="btn btn-secondary">取消</a>
+                                <button type="submit" class="btn btn-primary">刊登</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('venueForm');
+            
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // showLoading();
+                
+                // 模擬API呼叫
+                setTimeout(() => {
+                    //hideLoading();
+                    alert('場館刊登成功！');
+//                     form.reset();
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

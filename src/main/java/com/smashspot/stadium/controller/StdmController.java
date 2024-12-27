@@ -36,28 +36,25 @@ public class StdmController {
 
 //	@Autowired
 //	LocationService locSvc;
-//	
+	
 	@Autowired
 	AdmService admSvc;
 
-	/*
-	 * This method will serve as addStdm.html handler.
-	 */
-	@GetMapping("addStdm")
+
+	@GetMapping("/addStdm")
 	public String addStdm(ModelMap model) {
-		StadiumVO stdmVO = new StadiumVO();
-		model.addAttribute("stdmVO", stdmVO);
-		return "back-end/stdm/addStdm";
+	    // 修改為
+	    if (!model.containsAttribute("stadiumVO")) {
+	        model.addAttribute("stadiumVO", new StadiumVO());
+	    }
+	    return "back-end/stdm/addStdm";
 	}
 
-	/*
-	 * This method will be called on addStdm.html form submission, handling POST request It also validates the user input
-	 */
+	
 	@PostMapping("insert")
 	public String insert(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
-			@RequestParam("upFiles") MultipartFile[] parts) throws IOException {
+			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
 
-		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
 		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
 		result = removeFieldError(stdmVO, result, "upFiles");
 
@@ -81,17 +78,11 @@ public class StdmController {
 		return "redirect:/stdm/listAllStdm"; // 新增成功後重導至IndexController_inSpringBoot.java的第58行@GetMapping("/stdm/listAllStdm")
 	}
 
-	/*
-	 * This method will be called on listAllStdm.html form submission, handling POST request
-	 */
+	
 	@PostMapping("getOne_For_Update")
 	public String getOne_For_Update(@RequestParam("stdmId") String stdmId, ModelMap model) {
-		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
-		/*************************** 2.開始查詢資料 *****************************************/
 		StadiumVO stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmId));
-
-		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
-		model.addAttribute("stdmVO", stdmVO);
+		model.addAttribute("stadiumVO", stdmVO);
 		return "back-end/stdm/update_stdm_input"; // 查詢完成後轉交update_stdm_input.html
 	}
 
@@ -124,7 +115,7 @@ public class StdmController {
 		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
 		model.addAttribute("success", "- (修改成功)");
 		stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmVO.getStdmId()));
-		model.addAttribute("stdmVO", stdmVO);
+		model.addAttribute("stadiumVO", stdmVO);
 		return "back-end/stdm/listOneStdm"; // 修改成功後轉交listOneStdm.html
 	}
 
@@ -143,6 +134,8 @@ public class StdmController {
 		return "back-end/stdm/listAllStdm"; // 刪除完成後轉交listAllStdm.html
 	}
 
+	
+	
 	/*
 	 * 第一種作法 Method used to populate the List Data in view. 如 : 
 	 * <form:select path="admid" id="admid" items="${admListData}" itemValue="admid" itemLabel="admname" />
@@ -161,26 +154,13 @@ public class StdmController {
 //		return list;
 //	}
 
-//	/*
-//	 * 【 第二種作法 】 Method used to populate the Map Data in view. 如 : 
-//	 * <form:select path="deptno" id="deptno" items="${depMapData}" />
-//	 */
-//	@ModelAttribute("deptMapData") //
-//	protected Map<Integer, String> referenceMapData() {
-//		Map<Integer, String> map = new LinkedHashMap<Integer, String>();
-//		map.put(10, "財務部");
-//		map.put(20, "研發部");
-//		map.put(30, "業務部");
-//		map.put(40, "生管部");
-//		return map;
-//	}
 
 	// 去除BindingResult中某個欄位的FieldError紀錄
 	public BindingResult removeFieldError(StadiumVO stdmVO, BindingResult result, String removedFieldname) {
 		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()
 				.filter(fieldname -> !fieldname.getField().equals(removedFieldname))
 				.collect(Collectors.toList());
-		result = new BeanPropertyBindingResult(stdmVO, "stdmVO");
+		result = new BeanPropertyBindingResult(stdmVO, "stadiumVO");
 		for (FieldError fieldError : errorsListToKeep) {
 			result.addError(fieldError);
 		}
@@ -190,12 +170,12 @@ public class StdmController {
 	/*
 	 * This method will be called on select_page.html form submission, handling POST request
 	 */
-	@PostMapping("listEmps_ByCompositeQuery")
-	public String listAllEmp(HttpServletRequest req, Model model) {
-		Map<String, String[]> map = req.getParameterMap();
-		List<StadiumVO> list = stdmSvc.getAll(map);
-		model.addAttribute("empListData", list); // for listAllStdm.html 第85行用
-		return "back-end/emp/listAllEmp";
-	}
+//	@PostMapping("listEmps_ByCompositeQuery")
+//	public String listAllEmp(HttpServletRequest req, Model model) {
+//		Map<String, String[]> map = req.getParameterMap();
+//		List<StadiumVO> list = stdmSvc.getAll(map);
+//		model.addAttribute("empListData", list); // for listAllStdm.html 第85行用
+//		return "back-end/emp/listAllEmp";
+//	}
 
 }

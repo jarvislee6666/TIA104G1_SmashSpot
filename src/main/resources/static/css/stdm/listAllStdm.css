@@ -1,0 +1,309 @@
+:root {
+	--primary: #2563eb;
+	--primary-hover: #1d4ed8;
+	--secondary: #64748b;
+	--danger: #ef4444;
+	--success: #22c55e;
+	--background: #f8fafc;
+	--surface: #ffffff;
+	--text: #0f172a;
+	--border: #e2e8f0;
+}
+
+body {
+	background-color: var(--background);
+	min-height: 100vh;
+}
+
+/* 導航欄樣式 */
+.navbar {
+	padding: 0.75rem 1.5rem;
+	background-color: var(--surface);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-content {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: 2rem;
+}
+
+.navbar .navbar-brand {
+	font-size: 1.5rem;
+	font-weight: 600;
+	padding: 0;
+	margin: 0;
+	white-space: nowrap;
+}
+
+.nav-buttons {
+	display: flex;
+	gap: 1rem;
+	flex-grow: 1;
+	justify-content: flex-end;
+}
+
+.nav-buttons .nav-link {
+	color: var(--text);
+	padding: 0.5rem 1rem;
+	border-radius: 0.375rem;
+	transition: all 0.2s;
+	white-space: nowrap;
+	font-size: 0.9rem;
+}
+
+.nav-buttons .nav-link:hover {
+	background-color: var(--background);
+	color: var(--primary);
+}
+
+.nav-buttons .nav-link.active {
+	background-color: var(--primary);
+	color: white;
+}
+
+/* 新增預約狀態樣式 */
+.status-booked {
+	background-color: #ecfdf5;
+	color: #047857;
+}
+
+.status-cancelled {
+	background-color: #fef2f2;
+	color: #991b1b;
+}
+
+/* 側邊欄樣式 */
+.nav-pills .nav-link {
+	color: var(--text);
+	transition: all 0.2s;
+	padding: 1rem 1.5rem;
+	font-size: 1.1rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.nav-pills .nav-link.active {
+	background-color: var(--primary);
+}
+
+/* 卡片樣式 */
+.card {
+	border: 1px solid var(--border);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	transition: box-shadow 0.3s ease;
+}
+
+/* 表格樣式 */
+.table-responsive {
+	background-color: var(--surface);
+	border-radius: 0.5rem;
+	padding: 1rem;
+	margin-top: 1rem;
+}
+
+.table th {
+	background-color: var(--surface);
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	font-weight: 600;
+	color: var(--secondary);
+}
+
+.table td {
+	vertical-align: middle;
+}
+
+/* 狀態標籤樣式 */
+.status-badge {
+	padding: 0.25rem 0.75rem;
+	border-radius: 0.25rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	background-color: #ecfdf5;
+	color: #047857;
+}
+
+.status-badge.status-offline {
+	background-color: #f3f4f6;
+	color: #4b5563;
+}
+
+/* Loading樣式 */
+.loading-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.8);
+	display: none;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.loading-spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid #f3f3f3;
+	border-top: 4px solid var(--primary);
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 分頁樣式 */
+.pagination {
+	margin-bottom: 0;
+}
+
+.page-link {
+	color: var(--primary);
+}
+
+.page-item.active .page-link {
+	background-color: var(--primary);
+	border-color: var(--primary);
+}
+
+/* 評價標籤樣式 */
+.badge-reviewed {
+	background-color: var(--secondary);
+	color: white;
+}
+
+.badge-pending {
+	background-color: #f3f4f6;
+	color: var(--text);
+}
+
+/* 星等評分樣式 */
+.rating {
+	color: #fbbf24;
+}
+
+/* 表格相關樣式補充 */
+.table td {
+	vertical-align: middle;
+}
+
+.table th {
+	white-space: nowrap;
+}
+
+/* 表單樣式 */
+.venue-form {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.venue-form .form-control {
+	max-width: 400px;
+}
+
+.venue-form .input-group {
+	max-width: 400px;
+}
+
+.form-label {
+	font-weight: 500;
+	margin-bottom: 0.5rem;
+	color: var(--text);
+}
+
+/* 檔案上傳按鈕樣式 */
+.input-group .btn-outline-secondary {
+	border-color: var(--border);
+}
+
+.input-group .btn-outline-secondary:hover {
+	background-color: var(--background);
+	color: var(--primary);
+}
+
+/* 新增側邊欄子選單樣式 */
+.sub-menu {
+	padding-left: 1.5rem;
+	margin-top: 0.5rem;
+	display: none;
+}
+
+.nav-link.active .sub-menu {
+	display: block;
+}
+
+.sub-menu .nav-link {
+	padding: 0.5rem 1rem;
+	font-size: 0.9rem;
+	background-color: transparent;
+}
+
+.sub-menu .nav-link.active {
+	background-color: rgba(37, 99, 235, 0.1);
+	color: var(--primary);
+}
+
+/* 圖表容器樣式 */
+.chart-container {
+	width: 100%;
+	height: 400px;
+	margin: 2rem 0;
+}
+
+/* 統計控制項樣式 */
+.statistics-controls {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+.dropdown-menu {
+	min-width: 200px;
+}
+
+.modal-lg {
+	max-width: 800px;
+}
+
+.calendar-wrapper {
+	border: 1px solid #dee2e6;
+	border-radius: 0.375rem;
+	padding: 1rem;
+}
+
+.month-picker {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.calendar td {
+	height: 40px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.calendar td.selected {
+	background-color: #0d6efd;
+	color: white;
+}
+
+.calendar td:not(.empty):hover {
+	background-color: #e9ecef;
+}
+
+.calendar td.empty {
+	background-color: #f8f9fa;
+	cursor: default;
+}
+
+#imagePreview img {
+	max-height: 200px;
+	border-radius: 0.375rem;
+}
