@@ -107,7 +107,7 @@ public class Test_Application_CommandLineRunner_Stdm implements CommandLineRunne
 // 			System.out.print(aStdm.getAdmVO().getAdmid() + ",");
 // 			System.out.println();
 // 		}
-==
+
 
 
 //		//● 複合查詢-getAll(map) 配合 req.getParameterMap()方法 回傳 java.util.Map<java.lang.String,java.lang.String[]> 之測試
