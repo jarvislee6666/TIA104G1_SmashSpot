@@ -1,5 +1,6 @@
 package com.smashspot.stadium.model;
 
+import java.beans.Transient;//麒安test
 import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Set;

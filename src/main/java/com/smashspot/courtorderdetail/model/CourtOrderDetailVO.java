@@ -38,9 +38,6 @@ public class CourtOrderDetailVO {
 		courtOrder = courtOrder;
 	}
 
-//	@Column(name = "court_ord_id", nullable = false)
-//    private Integer courtOrdId; // 場地訂單編號 (FK)
-
 	@Column(name = "ord_date", nullable = false)
     private Date ordDate; // 預約日期
 
@@ -54,14 +51,6 @@ public class CourtOrderDetailVO {
 	public void setOrdDtlId(Integer ordDtlId) {
 		this.ordDtlId = ordDtlId;
 	}
-
-//	public Integer getCourtOrdId() {
-//		return courtOrdId;
-//	}
-//
-//	public void setCourtOrdId(Integer courtOrdId) {
-//		this.courtOrdId = courtOrdId;
-//	}
 
 	public Date getOrdDate() {
 		return ordDate;

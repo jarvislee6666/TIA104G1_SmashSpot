@@ -53,24 +53,27 @@ body {
 </style>
 </head>
 <body>
-	<div class="container my-4">
-		<h2>飆汗羽球館 - 場地預約</h2>
-
-
-		<!-- 週次選擇區 -->
-		<div class="mb-4">
-			<div>
-				<a th:if="${week > 0}" class="btn btn-outline-primary me-2"
-					th:href="@{/reservation/week(stdmId=${stdmId}, week=${week - 1})}">
-					上一週 </a> <a th:if="${week <= 0}"
-					class="btn btn-outline-primary me-2 disabled" href="#"> 上一週 </a> <span
-					th:text="${#dates.format(startDate, 'yyyy/MM/dd')} + ' ~ ' + ${#dates.format(endDate, 'yyyy/MM/dd')}">
-				</span> <a th:if="${week < 4}" class="btn btn-outline-primary ms-2"
-					th:href="@{/reservation/week(stdmId=${stdmId}, week=${week + 1})}">
-					下一週 </a> <a th:if="${week >= 4}"
-					class="btn btn-outline-primary ms-2 disabled" href="#"> 下一週 </a>
-			</div>
+<!-- 在容器外層使用 Flex 排版 -->
+		<div class="my-3 d-flex align-items-center justify-content-between">
+		    <h2 class="mb-0">飆汗羽球館 - 場地預約</h2>
+		
+		    <div>
+		        <a th:if="${week > 0}" class="btn btn-outline-primary me-2"
+		           th:href="@{/reservation/week(stdmId=${stdmId}, week=${week - 1})}">上一週</a>
+		        <a th:if="${week <= 0}" class="btn btn-outline-primary me-2 disabled" href="#">
+		            上一週
+		        </a>
+		
+		        <span th:text="${#dates.format(startDate, 'yyyy/MM/dd')} + ' ~ ' + ${#dates.format(endDate, 'yyyy/MM/dd')}"></span>
+		
+		        <a th:if="${week < 4}" class="btn btn-outline-primary ms-2"
+		           th:href="@{/reservation/week(stdmId=${stdmId}, week=${week + 1})}">下一週</a>
+		        <a th:if="${week >= 4}" class="btn btn-outline-primary ms-2 disabled" href="#">
+		            下一週
+		        </a>
+		    </div>
 		</div>
+
 
 		<!-- 預約表格 -->
 		<div class="card">
@@ -80,7 +83,7 @@ body {
 						<thead>
 							<tr>
 								<!-- 第一格：時段 -->
-								<th>時段</th>
+								<th></th>
 
 								<!-- Sunday 欄位 -->
 								<th style="color: red;">
@@ -442,5 +445,31 @@ body {
             });
         }
     </script>
+    <!-- 
+	<script>
+	    // 伺服器端的 API 路徑: /court-order (POST)
+	    fetch('/court-order', {
+	        method: 'POST',
+	        headers: {
+	          'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({
+	          memid: 123,
+	          stadium: { stdmId: 1 },
+	          courtOrderDetail: [
+	            { ordDate: '2024-12-31', ordTime: 'xxx11000000x' },
+	            { ordDate: '2024-12-31', ordTime: 'xxx00110000x' }
+	          ]
+	        })
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	        console.log('訂單新增成功:', data);
+	        alert('訂單編號: ' + data.courtordid + ', 金額: ' + data.totamt);
+	    })
+	    .catch(err => console.log('新增失敗', err));
+	</script>
+	add test -->
+
 </body>
 </html>
