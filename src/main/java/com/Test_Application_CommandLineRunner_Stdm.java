@@ -101,10 +101,9 @@ public class Test_Application_CommandLineRunner_Stdm implements CommandLineRunne
 			System.out.print(aStdm.getOpenTime() + ",");
 			System.out.print(aStdm.getCloseTime() + ",");
 			System.out.print(aStdm.getStdmStartTime() + ",");
-			System.out.print(aStdm.getStdmPicBase64() + ",");
 			// 注意以下三行的寫法 (優!)
-//			System.out.print(aStdm.getLocationVO().getLocId() + ",");
-//			System.out.print(aStdm.getAdmVO().getAdmid() + ",");
+			System.out.print(aStdm.getLocationVO().getLocId() + ",");
+			System.out.print(aStdm.getAdmVO().getAdmid() + ",");
 			System.out.println();
 		}
 
