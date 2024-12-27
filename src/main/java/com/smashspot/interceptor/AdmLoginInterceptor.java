@@ -23,7 +23,7 @@ public class AdmLoginInterceptor implements HandlerInterceptor {
 	        
 	        long now = System.currentTimeMillis();
 	        long lastAccessTime = session.getLastAccessedTime();
-	        if ((now - lastAccessTime) > 60000) {
+	        if ((now - lastAccessTime) > 600000) {
 	            session.invalidate();
 	            response.sendRedirect("/adm/login");
 	            return false;
