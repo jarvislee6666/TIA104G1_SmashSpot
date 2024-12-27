@@ -50,7 +50,7 @@ public class CourtOrderService {
 
         // 取消原因、評論留言、星等先不存
         order.setCanreason(null);
-        order.setMesssag(null);
+        order.setMessage(null);
         order.setStarrank(null);
 
         // 3. 處理明細
