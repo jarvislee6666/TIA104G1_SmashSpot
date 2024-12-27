@@ -84,28 +84,30 @@ public class Test_Application_CommandLineRunner_Stdm implements CommandLineRunne
       
     	
 		//● 查詢-getAll (多方emp2.hbm.xml必須設為lazy="false")(優!)
-    	List<StadiumVO> list = repository.findAll();
-		for (StadiumVO aStdm : list) {
-			System.out.print(aStdm.getStdmId() + ",");
-			System.out.print(aStdm.getStdmName() + ",");
-			System.out.print(aStdm.getStdmAddr() + ",");
-			//System.out.print(aStdm.getLocId() + ",");
-			System.out.print(aStdm.getLongitude() + ",");
-			System.out.print(aStdm.getLatitude() + ",");
-			System.out.print(aStdm.getStdmIntro() + ",");
-			System.out.print(aStdm.getCourtCount() + ",");
-			System.out.print(aStdm.getCourtPrice() + ",");
-			System.out.print(aStdm.getOprSta() + ",");
-			System.out.print(aStdm.getStdmPic() + ",");
-			//System.out.print(aStdm.getAdmin() + ",");
-			System.out.print(aStdm.getOpenTime() + ",");
-			System.out.print(aStdm.getCloseTime() + ",");
-			System.out.print(aStdm.getStdmStartTime() + ",");
-			// 注意以下三行的寫法 (優!)
-			System.out.print(aStdm.getLocationVO().getLocId() + ",");
-			System.out.print(aStdm.getAdmVO().getAdmid() + ",");
-			System.out.println();
-		}
+
+//     	List<StadiumVO> list = repository.findAll();
+// 		for (StadiumVO aStdm : list) {
+// 			System.out.print(aStdm.getStdmId() + ",");
+// 			System.out.print(aStdm.getStdmName() + ",");
+// 			System.out.print(aStdm.getStdmAddr() + ",");
+// 			//System.out.print(aStdm.getLocId() + ",");
+// 			System.out.print(aStdm.getLongitude() + ",");
+// 			System.out.print(aStdm.getLatitude() + ",");
+// 			System.out.print(aStdm.getStdmIntro() + ",");
+// 			System.out.print(aStdm.getCourtCount() + ",");
+// 			System.out.print(aStdm.getCourtPrice() + ",");
+// 			System.out.print(aStdm.getOprSta() + ",");
+// 			System.out.print(aStdm.getStdmPic() + ",");
+// 			//System.out.print(aStdm.getAdmin() + ",");
+// 			System.out.print(aStdm.getOpenTime() + ",");
+// 			System.out.print(aStdm.getCloseTime() + ",");
+// 			System.out.print(aStdm.getStdmStartTime() + ",");
+// 			// 注意以下三行的寫法 (優!)
+// 			System.out.print(aStdm.getLocationVO().getLocId() + ",");
+// 			System.out.print(aStdm.getAdmVO().getAdmid() + ",");
+// 			System.out.println();
+// 		}
+==
 
 
 //		//● 複合查詢-getAll(map) 配合 req.getParameterMap()方法 回傳 java.util.Map<java.lang.String,java.lang.String[]> 之測試
