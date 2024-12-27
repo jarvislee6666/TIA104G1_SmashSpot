@@ -1,7 +1,6 @@
 package com.smashspot.stadium.model;
 
 import java.sql.Timestamp;
-import java.util.Base64;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,6 +21,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.location.model.LocationVO;
@@ -53,7 +54,6 @@ public class StadiumVO implements java.io.Serializable {
 	// 新增的欄位//add by 麒安
 	private Set<ReservationTimeVO> reservationTime;
 
-// 
 	// "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
 	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	public Set<ReservationTimeVO> getReservationTime() {
@@ -77,7 +77,8 @@ public class StadiumVO implements java.io.Serializable {
 
 	private Set<CourtOrderVO> CourtOrder;
 
-	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)  
+	@JsonManagedReference
+	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)
 	public Set<CourtOrderVO> getCourtOrder() {
 		return CourtOrder;
 	}

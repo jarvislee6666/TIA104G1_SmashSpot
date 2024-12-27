@@ -17,14 +17,16 @@
 	<nav class="navbar navbar-light mb-4">
 		<div class="container-fluid">
 			<div class="navbar-content">
-				<a class="navbar-brand" href="#">管理員後台</a>
+				<a class="navbar-brand">管理員後台</a>
 				<div class="nav-buttons">
-					<a class="nav-link active" href="#"> <i
+					<a class="nav-link active" th:href="@{listAllAdm}"> <i
 						class="fas fa-users me-2"></i>員工帳號管理
-					</a> <a class="nav-link" href="#"> <i
+					</a> 
+					<a class="nav-link" th:href="@{listAllCoupon}"> <i
 						class="fas fa-ticket-alt me-2"></i>優惠券管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-store me-2"></i>商城管理
-					</a> <a class="nav-link" th:href="@{/stdm/addStdm}"> <i
+					</a> 
+					<a class="nav-link" href="#"> <i class="fas fa-store me-2"></i>商城管理
+					</a> <a class="nav-link" href="#"> <i
 						class="fas fa-map-marker-alt me-2"></i>場地管理
 					</a> <a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>論壇管理
 					</a> <a class="nav-link" href="#"> <i class="fas fa-headset me-2"></i>客服中心
