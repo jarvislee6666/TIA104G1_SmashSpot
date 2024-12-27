@@ -2,8 +2,20 @@ package com.smashspot.member.model;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "member")
@@ -155,4 +167,23 @@ public class MemberVO implements Serializable {
     public void setMempic(byte[] mempic) {
         this.mempic = mempic;
     }
+
+	public MemberVO findByAccount(
+			@NotEmpty(message = "帳號: 請勿空白") @Pattern(regexp = "^[(一-龥)(a-zA-Z0-9_)]{2,100}$", message = "帳號: 只能是中、英文字母、數字和_ , 且長度必需在2到100之間") String account2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String findByEmail(@NotEmpty(message = "Email: 請勿空白") @Email(message = "Email格式不正確") String email2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String findByPhone(
+			@NotEmpty(message = "電話: 請勿空白") @Pattern(regexp = "^09\\d{8}$", message = "手機號碼格式不正確") String phone2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }
