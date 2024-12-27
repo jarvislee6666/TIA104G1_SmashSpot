@@ -1,20 +1,25 @@
 package com.smashspot.coupon.controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.*;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import com.smashspot.coupon.model.*;
 
 @Controller
-@RequestMapping("/coupon")
+@RequestMapping("/adm")
 public class CouponController {
 
 	@Autowired
@@ -33,25 +38,36 @@ public class CouponController {
 	}
 	
 	@GetMapping("addCoupon")
-	public String addEmp(ModelMap model) {
+	public String addCoupon(ModelMap model) {
 		CouponVO couponVO = new CouponVO();
 		model.addAttribute("couponVO", couponVO);
 		return "back-end/coupon/addCoupon";
 	}
 
-	@PostMapping("insert")
-	public String insert(@Valid CouponVO couponVO, ModelMap model) throws IOException {
-
-		/*************************** 2.開始新增資料 *****************************************/
-		copSvc.addCoupon(couponVO);
-		/*************************** 3.新增完成,準備轉交(Send the Success view) **************/
-		List<CouponVO> list = copSvc.getAll();
-		model.addAttribute("couponListData", list);
-		model.addAttribute("success", "- (新增成功)");
-		return "redirect:/coupon/listAllCoupon"; // 新增成功後重導
+	@PostMapping("insertCoupon")
+	public String insert(@Valid CouponVO couponVO, BindingResult result,ModelMap model) throws IOException {
+		
+		if (copSvc.findByCopcode(couponVO.getCopcode()) != null) {
+	        result.rejectValue("copcode", "error.couponVO", "此 優惠碼 已存在");
+	    }
+	    
+		if (result.hasErrors()) {
+	        return "back-end/adm/addCoupon";
+	    }
+	    
+	    try {
+	    	copSvc.addCoupon(couponVO);
+	    	List<CouponVO> list = copSvc.getAll();
+			model.addAttribute("couponListData", list);
+	        model.addAttribute("success", "新增成功");
+	        return "redirect:/adm/listAllCoupon";
+	    } catch (Exception e) {
+	        model.addAttribute("error", "新增失敗: " + e.getMessage());
+	        return "back-end/adm/addCoupon"; 
+	    }
 	}
 
-	@PostMapping("getOne_For_Update")
+	@PostMapping("getOneCoupon_For_Update")
 	public String getOne_For_Update(@RequestParam("copid") String copid, ModelMap model) {
 		/*************************** 2.開始查詢資料 *****************************************/
 		CouponVO couponVO = copSvc.getOneCoupon(Integer.valueOf(copid));
@@ -61,7 +77,7 @@ public class CouponController {
 		return "back-end/coupon/update_coupon_input"; // 查詢完成後轉交update_coupon_input.html
 	}
 
-	@PostMapping("update")
+	@PostMapping("updateCoupon")
 	public String update(@Valid CouponVO couponVO, ModelMap model) throws IOException {
 
 		/*************************** 2.開始修改資料 *****************************************/
@@ -74,7 +90,18 @@ public class CouponController {
 		return "back-end/coupon/listAllCoupon";
 	}
 
-	@PostMapping("delete")
+	public BindingResult removeFieldError(CouponVO couponVO, BindingResult result, String removedFieldname) {
+		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()
+				.filter(fieldname -> !fieldname.getField().equals(removedFieldname))
+				.collect(Collectors.toList());
+		result = new BeanPropertyBindingResult(couponVO, "couponVO");
+		for (FieldError fieldError : errorsListToKeep) {
+			result.addError(fieldError);
+		}
+		return result;
+	}
+	
+	@PostMapping("deleteCoupon")
 	public String delete(@RequestParam("copid") String copid, ModelMap model) {
 		/*************************** 2.開始刪除資料 *****************************************/
 		copSvc.deleteCoupon(Integer.valueOf(copid));
