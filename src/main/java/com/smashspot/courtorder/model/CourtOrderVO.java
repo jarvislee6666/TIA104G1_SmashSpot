@@ -11,72 +11,69 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.stadium.model.StadiumVO;
-
 
 @Entity
 @Table(name = "court_order")
 public class CourtOrderVO {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "court_ord_id", updatable = false)	
-    private Integer courtordid;
-	
+	@Column(name = "court_ord_id", updatable = false)
+	private Integer courtordid;
+
+	@JsonBackReference
 	@ManyToOne
-	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
+	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id")
 	private StadiumVO stadium;
-	
-	@OneToMany(mappedBy = "courtOrder", cascade = CascadeType.ALL) 
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "courtOrder", cascade = CascadeType.ALL)
 	private Set<CourtOrderDetailVO> courtOrderDetail;
 
-	
 	public Set<CourtOrderDetailVO> getCourtOrderDetail() {
 		return courtOrderDetail;
 	}
+
 	public void setCourtOrderDetail(Set<CourtOrderDetailVO> courtOrderDetail) {
-		courtOrderDetail = courtOrderDetail;
+		this.courtOrderDetail = courtOrderDetail;
 	}
-	 
 
-
-	
 	public StadiumVO getStadium() {
 		return stadium;
 	}
+
 	public void setStadium(StadiumVO stadium) {
 		this.stadium = stadium;
 	}
-	
+
 	@Column(name = "mem_id")
-    private Integer memid;          
-    
-	
+	private Integer memid;
+
 	@Column(name = "rsv_sta")
-    private Boolean ordsta; 
-	
+	private Boolean ordsta;
+
 	@Column(name = "crt_time")
-    private Timestamp ordcrttime;        
-	
+	private Timestamp ordcrttime;
+
 	@Column(name = "tot_amt")
-    private Integer totamt;
-	
+	private Integer totamt;
+
 	@Column(name = "can_reason")
-    private String canreason;
-	
+	private String canreason;
+
 	@Column(name = "star_rank")
-	private Integer starrank;   
-	
-	@Column(name = "messsage")
-    private String messsag;   
-	
+	private Integer starrank;
+
+	@Column(name = "message")
+	private String message;
+
 	public Integer getCourtordid() {
 		return courtordid;
 	}
@@ -133,14 +130,12 @@ public class CourtOrderVO {
 		this.starrank = starrank;
 	}
 
-	public String getMesssag() {
-		return messsag;
+	public String getMessage() {
+		return message;
 	}
 
-	public void setMesssag(String messsag) {
-		this.messsag = messsag;
+	public void setMessage(String message) {
+		this.message = message;
 	}
-         
-
 
 }
