@@ -43,10 +43,11 @@ public class StdmController {
 
 	@GetMapping("/addStdm")
 	public String addStdm(ModelMap model) {
-	    // 修改為
+
 	    if (!model.containsAttribute("stadiumVO")) {
 	        model.addAttribute("stadiumVO", new StadiumVO());
 	    }
+	    
 	    return "back-end/stdm/addStdm";
 	}
 
@@ -55,7 +56,7 @@ public class StdmController {
 	public String insert(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
 			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
 
-		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
+		// result儲存驗證的結果,並去除中upFiles欄位的FieldError紀錄，以防影響最終驗證結果
 		result = removeFieldError(stdmVO, result, "upFiles");
 
 		if (parts[0].isEmpty()) { // 使用者未選擇要上傳的圖片時
@@ -69,13 +70,13 @@ public class StdmController {
 		if (result.hasErrors() || parts[0].isEmpty()) {
 			return "back-end/stdm/addStdm";
 		}
-		/*************************** 2.開始新增資料 *****************************************/
+		// 將資料調至後端DB
 		stdmSvc.addStdm(stdmVO);
-		/*************************** 3.新增完成,準備轉交(Send the Success view) **************/
+		// 回傳成功視圖
 		List<StadiumVO> list = stdmSvc.getAll();
 		model.addAttribute("stdmListData", list);
 		model.addAttribute("success", "- (新增成功)");
-		return "redirect:/stdm/listAllStdm"; // 新增成功後重導至IndexController_inSpringBoot.java的第58行@GetMapping("/stdm/listAllStdm")
+		return "redirect:/stdm/listAllStdm"; 
 	}
 
 	
@@ -136,10 +137,7 @@ public class StdmController {
 
 	
 	
-	/*
-	 * 第一種作法 Method used to populate the List Data in view. 如 : 
-	 * <form:select path="admid" id="admid" items="${admListData}" itemValue="admid" itemLabel="admname" />
-	 */
+
 	@ModelAttribute("admListData")
 	protected List<AdmVO> referenceListData() {
 		// AdmService admSvc = new AdmService();
@@ -153,6 +151,20 @@ public class StdmController {
 //		List<Location> list = locSvc.getAll();
 //		return list;
 //	}
+	@ModelAttribute("locMapData") //
+	protected Map<Integer, String> referenceMapData() {
+		Map<Integer, String> map = new LinkedHashMap<Integer, String>();
+		map.put(1, "台北市");
+		map.put(2, "新北市");
+		map.put(3, "桃園市");
+		map.put(4, "台中市");
+		map.put(5, "高雄市");
+		map.put(6, "台南市");
+		map.put(7, "基隆市");
+		map.put(8, "新竹市");
+		map.put(9, "嘉義市");
+		return map;
+	}
 
 
 	// 去除BindingResult中某個欄位的FieldError紀錄
