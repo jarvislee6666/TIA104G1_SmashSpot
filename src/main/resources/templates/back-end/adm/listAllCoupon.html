@@ -31,39 +31,28 @@
 </head>
 
 <body>
-	<div class="loading-overlay">
-		<div class="spinner-border text-primary" role="status">
-			<span class="visually-hidden">Loading...</span>
-		</div>
-	</div>
-
 	<!-- Navbar -->
 	<nav class="navbar navbar-light mb-4">
 		<div class="container-fluid">
 			<div class="navbar-content">
 				<a class="navbar-brand" href="#">管理員後台</a>
 				<div class="nav-buttons">
-					<a class="nav-link" th:href="@{listAllAdm}"><i class="fas fa-users me-2"></i>員工帳號管理
-					</a> 
-					<a class="nav-link" href="#"> <i
-						class="fas fa-ticket-alt me-2"></i>優惠券管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-store me-2"></i>商城管理
-					</a> <a class="nav-link" href="#"> <i
-						class="fas fa-map-marker-alt me-2"></i>場地管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>論壇管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-headset me-2"></i>客服中心
-					</a> <a class="nav-link" href="#"> <i
-						class="fas fa-user-circle me-2"></i>會員帳號管理
-					</a>
+					<a class="nav-link" th:href="@{listAllAdm}"><i class="fas fa-users me-2"></i>員工帳號管理</a>					
+					<a class="nav-link" href="#"><i	class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
+					<a class="nav-link" href="#"><i class="fas fa-store me-2"></i>商城管理	</a> 
+					<a class="nav-link" href="#"><i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
+					<a class="nav-link" href="#"><i class="fas fa-comments me-2"></i>論壇管理</a> 
+					<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
+					<a class="nav-link" href="#"><i	class="fas fa-user-circle me-2"></i>會員帳號管理</a>
 				</div>
 				<div class="d-flex align-items-center border-start ps-4">
 					<div class="nav-item me-3">
-						<span class="nav-link"> <i class="fas fa-user me-1"></i> <span
-							id="adminName">管理員</span>
+						<span class="nav-link">
+							<i class="fas fa-user me-1"></i> 
+							<span id="adminName">管理員</span>
 						</span>
 					</div>
-					<button class="btn btn-outline-secondary btn-sm"
-						onclick="handleLogout()">
+					<button class="btn btn-outline-secondary btn-sm" onclick="handleLogout()">
 						<i class="fas fa-sign-out-alt me-1"></i>登出
 					</button>
 				</div>
@@ -78,8 +67,8 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link active" href="#"> <i
-								class="fas fa-list me-2"></i>優惠券管理
+							<a class="nav-link active" href="#"> 
+								<i class="fas fa-list me-2"></i>優惠券管理
 							</a>
 						</div>
 					</div>
@@ -90,56 +79,38 @@
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
-						<div
-							class="d-flex justify-content-between align-items-center mb-4">
+						<div class="d-flex justify-content-between align-items-center mb-4">
 							<h5 class="card-title mb-0">優惠券管理</h5>
-
 							<form>
-								<div
-									style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
+								<div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
 									<div class="search-item">
-										<label style="margin-right: 5px;">關鍵字搜尋: </label> <input
+										<label style="margin-right: 5px;">關鍵字搜尋: </label>
+										<input
 											type="text"
 											style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;"
 											placeholder="請輸入關鍵字">
 									</div>
 
 									<div class="search-item d-flex flex-row align-items-center">
-										<label style="margin-right: 5px; width: 100px;">日期範圍:
-										</label>
-										<div class="input-group"
-											style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
-											<input type="date" class="form-control"> <span
-												class="input-group-text">至</span> <input type="date"
-												class="form-control">
+										<label style="margin-right: 5px; width: 100px;">日期範圍: </label>
+										<div class="input-group" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
+											<input type="date" class="form-control">
+											<span class="input-group-text">至</span> 
+											<input type="date" class="form-control">
 										</div>
 									</div>
 									<button type="submit" class="btn btn-primary"
-										style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">搜尋</button>
+										style="padding: 6px 16px; background-color: #0d6efd; color: white; 
+										border: none; border-radius: 4px; cursor: pointer;">搜尋
+									</button>
 								</div>
 							</form>
-<!-- 							<button type="button" class="btn btn-add" data-bs-toggle="modal" -->
-<!-- 								data-bs-target="#addCouponModal"> -->
-<!-- 								<i class="fas fa-plus me-2"></i>新增優惠券 -->
-<!-- 							</button> -->
-							<a class="btn btn-add" th:href="@{/adm/addCoupon}" method="post">
-				    <i class="fas fa-plus me-2"></i>新增優惠券
-						</a>
+							<a class="btn btn-add" th:href="@{/adm/addCoupon}">
+				   				 <i class="fas fa-plus me-2"></i>新增優惠券
+							</a>
 						</div>
 						<div class="table-responsive">
 							<table class="table">
-								<!-- 								<thead> -->
-								<!-- 									<tr> -->
-								<!-- 										<th>#</th> -->
-								<!-- 										<th>優惠券名稱</th> -->
-								<!-- 										<th>優惠碼</th> -->
-								<!-- 										<th>折抵金額</th> -->
-								<!-- 										<th>開始日期</th> -->
-								<!-- 										<th>結束日期</th> -->
-								<!-- 									</tr> -->
-								<!-- 								</thead> -->
-								<!-- 								<tbody id="couponTableBody"> -->
-								<!-- 								</tbody> -->
 								<thead>
 									<tr>
 										<th>#</th>
@@ -151,7 +122,6 @@
 										<th></th>
 									</tr>
 								</thead>
-
 								<tbody>
 									<th:block th:each="couponVO : ${couponListData}">
 										<tr>
@@ -171,7 +141,7 @@
 											<td>
 												<form method="post" th:action="@{/adm/deleteCoupon}"
 													style="margin-bottom: 0px;">
-													<button type="submit" value="刪除" class="btn btn-sm btn-outline-secondary">編輯</button>
+													<button type="submit" value="刪除" class="btn btn-sm btn-outline-danger">刪除</button>
 													<input type="hidden" name="copid" th:value="${couponVO.copid}">
 												</form>
 
@@ -180,25 +150,6 @@
 									</th:block>
 								</tbody>
 							</table>
-
-							<!-- 							<div -->
-							<!-- 								class="d-flex justify-content-between align-items-center mt-4"> -->
-							<!-- 								<div> -->
-							<!-- 									<span class="text-muted">共 <span id="totalCount">0</span> -->
-							<!-- 										筆資料 -->
-							<!-- 									</span> -->
-							<!-- 								</div> -->
-							<!-- 								<nav> -->
-							<!-- 									<ul class="pagination mb-0"> -->
-							<!-- 										<li class="page-item"><a class="page-link" href="#">&laquo;</a></li> -->
-							<!-- 										<li class="page-item active"><a class="page-link" -->
-							<!-- 											href="#">1</a></li> -->
-							<!-- 										<li class="page-item"><a class="page-link" href="#">2</a></li> -->
-							<!-- 										<li class="page-item"><a class="page-link" href="#">3</a></li> -->
-							<!-- 										<li class="page-item"><a class="page-link" href="#">&raquo;</a></li> -->
-							<!-- 									</ul> -->
-							<!-- 								</nav> -->
-							<!-- 							</div> -->
 							<div class="d-flex justify-content-center mt-4">
 								<nav>
 									<ul class="pagination">
@@ -221,100 +172,8 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- Add Coupon Modal -->
-	<div class="modal fade" id="addCouponModal" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">新增優惠券</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-				<div class="modal-body">
-					<form id="addCouponForm">
-						<div class="mb-3">
-							<label class="form-label">優惠券名稱</label> <input type="text"
-								class="form-control" name="name" required>
-						</div>
-						<div class="mb-3">
-							<label class="form-label">優惠碼</label> <input type="text"
-								class="form-control" name="code" required>
-						</div>
-						<div class="mb-3">
-							<label class="form-label">折抵金額</label> <input type="number"
-								class="form-control" name="amount" required>
-						</div>
-						<div class="row">
-							<div class="col-md-6 mb-3">
-								<label class="form-label">開始日期</label> <input type="date"
-									class="form-control" name="startDate" required>
-							</div>
-							<div class="col-md-6 mb-3">
-								<label class="form-label">結束日期</label> <input type="date"
-									class="form-control" name="endDate" required>
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary"
-						onclick="submitCoupon()">確認送出</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
+	
 	<script>
-        function showLoading() {
-            document.querySelector('.loading-overlay').style.display = 'flex';
-        }
-
-        function hideLoading() {
-            document.querySelector('.loading-overlay').style.display = 'none';
-        }
-
-        function submitCoupon() {
-            showLoading();
-            const form = document.getElementById('addCouponForm');
-            // Simulate AJAX request
-            setTimeout(() => {
-                const formData = new FormData(form);
-                const newCoupon = {
-                    id: coupons.length + 1,
-                    name: formData.get('name'),
-                    code: formData.get('code'),
-                    amount: formData.get('amount'),
-                    startDate: formData.get('startDate'),
-                    endDate: formData.get('endDate')
-                };
-                coupons.push(newCoupon);
-                renderCoupons();
-                hideLoading();
-                bootstrap.Modal.getInstance(document.getElementById('addCouponModal')).hide();
-                form.reset();
-            }, 500);
-        }
-
-        function handleLogout() {
-            if (confirm('確定要登出嗎？')) {
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCoupons();
-
-            document.getElementById('searchForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                showLoading();
-                setTimeout(() => {
-                    hideLoading();
-                }, 500);
-            });
-        });
     </script>
 </body>
 </html>
