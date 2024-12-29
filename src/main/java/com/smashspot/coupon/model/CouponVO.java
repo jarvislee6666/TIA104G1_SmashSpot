@@ -35,6 +35,7 @@ public class CouponVO implements java.io.Serializable {
 
 	@Column(name = "crt_date", insertable = false, updatable = false)
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date crtdate;
 
 	@Column(name = "end_date")

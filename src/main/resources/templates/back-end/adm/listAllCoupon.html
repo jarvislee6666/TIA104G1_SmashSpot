@@ -147,6 +147,8 @@
 										<th>開始日期</th>
 										<th>結束日期</th>
 										<th>折抵金額</th>
+										<th></th>
+										<th></th>
 									</tr>
 								</thead>
 
@@ -155,22 +157,22 @@
 										<tr>
 											<td th:text="${couponVO.copid}"></td>
 											<td th:text="${couponVO.copcode}"></td>
-											<td th:text="${couponVO.crtdate}"></td>
-											<td th:text="${couponVO.enddate}"></td>
+											<td th:text="${#dates.format(couponVO.crtdate, 'yyyy-MM-dd')}"></td>
+											<td th:text="${#dates.format(couponVO.enddate, 'yyyy-MM-dd')}"></td>
 											<td th:text="${couponVO.discount}"></td>
 											<td>
 												<form method="post" th:action="@{/adm/getOneCoupon_For_Update}"
 													style="margin-bottom: 0px;">
-													<input type="submit" value="修改"> <input
-														type="hidden" name="copid" th:value="${couponVO.copid}">
+													<button type="submit" value="修改" class="btn btn-sm btn-outline-secondary">編輯</button> 
+													<input type="hidden" name="copid" th:value="${couponVO.copid}">
 												</form>
 
 											</td>
 											<td>
 												<form method="post" th:action="@{/adm/deleteCoupon}"
 													style="margin-bottom: 0px;">
-													<input type="submit" value="刪除"> <input
-														type="hidden" name="copid" th:value="${couponVO.copid}">
+													<button type="submit" value="刪除" class="btn btn-sm btn-outline-secondary">編輯</button>
+													<input type="hidden" name="copid" th:value="${couponVO.copid}">
 												</form>
 
 											</td>

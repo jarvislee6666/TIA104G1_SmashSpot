@@ -84,7 +84,7 @@ public class CouponController {
 
 		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
 		model.addAttribute("couponVO", couponVO);
-		return "back-end/coupon/update_coupon_input"; // 查詢完成後轉交update_coupon_input.html
+		return "back-end/adm/updateCoupon"; // 查詢完成後轉交update_coupon_input.html
 	}
 
 	@PostMapping("updateCoupon")
@@ -97,7 +97,7 @@ public class CouponController {
 		model.addAttribute("success", "- (修改成功)");
 		couponVO = copSvc.getOneCoupon(Integer.valueOf(couponVO.getCopid()));
 		model.addAttribute("couponVO", couponVO);
-		return "back-end/coupon/listAllCoupon";
+		return "back-end/adm/listAllCoupon";
 	}
 
 	public BindingResult removeFieldError(CouponVO couponVO, BindingResult result, String removedFieldname) {
@@ -119,7 +119,7 @@ public class CouponController {
 		List<CouponVO> list = copSvc.getAll();
 		model.addAttribute("couponListData", list);
 		model.addAttribute("success", "- (刪除成功)");
-		return "back-end/coupon/listAllCoupon";
+		return "back-end/adm/listAllCoupon";
 	}
 
 }
