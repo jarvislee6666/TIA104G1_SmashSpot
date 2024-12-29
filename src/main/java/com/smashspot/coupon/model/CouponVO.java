@@ -43,7 +43,6 @@ public class CouponVO implements java.io.Serializable {
 	@Future(message = "結束日期必須大於現在")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
-//	@AssertTrue(message = "結束日期不得超過兩個月")
 	private Date enddate;
 
 	@NotNull(message = "折扣金額: 請勿空白")
