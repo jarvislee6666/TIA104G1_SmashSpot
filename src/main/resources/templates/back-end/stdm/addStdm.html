@@ -61,9 +61,14 @@
 						<div class="nav flex-column nav-pills">
 							<a class="nav-link active" th:href="@{/stdm/addStdm}"> <i
 								class="fas fa-plus-circle me-2"></i>場館刊登
-							</a> <a class="nav-link" href="#"> <i class="fas fa-list me-2"></i>場館刊登列表
-							</a> <a class="nav-link" href="#"> <i class="fas fa-history me-2"></i>預約訂單紀錄
-							</a> <a class="nav-link" href="#"> <i
+							</a> 
+							<a class="nav-link" th:href="@{/stdm/listAllStdm}"> <i 
+								class="fas fa-list me-2"></i>場館刊登列表
+							</a> 
+							<a class="nav-link" href="#"> <i 
+								class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> 
+							<a class="nav-link" href="#"> <i
 								class="fas fa-chart-line me-2"></i>場館成效統計
 							</a>
 						</div>
@@ -80,9 +85,9 @@
 							th:text="${message}"></div>
 
 
-						<form id="venueForm" class="venue-form" th:action="@{insert}"
-							method="post" th:object="${stadiumVO}"
-							enctype="multipart/form-data">
+						<form id="venueForm" class="venue-form"
+							th:action="@{/stdm/insert}" method="post"
+							th:object="${stadiumVO}" enctype="multipart/form-data">
 							<div class="mb-4">
 								<label class="form-label">場館名稱</label> <input type="text"
 									th:field="*{stdmName}" class="form-control"
@@ -135,15 +140,14 @@
 							<div class="mb-4">
 								<label class="form-label">球館圖片上傳</label>
 								<div class="input-group">
-									<input type="file" th:field="*{stdmPic}" class="form-control"
+									<input type="file" id="upFiles" name="stdmPic"
+										class="form-control" accept="image/png,image/jpeg,image/gif"
 										onclick="previewImage()" multiple="multiple"
-										onchange="hideContent('stdmPic.errors');"> <span
-										class="error" th:utext="${errorMessage}" id="upFiles.errors">${errorMessage}</span>
-									<button class="btn btn-outline-secondary" type="button">
-										<i class="fas fa-upload"></i>
-									</button>
+										onchange="hideContent('upFiles.errors');"> <span
+										class="error" th:utext="${errorMessage}" id="upFiles.errors"></span>
+									<div id="blob_holder" class="mt-2"></div>
 								</div>
-								<small class="text-muted">請上傳球館圖片</small>
+								<small class="text-muted">請上傳球館圖片 (支援 PNG、JPEG、GIF)</small>
 							</div>
 
 							<div class="mb-4">
@@ -212,7 +216,7 @@
 									th:field="*{admVO.admid}" class="form-control">
 									<option th:each="admVO : ${admListData}"
 										th:value="${admVO.admid}" th:text="${admVO.admname}" />
-								</select> 
+								</select>
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('admVO.admid')}"
 									th:errors="*{admVO.admid}"></div>
@@ -230,23 +234,99 @@
 	</div>
 
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			const form = document.getElementById('venueForm');
-			const loadingOverlay = document.querySelector('.loading-overlay');
+		document
+				.addEventListener(
+						'DOMContentLoaded',
+						function() {
+							const form = document.getElementById('venueForm');
+							const loadingOverlay = document
+									.querySelector('.loading-overlay');
 
-			function showLoading() {
-				loadingOverlay.style.display = 'flex';
-			}
+							// 隱藏錯誤訊息
+							function hideContent(d) {
+								document.getElementById(d).style.display = "none";
+							}
 
-			function hideLoading() {
-				loadingOverlay.style.display = 'none';
-			}
+							// 檢查瀏覽器支援
+							var filereader_support = typeof FileReader != 'undefined';
+							if (!filereader_support) {
+								alert("No FileReader support");
+							}
 
-			form.addEventListener('submit', function(e) {
-				showLoading();
-				// 表單會正常提交，讓Spring處理驗證
-			});
-		});
+							// 允許的圖片類型
+							const acceptedTypes = {
+								'image/png' : true,
+								'image/jpeg' : true,
+								'image/gif' : true
+							};
+
+							// 圖片預覽功能
+							function previewImage() {
+								var upfile1 = document
+										.getElementById("upFiles");
+								upfile1.addEventListener("change", function(
+										event) {
+									var files = event.target.files
+											|| event.dataTransfer.files;
+									for (var i = 0; i < files.length; i++) {
+										previewfile(files[i])
+									}
+								}, false);
+							}
+
+							// 處理預覽
+							function previewfile(file) {
+								if (filereader_support === true
+										&& acceptedTypes[file.type] === true) {
+									var reader = new FileReader();
+									reader.onload = function(event) {
+										var image = new Image();
+										image.src = event.target.result;
+										image.width = 100;
+										image.height = 75;
+										image.border = 2;
+										var blob_holder = document
+												.getElementById('blob_holder');
+										if (blob_holder.hasChildNodes()) {
+											blob_holder
+													.removeChild(blob_holder.childNodes[0]);
+										}
+										blob_holder.appendChild(image);
+									};
+									reader.readAsDataURL(file);
+									document.getElementById('submit').disabled = false;
+								} else {
+									document.getElementById('blob_holder').innerHTML = "<div style='text-align: left;'>"
+											+ "● 檔案名稱: "
+											+ file.name
+											+ "<br>"
+											+ "● 檔案類型: "
+											+ file.type
+											+ "<br>"
+											+ "● 檔案大小: "
+											+ file.size
+											+ " bytes<br>"
+											+ "● 限制格式: <b><font color=red>PNG、JPEG、GIF</font></b></div>";
+									document.getElementById('submit').disabled = true;
+								}
+							}
+
+							// 表單提交處理
+							document.querySelector('form').addEventListener('submit', function(e) {
+								showLoading();
+							});
+
+							function showLoading() {
+								loadingOverlay.style.display = 'flex';
+							}
+
+							function hideLoading() {
+								loadingOverlay.style.display = 'none';
+							}
+
+							// 初始化預覽功能
+							previewImage();
+						});
 	</script>
 </body>
 </html>
