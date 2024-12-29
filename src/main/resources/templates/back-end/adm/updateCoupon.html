@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>修改優惠券 - updateCoupon.html</title>
+<head th:insert="~{/back-end/adm/included-fragment}"></head>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+</style>
+
+</head>
+<body>
+	<nav class="navbar navbar-light mb-4">
+		<div class="container-fluid">
+			<div class="navbar-content">
+				<a class="navbar-brand" href="#">管理員後台</a>
+				<div class="nav-buttons">
+					<a class="nav-link active" th:href="@{listAllAdm}"> <i
+						class="fas fa-users me-2"></i>員工帳號管理
+					</a> <a class="nav-link" th:href="@{listAllCoupon}"> <i
+						class="fas fa-ticket-alt me-2"></i>優惠券管理
+					</a> <a class="nav-link" href="#"> <i class="fas fa-store me-2"></i>商城管理
+					</a> <a class="nav-link" href="#"> <i
+						class="fas fa-map-marker-alt me-2"></i>場地管理
+					</a> <a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>論壇管理
+					</a> <a class="nav-link" href="#"> <i class="fas fa-headset me-2"></i>客服中心
+					</a> <a class="nav-link" href="#"> <i
+						class="fas fa-user-circle me-2"></i>會員帳號管理
+					</a>
+				</div>
+				<div class="d-flex align-items-center border-start ps-4">
+					<div class="nav-item me-3">
+					   <span class="nav-link">
+					       <i class="fas fa-user me-1"></i>
+					       <span></span>
+					   </span>
+					</div>
+					<button class="btn btn-outline-secondary btn-sm"
+						onclick="handleLogout()">
+						<i class="fas fa-sign-out-alt me-1"></i>登出
+					</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<div class="container-fluid">
+		<div class="row">
+			<!-- 左側選單 -->
+			<div class="col-md-2">
+				<div class="card">
+					<div class="card-body p-0">
+						<div class="nav flex-column nav-pills">
+							<a class="nav-link" th:href="@{/adm/listAllCoupon}">
+							<i class="fas fa-list me-2"></i>優惠券列表
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		<div class="col-md-10">
+	<div class="card">
+		<div class="card-body">
+			<div
+				class="d-flex justify-content-between align-items-center mb-4">
+				<h5 class="card-title mb-0">修改優惠券</h5>
+					</div>
+					<div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
+
+				<form th:action="@{/adm/updateCoupon}" method="post" th:object="${couponVO}" enctype="multipart/form-data">
+				    <input type="hidden" th:field="*{copid}">
+				    <input type="hidden" th:field="*{crtdate}">
+				    <div class="modal-body">
+				        <div class="mb-3">
+				            <label class="form-label">優惠碼</label>
+				            <input type="text" th:field="*{copcode}" class="form-control" th:class="${#fields.hasErrors('copcode')} ? 'form-control is-invalid' : 'form-control'">
+				            <div class="invalid-feedback" th:if="${#fields.hasErrors('copcode')}" th:errors="*{copcode}"></div>
+				        </div>
+				
+				        <div class="mb-3">
+				            <label class="form-label">使用期限</label>
+				            <input type="date" th:field="*{enddate}" class="form-control" th:class="${#fields.hasErrors('enddate')} ? 'form-control is-invalid' : 'form-control'">
+				            <div class="invalid-feedback" th:if="${#fields.hasErrors('enddate')}" th:errors="*{enddate}"></div>
+				        </div>
+				        
+				        <div class="mb-3">
+				            <label class="form-label">折扣金額</label>
+				            <input type="number" th:field="*{discount}" class="form-control" th:class="${#fields.hasErrors('discount')} ? 'form-control is-invalid' : 'form-control'">
+				            <div class="invalid-feedback" th:if="${#fields.hasErrors('discount')}" th:errors="*{discount}"></div>
+				        </div>
+				
+				    </div>
+				    <div class="modal-footer">
+				        <a href="/adm/listAllCoupon" class="btn btn-secondary">取消</a>
+				        <button type="submit" class="btn btn-add">修改完成</button>
+				    </div>
+				</form>
+
+<script>
+</script>
+
+</body>
+</html>
