@@ -1,12 +1,14 @@
 package com.smashspot.coupon.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.*;
 import org.springframework.ui.Model;
@@ -14,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import com.smashspot.coupon.model.*;
@@ -24,6 +27,13 @@ public class CouponController {
 
 	@Autowired
 	CouponService copSvc;
+	
+	@InitBinder
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
 
     @GetMapping("listAllCoupon")
 	public String listAllCoupon(Model model) {
@@ -41,7 +51,7 @@ public class CouponController {
 	public String addCoupon(ModelMap model) {
 		CouponVO couponVO = new CouponVO();
 		model.addAttribute("couponVO", couponVO);
-		return "back-end/coupon/addCoupon";
+		return "back-end/adm/addCoupon";
 	}
 
 	@PostMapping("insertCoupon")

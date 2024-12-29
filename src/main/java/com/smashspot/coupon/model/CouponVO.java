@@ -1,6 +1,7 @@
 package com.smashspot.coupon.model;
 
-import java.sql.Date;
+//import java.sql.Date;
+import java.util.Date;
 import java.util.Calendar;
 
 import javax.persistence.Column;
@@ -9,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -30,17 +33,19 @@ public class CouponVO implements java.io.Serializable {
 	@Pattern(regexp = "^[a-zA-Z0-9]{2,20}$", message = "優惠碼: 只能是英文字母、數字, 且長度必需在2到20之間")
 	private String copcode;
 
-	@Column(name = "crt_date")
+	@Column(name = "crt_date", insertable = false, updatable = false)
+	@Temporal(TemporalType.DATE)
 	private Date crtdate;
 
 	@Column(name = "end_date")
-	@NotEmpty(message = "使用期限: 請勿空白")
+	@NotNull(message = "使用期限: 請勿空白")
 	@Future(message = "結束日期必須大於現在")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@AssertTrue(message = "結束日期不得超過兩個月")
+	@Temporal(TemporalType.DATE)
+//	@AssertTrue(message = "結束日期不得超過兩個月")
 	private Date enddate;
 
-	@NotEmpty(message = "折扣金額: 請勿空白")
+	@NotNull(message = "折扣金額: 請勿空白")
 	@Min(value = 10, message = "折扣金額不得小於{value}")
 	@Max(value = 5000, message = "折扣金額不得大於{value}")
 	private Integer discount;
@@ -49,7 +54,7 @@ public class CouponVO implements java.io.Serializable {
 	@AssertTrue(message = "結束日期不得超過兩個月")
 	private boolean isEndDateValid() {
 		if (enddate == null) {
-			return false;
+			return true;
 		}
 
 		Calendar now = Calendar.getInstance();
