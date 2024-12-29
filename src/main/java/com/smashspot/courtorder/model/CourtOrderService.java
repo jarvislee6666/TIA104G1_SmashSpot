@@ -4,7 +4,10 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Set;
 
+
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.smashspot.courtorderdetail.model.CourtOrderDetailRepository;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
@@ -29,6 +32,7 @@ public class CourtOrderService {
     /**
      * 新增訂單 (只要傳 CourtOrderVO 進來即可)
      */
+	@Transactional
     public CourtOrderVO createOrder(CourtOrderVO requestOrder) {
         // 1. 先根據前端傳過來的 stadiumId, 撈出 DB 的 StadiumVO
         Integer stadiumId = requestOrder.getStadium().getStdmId();
