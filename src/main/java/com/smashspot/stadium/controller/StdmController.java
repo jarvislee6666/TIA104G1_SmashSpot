@@ -25,6 +25,7 @@ import com.smashspot.stadium.model.StdmService;
 //import com.smashspot.location.model.LocationVO;
 //import com.smashspot.location.model.LocationService;
 import com.smashspot.admin.model.AdmVO;
+import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.admin.model.AdmService;
 
 @Controller
@@ -40,6 +41,17 @@ public class StdmController {
 	@Autowired
 	AdmService admSvc;
 
+	@GetMapping("/listAllStdm")
+	public String listAllStdm(Model model) {
+		return "back-end/stdm/listAllStdm";
+	}
+	
+	@ModelAttribute("stdmListData")  // for listAllStdm.html 迴圈顯示資料用
+	protected List<StadiumVO> referenceListData(Model model) {
+		
+    	List<StadiumVO> list = stdmSvc.getAll();
+		return list;
+	}
 
 	@GetMapping("/addStdm")
 	public String addStdm(ModelMap model) {
@@ -52,7 +64,7 @@ public class StdmController {
 	}
 
 	
-	@PostMapping("insert")
+	@PostMapping("/insert")
 	public String insert(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
 			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
 
@@ -70,13 +82,21 @@ public class StdmController {
 		if (result.hasErrors() || parts[0].isEmpty()) {
 			return "back-end/stdm/addStdm";
 		}
-		// 將資料調至後端DB
-		stdmSvc.addStdm(stdmVO);
-		// 回傳成功視圖
-		List<StadiumVO> list = stdmSvc.getAll();
-		model.addAttribute("stdmListData", list);
-		model.addAttribute("success", "- (新增成功)");
-		return "redirect:/stdm/listAllStdm"; 
+		try {
+	        stdmSvc.addStdm(stdmVO);
+	        model.addAttribute("success", "新增成功");
+	        return "redirect:/stdm/listAllStdm";
+	    } catch (Exception e) {
+	        model.addAttribute("error", "新增失敗: " + e.getMessage());
+	        return "back-end/stdm/addStdm";
+	    }
+//		// 將資料調至後端DB
+//		stdmSvc.addStdm(stdmVO);
+//		// 回傳成功視圖
+//		List<StadiumVO> list = stdmSvc.getAll();
+//		model.addAttribute("stdmListData", list);
+//		model.addAttribute("success", "- (新增成功)");
+//		return "redirect:/stdm/listAllStdm"; 
 	}
 
 	
@@ -123,7 +143,7 @@ public class StdmController {
 	/*
 	 * This method will be called on listAllStdm.html form submission, handling POST request
 	 */
-	@PostMapping("delete")
+	@PostMapping("/deleteStdm")
 	public String delete(@RequestParam("stdmId") String stdmId, ModelMap model) {
 		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
 		/*************************** 2.開始刪除資料 *****************************************/
@@ -151,6 +171,7 @@ public class StdmController {
 //		List<Location> list = locSvc.getAll();
 //		return list;
 //	}
+	
 	@ModelAttribute("locMapData") //
 	protected Map<Integer, String> referenceMapData() {
 		Map<Integer, String> map = new LinkedHashMap<Integer, String>();
