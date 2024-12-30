@@ -68,7 +68,7 @@ public class ProductVO {
 	private byte[] propic;
 	
 	@Column(name = "max_price")
-	private Integer maxprice; // 結標金額
+	private Integer maxprice; // 最高金額(競標中、結標)
 
 	public Integer getProid() {
 		return proid;

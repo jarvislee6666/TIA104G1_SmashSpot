@@ -9,7 +9,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.*;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -95,8 +94,7 @@ public class CouponController {
 
 		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
 		model.addAttribute("success", "- (修改成功)");
-		couponVO = copSvc.getOneCoupon(Integer.valueOf(couponVO.getCopid()));
-		model.addAttribute("couponVO", couponVO);
+		
 		return "back-end/adm/listAllCoupon";
 	}
 
