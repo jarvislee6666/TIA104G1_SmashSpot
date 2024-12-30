@@ -45,9 +45,9 @@ public class ProductController {
 		return "back-end/adm/listAllProduct";
 	}
     
-    @GetMapping("listAllProductING")
+    @GetMapping("/client/listAllProductING")
 	public String listAllProductING(Model model) {
-		return "back-end/product/listAllProductING";
+		return "back-end/client/product/listAllProductING";
 	}
     
     @ModelAttribute("productListData")  // 管理員後台 迴圈顯示資料用

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,14 +12,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./Header.css" />
   </head>
   <body class="bg-light">
-    <header>
+    <header th:fragment="header">
       <nav class="navbar nav-container position-fixed w-100 z-3 top-0">
         <div class="container position-relative">
           <a class="navbar-brand" href="#">
-            <img src="./logo/logo.svg" alt="Bootstrap" />
+            <img th:src="@{/css/client/logo/logo.svg}" alt="Bootstrap" />
           </a>
 
           <!-- Mobile Toggle Button -->
@@ -61,6 +60,5 @@
         </div>
       </nav>
     </header>
-    <script src="./Header.js"></script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,13 +12,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./Footer.css" />
   </head>
   <body>
-    <footer>
+    <footer th:fragment="footer">
       <div class="footer-container">
         <div class="d-flex align-items-center">
-          <img src="./logo/logo.svg" alt="網站logo" class="footer-logo" />
+          <img th:src="@{/css/client/logo/logo.svg}" alt="網站logo" class="footer-logo"/>
           <div class="footer-contact">
             <p class="footer-text">連絡電話: (02) 1234-5678</p>
             <p>
