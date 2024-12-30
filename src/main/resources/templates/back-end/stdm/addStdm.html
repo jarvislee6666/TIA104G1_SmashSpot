@@ -23,26 +23,36 @@
 			<div class="navbar-content">
 				<a class="navbar-brand" href="#">管理員後台</a>
 				<div class="nav-buttons">
-					<a class="nav-link" href="#"> <i class="fas fa-users me-2"></i>員工帳號管理
-					</a> <a class="nav-link" href="#"> <i
+					<a class="nav-link" th:href="@{/adm/listAllAdm}"> <i 
+						class="fas fa-users me-2"></i>員工帳號管理
+					</a> 
+					<a class="nav-link" th:href="@{/adm/listAllCoupon}"> <i
 						class="fas fa-ticket-alt me-2"></i>優惠券管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-store me-2"></i>商城管理
-					</a> <a class="nav-link active" th:href="@{/stdm/addStdm}"> <i
+					</a> 
+					<a class="nav-link" href="#"> <i 
+						class="fas fa-store me-2"></i>商城管理
+					</a> 
+					<a class="nav-link active" th:href="@{/stdm/listAllStdm}"> <i
 						class="fas fa-map-marker-alt me-2"></i>場地管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>論壇管理
-					</a> <a class="nav-link" href="#"> <i class="fas fa-headset me-2"></i>客服中心
-					</a> <a class="nav-link" href="#"> <i
+					</a> 
+					<a class="nav-link" href="#"> <i 
+						class="fas fa-comments me-2"></i>論壇管理
+					</a> 
+					<a class="nav-link" href="#"> <i 
+						class="fas fa-headset me-2"></i>客服中心
+					</a> 
+					<a class="nav-link" href="#"> <i
 						class="fas fa-user-circle me-2"></i>會員帳號管理
 					</a>
 				</div>
 				<div class="d-flex align-items-center border-start ps-4">
 					<div class="nav-item me-3">
-						<span class="nav-link"> <i class="fas fa-user me-1"></i> <span
+						<span class="nav-link"> <i class="fas fa-user me-1"></i> 
+						<span
 							th:if="${session.loginAdm}" th:text="${session.loginAdm.admname}"></span>
 						</span>
 					</div>
-					<form th:action="@{/adm/logout}" method="post"
-						style="display: inline;">
+					<form th:action="@{/adm/logout}" method="post" style="display: inline;">
 						<button type="submit" class="btn btn-outline-secondary btn-sm">
 							<i class="fas fa-sign-out-alt me-1"></i>登出
 						</button>
@@ -84,13 +94,17 @@
 						<div th:if="${message}" class="alert alert-warning" role="alert"
 							th:text="${message}"></div>
 
+<div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+<div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
 						<form id="venueForm" class="venue-form"
 							th:action="@{/stdm/insert}" method="post"
 							th:object="${stadiumVO}" enctype="multipart/form-data">
 							<div class="mb-4">
-								<label class="form-label">場館名稱</label> <input type="text"
-									th:field="*{stdmName}" class="form-control"
+								<label class="form-label">場館名稱</label> 
+								<input type="text"
+									th:field="*{stdmName}" 
+									class="form-control"
 									th:class="${#fields.hasErrors('stdmName')} ? 'form-control is-invalid' : 'form-control'">
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmName')}"
@@ -98,8 +112,10 @@
 							</div>
 
 							<div class="mb-4">
-								<label class="form-label">場館地址</label> <input type="text"
-									th:field="*{stdmAddr}" class="form-control"
+								<label class="form-label">場館地址</label> 
+								<input type="text"
+									th:field="*{stdmAddr}" 
+									class="form-control"
 									th:class="${#fields.hasErrors('stdmAddr')} ? 'form-control is-invalid' : 'form-control'">
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmAddr')}"
@@ -107,8 +123,10 @@
 							</div>
 
 							<div class="mb-4">
-								<label class="form-label">場館簡介</label> <input type="text"
-									th:field="*{stdmIntro}" class="form-control"
+								<label class="form-label">場館簡介</label> 
+								<input type="text"
+									th:field="*{stdmIntro}" 
+									class="form-control"
 									th:class="${#fields.hasErrors('stdmIntro')} ? 'form-control is-invalid' : 'form-control'">
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmIntro')}"
@@ -116,8 +134,10 @@
 							</div>
 
 							<div class="mb-4">
-								<label class="form-label">場地數量</label> <input type="number"
-									th:field="*{courtCount}" class="form-control"
+								<label class="form-label">場地數量</label> 
+								<input type="number"
+									th:field="*{courtCount}" 
+									class="form-control"
 									th:class="${#fields.hasErrors('courtCount')} ? 'form-control is-invalid' : 'form-control'">
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('courtCount')}"
@@ -127,7 +147,8 @@
 							<div class="mb-4">
 								<label class="form-label">場租費</label>
 								<div class="input-group">
-									<input type="number" th:field="*{courtPrice}"
+									<input type="number" 
+										th:field="*{courtPrice}"
 										class="form-control"
 										th:class="${#fields.hasErrors('courtPrice')} ? 'form-control is-invalid' : 'form-control'">
 									<span class="input-group-text">元/小時</span>
@@ -141,19 +162,29 @@
 								<label class="form-label">球館圖片上傳</label>
 								<div class="input-group">
 									<input type="file" id="upFiles" name="stdmPic"
-										class="form-control" accept="image/png,image/jpeg,image/gif"
+										class="form-control"
+										th:class="${#fields.hasErrors('stdmPic')} ? 'form-control is-invalid' : 'form-control'"
+										accept="image/png,image/jpeg,image/gif"
 										onclick="previewImage()" multiple="multiple"
-										onchange="hideContent('upFiles.errors');"> <span
-										class="error" th:utext="${errorMessage}" id="upFiles.errors"></span>
+										onchange="hideContent('upFiles.errors');">
+									
 									<div id="blob_holder" class="mt-2"></div>
 								</div>
-								<small class="text-muted">請上傳球館圖片 (支援 PNG、JPEG、GIF)</small>
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('stdmPic')}" th:errors="*{stdmPic}">
+								</div>
+								<!-- JS錯誤訊息容器 -->
+								<div class="invalid-feedback" 
+									id="upFiles.errors"
+									th:if="${#fields.hasErrors('stdmPic')}"
+									th:utext="${errorMessage}"></div>
 							</div>
 
-							<div class="mb-4">
+							<!--<div class="mb-4">
 								<label class="form-label">開館時間</label>
 								<div class="input-group">
-									<input type="number" th:field="*{openTime}"
+									<input type="number" 
+										th:field="*{openTime}"
 										class="form-control"
 										th:class="${#fields.hasErrors('openTime')} ? 'form-control is-invalid' : 'form-control'">
 									<div class="invalid-feedback"
@@ -165,19 +196,21 @@
 							<div class="mb-4">
 								<label class="form-label">閉館時間</label>
 								<div class="input-group">
-									<input type="number" th:field="*{closeTime}"
+									<input type="number" 
+										th:field="*{closeTime}"
 										class="form-control"
 										th:class="${#fields.hasErrors('closeTime')} ? 'form-control is-invalid' : 'form-control'">
 									<div class="invalid-feedback"
 										th:if="${#fields.hasErrors('closeTime')}"
 										th:errors="*{closeTime}"></div>
 								</div>
-							</div>
+							</div>-->
 							<div>以下測試用:</div>
 							<div class="mb-4">
 								<label class="form-label">經度</label>
 								<div class="input-group">
-									<input type="number" th:field="*{longitude}"
+									<input type="number" 
+										th:field="*{longitude}"
 										class="form-control"
 										th:class="${#fields.hasErrors('longitude')} ? 'form-control is-invalid' : 'form-control'">
 									<div class="invalid-feedback"
@@ -188,7 +221,8 @@
 							<div class="mb-4">
 								<label class="form-label">緯度</label>
 								<div class="input-group">
-									<input type="number" th:field="*{latitude}"
+									<input type="number" 
+										th:field="*{latitude}"
 										class="form-control"
 										th:class="${#fields.hasErrors('latitude')} ? 'form-control is-invalid' : 'form-control'">
 									<div class="invalid-feedback"
@@ -199,10 +233,12 @@
 							<!-- 地點選擇 -->
 							<div class="mb-4">
 								<label class="form-label">地點編號</label> <select
-									th:field="*{locationVO.locId}" class="form-control">
+									th:field="*{locationVO.locId}" 
+									class="form-control">
 									<option value="">請選擇地點</option>
 									<option th:each="location : ${locMapData}"
-										th:value="${location.key}" th:text="${location.value}">
+											th:value="${location.key}" 
+											th:text="${location.value}">
 									</option>
 								</select>
 								<div class="invalid-feedback"
@@ -213,9 +249,11 @@
 							<!-- 管理員選擇 -->
 							<div class="mb-4">
 								<label class="form-label">管理員編號:</label> <select
-									th:field="*{admVO.admid}" class="form-control">
+									th:field="*{admVO.admid}" 
+									class="form-control">
 									<option th:each="admVO : ${admListData}"
-										th:value="${admVO.admid}" th:text="${admVO.admname}" />
+											th:value="${admVO.admid}" 
+											th:text="${admVO.admname}" />
 								</select>
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('admVO.admid')}"
@@ -234,26 +272,22 @@
 	</div>
 
 	<script>
-		document
-				.addEventListener(
-						'DOMContentLoaded',
-						function() {
-							const form = document.getElementById('venueForm');
-							const loadingOverlay = document
-									.querySelector('.loading-overlay');
+		document.addEventListener('DOMContentLoaded', function() {
+							const form = document.getElementById('venue-form');
+							const loadingOverlay = document.querySelector('.loading-overlay');
 
-							// 隱藏錯誤訊息
+							// 隱藏錯誤訊息函數
 							function hideContent(d) {
 								document.getElementById(d).style.display = "none";
 							}
 
-							// 檢查瀏覽器支援
+							// 檢查瀏覽器是否支援FileReader
 							var filereader_support = typeof FileReader != 'undefined';
 							if (!filereader_support) {
 								alert("No FileReader support");
 							}
 
-							// 允許的圖片類型
+							// 定義允許的圖片類型
 							const acceptedTypes = {
 								'image/png' : true,
 								'image/jpeg' : true,
@@ -262,12 +296,9 @@
 
 							// 圖片預覽功能
 							function previewImage() {
-								var upfile1 = document
-										.getElementById("upFiles");
-								upfile1.addEventListener("change", function(
-										event) {
-									var files = event.target.files
-											|| event.dataTransfer.files;
+								var upfile1 = document.getElementById("upFiles");
+								upfile1.addEventListener("change", function(event) {
+									var files = event.target.files || event.dataTransfer.files;
 									for (var i = 0; i < files.length; i++) {
 										previewfile(files[i])
 									}
@@ -276,8 +307,8 @@
 
 							// 處理預覽
 							function previewfile(file) {
-								if (filereader_support === true
-										&& acceptedTypes[file.type] === true) {
+								// 如果支援 FileReader 且檔案類型正確
+								if (filereader_support === true && acceptedTypes[file.type] === true) {
 									var reader = new FileReader();
 									reader.onload = function(event) {
 										var image = new Image();
@@ -285,17 +316,19 @@
 										image.width = 100;
 										image.height = 75;
 										image.border = 2;
-										var blob_holder = document
-												.getElementById('blob_holder');
+										
+										// 更新預覽區域
+										var blob_holder = document.getElementById('blob_holder');
 										if (blob_holder.hasChildNodes()) {
-											blob_holder
-													.removeChild(blob_holder.childNodes[0]);
+											blob_holder.removeChild(blob_holder.childNodes[0]);
 										}
 										blob_holder.appendChild(image);
 									};
+									
 									reader.readAsDataURL(file);
 									document.getElementById('submit').disabled = false;
 								} else {
+									// 如果檔案類型不正確，則顯示錯誤訊息
 									document.getElementById('blob_holder').innerHTML = "<div style='text-align: left;'>"
 											+ "● 檔案名稱: "
 											+ file.name
