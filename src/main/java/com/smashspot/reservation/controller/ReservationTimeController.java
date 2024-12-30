@@ -74,12 +74,12 @@ public class ReservationTimeController {
         
      // (1) 如果 rawList 不空，從第一筆拿到場館名稱
         //先保留但不使用
-//        if (rawList != null && !rawList.isEmpty()) {
-//            Object[] firstRow = rawList.get(0);
-//            // 索引 1 處就是您在 raw SQL/JPQL Query 裡 SELECT 的第二個欄位 (matchingRow[1])
-//            String stadiumName = (String) firstRow[1]; 
-//            model.addAttribute("stdmName", stadiumName);
-//        }
+        if (rawList != null && !rawList.isEmpty()) {
+            Object[] firstRow = rawList.get(0);
+            // 索引 1 處就是您在 raw SQL/JPQL Query 裡 SELECT 的第二個欄位 (matchingRow[1])
+            String stadiumName = (String) firstRow[1]; 
+            model.addAttribute("stdmName", stadiumName);
+        }
 
         // 確保有完整的七天資料
         List<Map<String, Object>> reservationList = new ArrayList<>();
