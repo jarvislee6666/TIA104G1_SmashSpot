@@ -18,7 +18,7 @@ public class CouponService {
 	CouponRepository repository;
 	
 	@Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory; // 複合查詢
 	
 	public void addCoupon(CouponVO couponVO) {
 		repository.save(couponVO);
