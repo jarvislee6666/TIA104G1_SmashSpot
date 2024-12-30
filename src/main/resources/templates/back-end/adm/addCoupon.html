@@ -32,13 +32,14 @@
 					<div class="nav-item me-3">
 					   <span class="nav-link">
 					       <i class="fas fa-user me-1"></i>
-					       <span></span>
+					       <span th:text="${session.loginAdm.admname}"></span>
 					   </span>
 					</div>
-					<button class="btn btn-outline-secondary btn-sm"
-						onclick="handleLogout()">
+					<form th:action="@{/adm/logout}" method="post" style="display: inline;">
+					<button  type="submit" class="btn btn-outline-secondary btn-sm">
 						<i class="fas fa-sign-out-alt me-1"></i>登出
 					</button>
+					</form>
 				</div>
 			</div>
 		</div>
