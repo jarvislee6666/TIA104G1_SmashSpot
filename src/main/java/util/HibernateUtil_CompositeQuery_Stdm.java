@@ -16,6 +16,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.smashspot.stadium.model.StadiumVO;
+import com.smashspot.admin.model.AdmVO;
 import com.smashspot.location.model.LocationVO;
 
 
@@ -24,15 +25,23 @@ public class HibernateUtil_CompositeQuery_Stdm {
 
 		Predicate predicate = null;
 
-		if ("stdmId".equals(columnName))// 用於Integer
+		if ("stdmId".equals(columnName)) {
+			// 用於Integer
 			predicate = builder.equal(root.get(columnName), Integer.valueOf(value));
-		else if ("stdmName".equals(columnName))// 用於varchar
+		} else if ("stdmName".equals(columnName)) {
+			// 用於varchar
 			predicate = builder.like(root.get(columnName), "%" + value + "%");
-		else if ("locationVO".equals(columnName)) {
-			LocationVO locationVO = new LocationVO();
-			locationVO.setLocId(Integer.valueOf(value));
-			predicate = builder.equal(root.get("locationVO"), locationVO);
+		} else if ("oprSta".equals(columnName)) {
+	        // Boolean 值查詢
+	        predicate = builder.equal(root.get(columnName), Boolean.valueOf(value));
+	    } else if ("admname".equals(columnName)) {
+	    	predicate = builder.like(root.get("admVO").get("admname"), "%" + value + "%");
 		}
+//		else if ("locationVO".equals(columnName)) {
+//			LocationVO locationVO = new LocationVO();
+//			locationVO.setLocId(Integer.valueOf(value));
+//			predicate = builder.equal(root.get("locationVO"), locationVO);
+//		}
 
 		return predicate;
 	}
