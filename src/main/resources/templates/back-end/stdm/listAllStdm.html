@@ -22,16 +22,16 @@
 			<div class="navbar-content">
 				<a class="navbar-brand" href="#">管理員後台</a>
 				<div class="nav-buttons">
-					<a class="nav-link" th:href="@{listAllAdm}"> <i 
+					<a class="nav-link" th:href="@{/adm/listAllAdm}"> <i 
 						class="fas fa-users me-2"></i>員工帳號管理
 					</a> 
-					<a class="nav-link" th:href="@{listAllCoupon}"> <i
+					<a class="nav-link" th:href="@{/adm/listAllCoupon}"> <i
 						class="fas fa-ticket-alt me-2"></i>優惠券管理
 					</a> 
 					<a class="nav-link" href="#"> <i 
 						class="fas fa-store me-2"></i>商城管理
 					</a> 
-					<a class="nav-link active" th:href="@{stdm/listAllStdm}"> <i
+					<a class="nav-link active" th:href="@{/stdm/listAllStdm}"> <i
 						class="fas fa-map-marker-alt me-2"></i>場地管理
 					</a> 
 					<a class="nav-link" href="#"> <i 
@@ -48,7 +48,7 @@
 					<div class="nav-item me-3">
 						<span class="nav-link"> <i class="fas fa-user me-1"></i> 
 						<span
-							th:text="${session.loginAdm}"></span>
+							th:if="${session.loginAdm}" th:text="${session.loginAdm.admname}"></span>
 						</span>
 					</div>
 					<form th:action="@{/adm/logout}" method="post" style="display: inline;">
@@ -84,6 +84,7 @@
 				</div>
 			</div>
 
+			<!-- 主要內容區 -->
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
@@ -127,7 +128,7 @@
 										<td th:text="${stadiumVO.stdmStartTime}"></td>
 										<td th:text="${stadiumVO.courtCount}"></td>
 										<td th:text="${stadiumVO.courtPrice}"></td>
-										<td th:text="${stadiumVO.admVO}"></td>
+										<td th:text="${stadiumVO.admVO.admname}"></td>
 										<td>
 											<button class="btn btn-sm btn-outline-primary me-2">編輯</button>
 											<a th:href="@{/stdm/deleteStdm(stdmId=${stadiumVO.stdmId})}" class="btn btn-sm btn-outline-secondary">下架</a>

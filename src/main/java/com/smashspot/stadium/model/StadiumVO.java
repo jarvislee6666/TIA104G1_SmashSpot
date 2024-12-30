@@ -118,7 +118,7 @@ public class StadiumVO implements java.io.Serializable {
 
 	@Column(name = "stdm_addr")
 	@NotEmpty(message = "場館地址: 請勿空白")
-	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,50}$", message = "場館地址: 只能是中、英文字母、數字和_ , 且長度必需在2到50之間")
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_-)]{2,50}$", message = "場館地址: 只能是中、英文字母、數字和_ - 且長度必需在2到50之間")
 	public String getStdmAddr() {
 		return stdmAddr;
 	}
@@ -161,7 +161,7 @@ public class StadiumVO implements java.io.Serializable {
 
 	@Column(name = "stdm_intro")
 	@NotEmpty(message = "場館簡介: 請勿空白")
-	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,500}$", message = "場館簡介: 只能是中、英文字母、數字和_ ,")
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_,，。、)]{2,500}$", message = "場館簡介: 只能是中、英文字母、數字和_ ,，、。")
 	public String getStdmIntro() {
 		return stdmIntro;
 	}
@@ -228,8 +228,8 @@ public class StadiumVO implements java.io.Serializable {
 	// 開閉館時間的驗證邏輯待修~~~
 	@Column(name = "opentime")
 	@NotNull(message = "開館時間請填數字")
-	@DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
-	@DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
+//	@DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
+//	@DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
 	public Integer getOpenTime() {
 		return openTime;
 	}
@@ -240,8 +240,8 @@ public class StadiumVO implements java.io.Serializable {
 
 	@Column(name = "closetime")
 	@NotNull(message = "閉館時間請填數字")
-	@DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
-	@DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
+//	@DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
+//	@DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
 	public Integer getCloseTime() {
 		return closeTime;
 	}
@@ -250,7 +250,7 @@ public class StadiumVO implements java.io.Serializable {
 		this.closeTime = closeTime;
 	}
 
-	@Column(name = "stdm_start_time")
+	@Column(name = "stdm_start_time", updatable = false, insertable = false)
 	public Timestamp getStdmStartTime() {
 		return stdmStartTime;
 	}
