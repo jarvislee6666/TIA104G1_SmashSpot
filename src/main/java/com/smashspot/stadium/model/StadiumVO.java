@@ -118,7 +118,7 @@ public class StadiumVO implements java.io.Serializable {
 
 	@Column(name = "stdm_addr")
 	@NotEmpty(message = "場館地址: 請勿空白")
-	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_-)]{2,50}$", message = "場館地址: 只能是中、英文字母、數字和_ - 且長度必需在2到50之間")
+	@Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_，。、)]{2,50}$", message = "場館地址: 只能是中、英文字母、數字和_，。、 ,  且長度必需在2到50之間")
 	public String getStdmAddr() {
 		return stdmAddr;
 	}
