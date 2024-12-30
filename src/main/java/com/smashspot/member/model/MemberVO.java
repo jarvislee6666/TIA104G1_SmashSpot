@@ -39,7 +39,7 @@ public class MemberVO implements Serializable {
     }
 
     @Id
-    @Column(name = "memid")
+    @Column(name = "mem_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer getMemid() {
         return this.memid;
@@ -95,7 +95,7 @@ public class MemberVO implements Serializable {
         this.email = email;
     }
 
-    @Column(name = "crttime")
+    @Column(name = "crt_time")
     @NotNull(message="建立時間: 請勿空白")
     public Timestamp getCrttime() {
         return this.crttime;
@@ -105,7 +105,7 @@ public class MemberVO implements Serializable {
         this.crttime = crttime;
     }
 
-    @Column(name = "chgtime")
+    @Column(name = "chg_time")
     @NotNull(message="修改時間: 請勿空白")
     public Timestamp getChgtime() {
         return this.chgtime;
@@ -158,7 +158,7 @@ public class MemberVO implements Serializable {
         this.status = status;
     }
 
-    @Column(name = "mempic")
+    @Column(name = "mem_pic")
     @Lob
     public byte[] getMempic() {
         return this.mempic;

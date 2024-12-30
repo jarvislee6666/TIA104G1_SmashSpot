@@ -33,6 +33,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
+import com.smashspot.member.model.MemberService;
+import com.smashspot.member.model.MemberVO;
 
 
 
@@ -42,6 +44,9 @@ public class AdmController {
 	
 	@Autowired
 	AdmService admSvc;
+	
+	@Autowired
+    private MemberService memberSvc;
 	
 	@GetMapping("/listAllAdm")
 		public String listAllAdm(
@@ -201,5 +206,12 @@ public class AdmController {
 	    session.invalidate();
 	    return "redirect:/adm/loginAdm";
 	}
+	
+	@GetMapping("/listAllMember")
+    public String listAllMember(Model model) {
+        List<MemberVO> memberList = memberSvc.getAll();
+        model.addAttribute("memberList", memberList);
+        return "back-end/adm/listAllMember";
+    }
 
 }

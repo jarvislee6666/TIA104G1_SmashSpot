@@ -57,8 +57,8 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link" th:href="@{/adm/listAllAdm}"> <i
-								class="fas fa-list me-2"></i>管理員列表
+							<a class="nav-link" th:href="@{/adm/listAllMember}"> <i
+								class="fas fa-list me-2"></i>會員列表
 							</a>
 						</div>
 					</div>
@@ -69,80 +69,64 @@
 		<div class="card-body">
 			<div
 				class="d-flex justify-content-between align-items-center mb-4">
-				<h5 class="card-title mb-0">管理員列表</h5>
-				<form ath:action="@{/adm/listAllAdm}" method="get">
+				<h5 class="card-title mb-0">會員列表</h5>
+				<form ath:action="@{/adm/listAllMember}" method="get">
 
 					<div
 						style="display: flex; align-items: center; gap: 20px; padding: 15px; border-radius: 8px;">
 						
 						<div class="search-item">
-					            <label for="admname" style="margin-right: 5px;">管理員名稱：</label>
-					            <input type="text" id="admname" name="admname" th:value="${param.admname}"
+					            <label for="name" style="margin-right: 5px;">會員名稱：</label>
+					            <input type="text" id="name" name="name" th:value="${param.name}"
 			                   style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
 				        </div>
 
 						<div class="search-item">
-							<label for="admsta" style="margin-right: 5px;">帳號狀態：</label> <select
-								id="admsta" name="admsta"
+							<label for="status" style="margin-right: 5px;">帳號狀態：</label> <select
+								id="status" name="status"
 								style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
 								<option value="">請選擇狀態</option>
-								<option value="true" th:selected="${param.admsta == 'true'}">正常</option>
+								<option value="true" th:selected="${param.status == 'true'}">正常</option>
 								<option value="false"
-									th:selected="${param.admsta == 'false'}">停用</option>
+									th:selected="${param.status == 'false'}">停用</option>
 							</select>
 						</div>
 
-						<div class="search-item">
-							<label for="supvsr" style="margin-right: 5px;">權限等級：</label> <select
-								id="supvsr" name="supvsr"
-								style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
-								<option value="">請選擇等級</option>
-								<option value="true" th:selected="${param.supvsr == 'true'}">高級</option>
-								<option value="false"
-									th:selected="${param.supvsr == 'false'}">一般</option>
-							</select>
-						</div>
 
 						<button type="submit" class="btn btn-primary"
 							style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">
 							查詢</button>
 					</div>
 				</form>
-						<a class="btn btn-add" th:href="@{/adm/addAdm}" method="post">
-				    <i class="fas fa-plus me-2"></i>新增管理員資料
-						</a>
 			</div>
 
 			<div class="table-responsive">
 				<table class="table" id="example">
 					<thead>
 						<tr>
-							<th>編號</th>
-							<th>管理員名稱</th>
-							<th>Email</th>
-							<th>密碼</th>
-							<th>連絡電話</th>
-							<th>生日</th>
-							<th>雇用日期</th>
-							<th>帳號狀態</th>
-							<th>權限等級</th>
-							<th>編輯</th>
-						</tr>
+                            <th>會員編號</th>
+                            <th>帳號</th>
+                            <th>Email</th>
+                            <th>電話</th>
+                            <th>生日</th>
+                            <th>地址</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
 					</thead>
-					<tr th:each="admVO : ${admList}">
-						<td th:text="${admVO.admid}"></td>
-						<td th:text="${admVO.admname}"></td>
-						<td th:text="${admVO.admemail}"></td>
-						<td th:text="${admVO.admpassword}"></td>
-						<td th:text="${admVO.admphone}"></td>
-						<td th:text="${admVO.admbday}"></td>
-						<td th:text="${admVO.hrdate}"></td>
-						<td th:text="${admVO.admsta ? '正常' : '停用'}"></td>
-						<td th:text="${admVO.supvsr ? '高級' : '一般'}"></td>
-						<td>
-							<a th:href="@{/adm/updateAdm(admid=${admVO.admid})}" class="btn btn-sm btn-outline-secondary">編輯</a>
-						</td>
-					</tr>
+					<tr th:each="memberVO : ${memberList}">
+                            <td th:text="${memberVO.memid}"></td>
+                            <td th:text="${memberVO.account}"></td>
+                            <td th:text="${memberVO.email}"></td>
+                            <td th:text="${memberVO.phone}"></td>
+                            <td th:text="${memberVO.bday}"></td>
+                            <td th:text="${memberVO.addr}"></td>
+                            <td th:text="${memberVO.status} ? '正常' : '停用'"></td>
+                            <td>
+                                <a th:href="@{/adm/updateMember(memid=${memberVO.memid})}" 
+                                   class="btn btn-sm btn-outline-secondary">編輯</a>
+                            </td>
+                        </tr>
 					</c:forEach>
 				</table>
 				<div class="d-flex justify-content-center mt-4">
