@@ -29,7 +29,7 @@
 				<div class="nav-buttons">
 					<a class="nav-link" th:href="@{listAllAdm}"><i class="fas fa-users me-2"></i>員工帳號管理</a>					
 					<a class="nav-link" href="#"><i	class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
-					<a class="nav-link" href="#"><i class="fas fa-store me-2"></i>商城管理	</a> 
+					<a class="nav-link" th:href="@{listAllProduct}"><i class="fas fa-store me-2"></i>商城管理	</a> 
 					<a class="nav-link" href="#"><i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
 					<a class="nav-link" href="#"><i class="fas fa-comments me-2"></i>論壇管理</a> 
 					<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
@@ -121,15 +121,15 @@
 											<td th:text="${#dates.format(couponVO.enddate, 'yyyy-MM-dd')}"></td>
 											<td th:text="${couponVO.discount}"></td>
 											<td>
-												<form method="post" th:action="@{/adm/getOneCoupon_For_Update}"
+												<form method="post" th:action="@{getOneCoupon_For_Update}"
 													style="margin-bottom: 0px;">
-													<button type="submit" value="修改" class="btn btn-sm btn-outline-secondary">編輯</button> 
+													<button type="submit" value="編輯" class="btn btn-sm btn-outline-secondary">編輯</button> 
 													<input type="hidden" name="copid" th:value="${couponVO.copid}">
 												</form>
 
 											</td>
 											<td>
-												<form method="post" th:action="@{/adm/deleteCoupon}"
+												<form method="post" th:action="@{deleteCoupon}"
 													style="margin-bottom: 0px;">
 													<button type="submit" value="刪除" class="btn btn-sm btn-outline-danger">刪除</button>
 													<input type="hidden" name="copid" th:value="${couponVO.copid}">
