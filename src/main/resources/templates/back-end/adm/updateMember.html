@@ -76,39 +76,39 @@
 			    
 			    <div class="mb-3">
 			        <label class="form-label">帳號</label>
-			        <input type="account" th:field="*{account}" class="form-control" readonly>
+			        <input type="text" th:field="*{account}" class="form-control" readonly>
 			    </div>
 			    
-			    <!-- Email -->
+	
 			    <div class="mb-3">
 			        <label class="form-label">Email</label>
 			        <input type="email" th:field="*{email}" class="form-control" readonly>
 			    </div>
 			    
-			    <!-- 其他唯讀欄位 -->
+	
 			    <div class="mb-3">
 			        <label class="form-label">名稱</label>
 			        <input type="text" th:field="*{name}" class="form-control" readonly>
 			    </div>
 			    
-			    <!-- 電話 -->
+
 			    <div class="mb-3">
 			        <label class="form-label">電話</label>
-			        <input type="phone" th:field="*{phone}" class="form-control" readonly>
+			        <input type="tel" th:field="*{phone}" class="form-control" readonly>
 			    </div>
 			    
-			    <!-- 唯讀欄位 -->
+
 			    <div class="mb-3">
 			        <label class="form-label">生日</label>
-			        <input type="bday" th:field="*{bday}" class="form-control" readonly>
+			        <input type="date" th:field="*{bday}" class="form-control" readonly>
 			    </div>
 			    
 			    <div class="mb-3">
 			        <label class="form-label">地址</label>
-			        <input type="address" th:field="*{addr}" class="form-control" readonly>
+			        <input type="text" th:field="*{addr}" class="form-control" readonly>
 			    </div>
 			  
-			    <!-- 下拉選單 -->
+	
 			    <div class="mb-3">
 			        <label class="form-label">狀態</label>
 			        <select class="form-select" th:field="*{status}">

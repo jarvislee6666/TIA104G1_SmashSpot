@@ -1,7 +1,9 @@
 package com.smashspot.admin.controller;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -138,12 +140,7 @@ public class AdmController {
 	
 	@GetMapping("/updateAdm")
 	public String getOne_For_Update(@RequestParam("admid") String admid, ModelMap model) {
-		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
-		/*************************** 2.開始查詢資料 *****************************************/
-		// EmpService empSvc = new EmpService();
 		AdmVO admVO = admSvc.getOneAdm(Integer.valueOf(admid));
-
-		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
 		model.addAttribute("admVO", admVO);
 		return "back-end/adm/updateAdm"; // 查詢完成後轉交update_emp_input.html
 	}
@@ -221,12 +218,29 @@ public class AdmController {
         return "back-end/adm/updateMember";
     }
 
-    @PostMapping("/updateMem")
-    public String update(@Valid MemberVO memberVO, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "back-end/adm/updateMember";
-        }
-        memberSvc.updateMember(memberVO);
-        return "redirect:/adm/listAllMember";
-    }
+	@PostMapping("updateMem")
+	public String update(@Valid MemberVO memberVO, BindingResult result, ModelMap model) {
+	   result = removeFieldErrors(memberVO, result, "crttime", "password", "chgtime");
+	   
+	   if (result.hasErrors()) {
+	       return "back-end/adm/updateMember";
+	   }
+	   
+	   MemberVO original = memberSvc.getOneMember(memberVO.getMemid());
+	   original.setStatus(memberVO.getStatus());
+	   original.setChgtime(new Timestamp(System.currentTimeMillis())); // 設定當前時間
+	   
+	   memberSvc.updateMember(original);
+	   return "redirect:/adm/listAllMember";
+	}
+
+	private BindingResult removeFieldErrors(MemberVO memberVO, BindingResult result, String... fieldNames) {
+	   List<FieldError> errorsToKeep = result.getFieldErrors().stream()
+	       .filter(err 	-> !Arrays.asList(fieldNames).contains(err.getField()))
+	       .collect(Collectors.toList());
+	   
+	   BindingResult newResult = new BeanPropertyBindingResult(memberVO, "memberVO");
+	   errorsToKeep.forEach(newResult::addError);
+	   return newResult;
+	}
 }

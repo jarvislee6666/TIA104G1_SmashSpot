@@ -106,6 +106,7 @@
 						<tr>
                             <th>會員編號</th>
                             <th>帳號</th>
+                            <th>名稱</th>
                             <th>Email</th>
                             <th>電話</th>
                             <th>生日</th>
@@ -117,6 +118,7 @@
 					<tr th:each="memberVO : ${memberList}">
                             <td th:text="${memberVO.memid}"></td>
                             <td th:text="${memberVO.account}"></td>
+                            <td th:text="${memberVO.name}"></td>
                             <td th:text="${memberVO.email}"></td>
                             <td th:text="${memberVO.phone}"></td>
                             <td th:text="${memberVO.bday}"></td>
