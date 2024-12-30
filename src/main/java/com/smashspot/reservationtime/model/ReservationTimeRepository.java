@@ -1,9 +1,12 @@
 package com.smashspot.reservationtime.model;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ReservationTimeRepository extends JpaRepository<ReservationTimeVO, Integer> {
     @Query(value = 
@@ -30,5 +33,28 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
        Integer stdmId, 
        Integer startWeek, 
        Integer endWeek
+   );
+   
+   
+   // --- 方法 2: 動態依照 stadium.capacity 來拼出 rsv_ava ---
+   //   假設 stadium 有欄位叫 'capacity'
+   //   若你想用 'xxxx' + capacity*7 + 'x' 的方式組出 12 碼
+   //   下面範例以 MySQL 語法 CONCAT 與 REPEAT() 函式來實作
+   @Modifying
+   @Query(value = 
+      "INSERT INTO reservation_time (stdm_id, dates, rsv_ava, booked) " +
+      "SELECT s.stdm_id, :insertDate, " +
+      // 組出 12 碼： 'xxxx' + (capacity 重複 7 次) + 'x'
+      "       CONCAT('xxxx', REPEAT(s.court_count, 7), 'x') AS dynamic_rsv_ava, " +
+      "       'xxxx0000000x' AS bookedStr " +
+      "FROM stadium s " +
+      "WHERE NOT EXISTS ( " +
+      "    SELECT 1 FROM reservation_time r " +
+      "    WHERE r.stdm_id = s.stdm_id " +
+      "      AND r.dates = :insertDate " +
+      ")", 
+      nativeQuery = true)
+   void insertTodayReservationDynamicIfNotExists(
+       @Param("insertDate") Date insertDate
    );
 }

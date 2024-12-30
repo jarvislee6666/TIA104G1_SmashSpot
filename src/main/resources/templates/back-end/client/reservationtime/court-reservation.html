@@ -60,7 +60,7 @@ body {
 <body>
 
 <div id="stadiumInfo" th:data-stdmId="${stdmId}" style="display: none;"></div>
-<!-- <div id="stadiumName" th:text="${stdmName}" th:data-stdmName="${stdmName}"></div> -->
+<div id="stadiumName" th:text="${stdmName}" th:data-stdmName="${stdmName}"></div>
 <!-- stadiumName 還沒處理 -->
 <div class="my-3 d-flex align-items-center justify-content-between">
     <h2 class="mb-0">飆汗羽球館 - 場地預約</h2>
@@ -367,7 +367,7 @@ body {
 </div>
 
 <!-- 預約按鈕 -->
-<div class="text-center mt-3" id="bookingButtonContainer" style="display: none;">
+<div class="text-center mt-3" id="bookingButtonContainer" style="display: block;">
     <button class="btn btn-primary" onclick="showBookingModal()">
         <i class="fas fa-calendar-check me-1"></i> 確認預約
     </button>
@@ -402,7 +402,6 @@ body {
     // 1. 全域變數 & 設定
     // --------------------------------------------------
     let selectedTimeSlots = [];
-    const PRICE_PER_SLOT = 600;
 
     // 時段對應 leftover 裡面的索引位置 (示範寫法)
     const timeSlotMap = {
@@ -448,6 +447,7 @@ body {
         } else {
             selectedTimeSlots = selectedTimeSlots.filter(
                 slot => slot.date !== date || slot.timeSlot !== timeSlot
+                //Array.prototype.filter(callback) 會依據回傳的布林值，保留或丟棄陣列中的元素：callback 回傳 true → 保留該元素//callback 回傳 false → 移除該元素
             );
         }
         updateBookingButton();
@@ -456,10 +456,10 @@ body {
     // --------------------------------------------------
     // 4. 檢查是否有已選時段，控制「確認預約」按鈕顯示
     // --------------------------------------------------
-    function updateBookingButton() {
-        const container = document.getElementById('bookingButtonContainer');
-        container.style.display = selectedTimeSlots.length > 0 ? 'block' : 'none';
-    }
+    // function updateBookingButton() {
+    //     const container = document.getElementById('bookingButtonContainer');
+    //     container.style.display ='block' ;
+    // }
 
     // --------------------------------------------------
     // 5. 顯示預約資訊 Modal
@@ -476,7 +476,8 @@ body {
         // 6.1 按日期分組
         const groupedByDate = {};
         selectedTimeSlots.forEach(slot => {
-            const { date, timeSlot } = slot;
+        	const date = slot.date;
+        	const timeSlot = slot.timeSlot;
             if (!groupedByDate[date]) {
                 groupedByDate[date] = [];
             }
