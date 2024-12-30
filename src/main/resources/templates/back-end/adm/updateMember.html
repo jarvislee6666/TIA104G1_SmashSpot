@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>更新管理員資料 - updateAdm.html</title>
+<title>更新會員員資料 - updateMember.html</title>
 <head th:insert="~{/back-end/adm/included-fragment}"></head>
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -55,8 +55,8 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link" th:href="@{/adm/listAllAdm}"> <i
-								class="fas fa-list me-2"></i>管理員列表
+							<a class="nav-link" th:href="@{/adm/listAllMember}"> <i
+								class="fas fa-list me-2"></i>會員列表
 							</a>
 						</div>
 					</div>
@@ -67,66 +67,58 @@
 		<div class="card-body">
 			<div
 				class="d-flex justify-content-between align-items-center mb-4">
-				<h5 class="card-title mb-0">更新管理員資料</h5>
+				<h5 class="card-title mb-0">更新會員資料</h5>
 					</div>
 					<div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
 
-				<form th:action="@{/adm/update}" method="post" th:object="${admVO}">
-			    <input type="hidden" th:field="*{admid}">
+				<form th:action="@{/adm/updateMem}" th:object="${memberVO}" method="post">
+			    <input type="hidden" th:field="*{memid}">
+			    
+			    <div class="mb-3">
+			        <label class="form-label">帳號</label>
+			        <input type="account" th:field="*{account}" class="form-control" readonly>
+			    </div>
 			    
 			    <!-- Email -->
 			    <div class="mb-3">
 			        <label class="form-label">Email</label>
-			        <input type="email" th:field="*{admemail}" class="form-control" readonly>
+			        <input type="email" th:field="*{email}" class="form-control" readonly>
 			    </div>
 			    
 			    <!-- 其他唯讀欄位 -->
 			    <div class="mb-3">
 			        <label class="form-label">名稱</label>
-			        <input type="text" th:field="*{admname}" class="form-control" readonly>
+			        <input type="text" th:field="*{name}" class="form-control" readonly>
 			    </div>
 			    
 			    <!-- 電話 -->
 			    <div class="mb-3">
 			        <label class="form-label">電話</label>
-			        <input type="tel" th:field="*{admphone}" class="form-control" readonly>
+			        <input type="phone" th:field="*{phone}" class="form-control" readonly>
 			    </div>
 			    
 			    <!-- 唯讀欄位 -->
 			    <div class="mb-3">
 			        <label class="form-label">生日</label>
-			        <input type="date" th:field="*{admbday}" class="form-control" readonly>
+			        <input type="bday" th:field="*{bday}" class="form-control" readonly>
 			    </div>
 			    
 			    <div class="mb-3">
-			        <label class="form-label">雇用日期</label>
-			        <input type="date" th:field="*{hrdate}" class="form-control" readonly>
+			        <label class="form-label">地址</label>
+			        <input type="address" th:field="*{addr}" class="form-control" readonly>
 			    </div>
-			    
-			    <div class="mb-3">
-			        <label class="form-label">密碼</label>
-			        <input type="text" th:field="*{admpassword}" class="form-control" readonly>
-			    </div>
-			    
+			  
 			    <!-- 下拉選單 -->
 			    <div class="mb-3">
 			        <label class="form-label">狀態</label>
-			        <select class="form-select" th:field="*{admsta}">
+			        <select class="form-select" th:field="*{status}">
 			            <option th:value="true">正常</option>
-			            <option th:value="false">停用</option>
-			        </select>
-			    </div>
-			    
-			    <div class="mb-3">
-			        <label class="form-label">權限</label>
-			        <select class="form-select" th:field="*{supvsr}">
-			            <option th:value="true">高級</option>
-			            <option th:value="false">一般</option>
+			            <option th:value="false">停權</option>
 			        </select>
 			    </div>
 			    
 			    <div class="modal-footer">
-			        <a href="/adm/listAllAdm" class="btn btn-secondary">取消</a>
+			        <a href="/adm/listAllMember" class="btn btn-secondary">取消</a>
 			        <button type="submit" class="btn btn-add">更新</button>
 			    </div>
 			</form>

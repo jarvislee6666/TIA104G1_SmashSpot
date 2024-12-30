@@ -214,4 +214,19 @@ public class AdmController {
         return "back-end/adm/listAllMember";
     }
 
+	@GetMapping("/updateMember")
+    public String getOneForUpdate(@RequestParam("memid") Integer memid, Model model) {
+        MemberVO memberVO = memberSvc.getOneMember(memid);
+        model.addAttribute("memberVO", memberVO);
+        return "back-end/adm/updateMember";
+    }
+
+    @PostMapping("/updateMem")
+    public String update(@Valid MemberVO memberVO, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "back-end/adm/updateMember";
+        }
+        memberSvc.updateMember(memberVO);
+        return "redirect:/adm/listAllMember";
+    }
 }
