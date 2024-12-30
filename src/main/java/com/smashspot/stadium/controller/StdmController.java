@@ -26,6 +26,7 @@ import com.smashspot.stadium.model.StdmService;
 //import com.smashspot.location.model.LocationService;
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.coupon.model.CouponVO;
+import com.smashspot.location.model.LocationVO;
 import com.smashspot.admin.model.AdmService;
 
 @Controller
@@ -42,14 +43,57 @@ public class StdmController {
 	AdmService admSvc;
 
 	@GetMapping("/listAllStdm")
-	public String listAllStdm(Model model) {
-		return "back-end/stdm/listAllStdm";
-	}
+	public String listAllStdm(
+	        @RequestParam(required = false) String stdmName,
+	        @RequestParam(required = false) String oprSta,
+	        @RequestParam(required = false) String admname,
+	        @RequestParam(required = false) String locationVO,
+	        Model model) {
+    
+    Map<String, String[]> map = new HashMap<>();
+    if (stdmName != null && !stdmName.trim().isEmpty()) {
+        map.put("stdmName", new String[]{stdmName});
+    }
+    if (oprSta != null && !oprSta.trim().isEmpty()) {
+        map.put("oprSta", new String[]{oprSta});
+    }
+    if (admname != null && !admname.trim().isEmpty()) {
+        map.put("admname", new String[]{admname});
+    }
+//    if (locationVO != null && !locationVO.isEmpty()) {
+//        map.put("locationVO", new String[]{locationVO});
+//    }
+
+    
+    List<StadiumVO> stdmList;
+    if (map.isEmpty()) {
+        stdmList = stdmSvc.getAll();
+    } else {
+        stdmList = stdmSvc.getAll(map);
+    }
+    
+    // 確保管理員列表資料有被加載
+    if (!model.containsAttribute("admListData")) {
+        model.addAttribute("admListData", admSvc.getAll());
+    }
+    
+    model.addAttribute("stadiumVO", new StadiumVO());
+    model.addAttribute("stdmListData", stdmList);
+    return "back-end/stdm/listAllStdm";
+}
+
+//	
+//	@ModelAttribute("stdmListData")  // for listAllStdm.html 迴圈顯示資料用
+//	protected List<StadiumVO> referenceListData(Model model) {
+//		
+//    	List<StadiumVO> list = stdmSvc.getAll();
+//		return list;
+//	}
 	
-	@ModelAttribute("stdmListData")  // for listAllStdm.html 迴圈顯示資料用
-	protected List<StadiumVO> referenceListData(Model model) {
-		
-    	List<StadiumVO> list = stdmSvc.getAll();
+	@ModelAttribute("admListData")
+	protected List<AdmVO> referenceListData() {
+		// AdmService admSvc = new AdmService();
+		List<AdmVO> list = admSvc.getAll();
 		return list;
 	}
 
@@ -140,25 +184,8 @@ public class StdmController {
 	}
 
 
-	@PostMapping("/deleteStdm")
-	public String delete(@RequestParam("stdmId") String stdmId, ModelMap model) {
-		stdmSvc.deleteStdm(Integer.valueOf(stdmId));
-		/*************************** 3.刪除完成,準備轉交(Send the Success view) **************/
-		List<StadiumVO> list = stdmSvc.getAll();
-		model.addAttribute("stdmListData", list);
-		model.addAttribute("success", "- (刪除成功)");
-		return "back-end/stdm/listAllStdm"; // 刪除完成後轉交listAllStdm.html
-	}
 
-	
-	
 
-	@ModelAttribute("admListData")
-	protected List<AdmVO> referenceListData() {
-		// AdmService admSvc = new AdmService();
-		List<AdmVO> list = admSvc.getAll();
-		return list;
-	}
 	
 //	@ModelAttribute("locListData")
 //	protected List<LocationVO> referenceListData() {

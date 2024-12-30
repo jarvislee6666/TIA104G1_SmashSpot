@@ -90,33 +90,72 @@
 					<div class="card-body">
 						<h5 class="card-title mb-4">場地刊登列表</h5>
 						<form th:action="@{/stdm/listAllStdm}" method="get">
+		<div style="display: flex; align-items: center; gap: 20px; padding: 15px; border-radius: 8px;">
+						
+						<div class="search-item">
+					            <label for="stdmName" style="margin-right: 5px;">場館名稱：</label>
+					            <input type="text" id="stdmName" name="stdmName" th:value="${param.stdmName}"
+			                   style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
+				        </div>
+				        
+				        <!--<div class="search-item">
+							<label for="locationVO" style="margin-right: 5px;">場館地點：</label> 
+							<select
+								id="locationVO" name="locationVO"
+								style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
+								<option value="">請選擇地點</option>
+								<option th:each="location : ${locMapData}"
+											th:value="${location.key}" 
+											th:text="${location.value}"  />
+							</select>
+						</div> -->
 
-							<!-- 搜尋區域 -->
-							<div class="search-section mb-4">
-								<div class="row g-3">
-									<div class="col-md-3">
-										<input type="text" class="form-control" placeholder="場地名稱">
-									</div>
-									<div class="col-md-3">
-										<input type="date" class="form-control">
-									</div>
-									<div class="col-md-2 d-flex align-items-end">
-										<button type="submit" class="btn btn-primary w-100">搜尋</button>
-									</div>
+						<div class="search-item">
+							<label for="oprSta" style="margin-right: 5px;">場館狀態：</label> 
+							<select
+								id="oprSta" name="oprSta"
+								style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
+								<option value="">請選擇狀態</option>
+								<option value="true" 
+										th:selected="${param.oprSta == 'true'}">正常</option>
+								<option value="false"
+										th:selected="${param.oprSta == 'false'}">已下架</option>
+							</select>
+						</div>
+
+						<div class="search-item">
+							<label for="admname" style="margin-right: 5px;">管理員ID：</label> 
+							<select
+								id="admname" name="admname"
+								style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
+								<option value="">請選擇ID</option>
+								<option th:each="admVO : ${admListData}"
+											th:value="${admVO.admname}" 
+											th:text="${admVO.admname}" />
+							</select>
+						</div>
+
+						<button type="submit" class="btn btn-primary"
+							style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">
+							查詢</button>
+					</div>
+					</form>
+							
 								</div>
 							</div>
-						</form>
+						
 
 						<div class="table-responsive">
 							<table class="table table-hover">
 								<thead>
 									<tr>
 										<th>#</th>
-										<th>場地名稱</th>
+										<th>場館名稱</th>
 										<th>上架時間</th>
 										<th>球場數量</th>
-										<th>場租費</th>
-										<th>管理員編號</th>
+										<th>場租費(元/小時)</th>
+										<th>管理員ID</th>
+										<th>場館狀態</th>
 										<th>操作</th>
 									</tr>
 								</thead>
@@ -129,23 +168,12 @@
 										<td th:text="${stadiumVO.courtCount}"></td>
 										<td th:text="${stadiumVO.courtPrice}"></td>
 										<td th:text="${stadiumVO.admVO.admname}"></td>
+										<td><span
+											th:class="${stadiumVO.oprSta ? 'status-badge status-active' : 'status-badge status-inactive'}"
+											th:text="${stadiumVO.oprSta ? '正常' : '已下架'}"> </span></td>
 										<td>
 											<button class="btn btn-sm btn-outline-primary me-2">編輯</button>
-											<a th:href="@{/stdm/deleteStdm(stdmId=${stadiumVO.stdmId})}" class="btn btn-sm btn-outline-secondary">下架</a>
 										</td>
-										<!--<td>
-											<button class="btn btn-sm btn-outline-primary me-2"
-												th:attr="data-id=${stadium.stdmId}" data-bs-toggle="modal"
-												data-bs-target="#editVenueModal">編輯</button>
-
-											<form th:action="@{/stdm/delete}" method="post"
-												style="display: inline">
-												<input type="hidden" name="stdmId"
-													th:value="${stadium.stdmId}" />
-												<button class="btn btn-sm btn-outline-secondary"
-													type="submit">下架</button>
-											</form>
-										</td>-->
 									</tr>
 								</tbody>
 							</table>
@@ -192,8 +220,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
+
 
 	<!-- Modal -->
 	<div class="modal fade" id="editVenueModal" tabindex="-1">
@@ -271,35 +298,7 @@
 		</div>
 	</div>
 
-	<!-- 添加確認對話框的 Modal -->
-	<div class="modal fade" id="delistConfirmModal" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">確認下架</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-				<div class="modal-body">
-					<p>
-						確定要下架「<span id="venueNameToDelete"></span>」嗎？
-					</p>
-					<p class="text-danger">注意：下架後該場地將不會出現在用戶搜尋結果中。</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-danger"
-						onclick="handleDelist()">確認下架</button>
-				</div>
-			</div>
-		</div>
-	</div>
 
-
-
-
-	<!-- <script src="js/main.js"></script>-->
-	<!-- 跳窗的CSS -->
 	<script>
         class Calendar {
             constructor() {
@@ -669,20 +668,7 @@
         }
         </script>
 
-	<!-- 添加對應的 JavaScript 代碼 -->
-	<script>
-            function confirmDelist(button) {
-                // 獲取場地名稱
-                const venueName = button.closest('tr').querySelector('td:nth-child(2)').textContent;
-                
-                // 顯示確認對話框
-                if (confirm(`確定要下架「${venueName}」嗎？`)) {
-                    // 如果用戶點擊確認，可以在這裡添加下架的操作
-                    alert('下架成功！');
-                    button.closest('tr').remove(); // 從表格中移除該行
-                }
-            }
-            </script>
+
 
 </body>
 </html>
