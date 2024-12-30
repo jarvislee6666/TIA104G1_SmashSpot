@@ -27,7 +27,7 @@ public class ProductVO {
     private ProductClassVO productClassVO;
 
 	@Column(name = "bid_sta_id", nullable = false)
-	@NotNull(message = "競標狀態編號不能為空")
+	@NotNull(message = "競標狀態不能為空")
 	private Integer bidstaid;
 
 	@Column(name = "base_price", nullable = false)

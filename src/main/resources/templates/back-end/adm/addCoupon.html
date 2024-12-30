@@ -13,6 +13,7 @@
 </style>
 
 </head>
+
 <body>
 	<nav class="navbar navbar-light mb-4">
 		<div class="container-fluid">
@@ -49,7 +50,7 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link" th:href="@{/adm/listAllCoupon}">
+							<a class="nav-link" th:href="@{listAllCoupon}">
 							<i class="fas fa-list me-2"></i>優惠券列表
 							</a>
 						</div>
@@ -64,7 +65,7 @@
 					</div>
 					<div th:if="${message}" class="alert alert-warning" role="alert" th:text="${message}"></div>
 		
-					<form th:action="@{/adm/insertCoupon}" method="post" th:object="${couponVO}" enctype="multipart/form-data">
+					<form th:action="@{insertCoupon}" method="post" th:object="${couponVO}" enctype="multipart/form-data">
 					    <div class="modal-body">
 					        <div class="mb-3">
 					            <label class="form-label">優惠碼</label>

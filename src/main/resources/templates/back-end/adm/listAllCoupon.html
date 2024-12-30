@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>優惠券管理系統</title>
@@ -15,19 +16,8 @@
 <head th:insert="~{/back-end/adm/included-fragment}"></head>
 
 <style>
-.loading-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(255, 255, 255, 0.8);
-	display: none;
-	justify-content: center;
-	align-items: center;
-	z-index: 1000;
-}
 </style>
+
 </head>
 
 <body>
@@ -105,7 +95,7 @@
 									</button>
 								</div>
 							</form>
-							<a class="btn btn-add" th:href="@{/adm/addCoupon}">
+							<a class="btn btn-add" th:href="@{addCoupon}">
 				   				 <i class="fas fa-plus me-2"></i>新增優惠券
 							</a>
 						</div>
@@ -153,16 +143,11 @@
 							<div class="d-flex justify-content-center mt-4">
 								<nav>
 									<ul class="pagination">
-										<li class="page-item"><a class="page-link" href="#">&laquo;</a>
-										</li>
-										<li class="page-item active"><a class="page-link"
-											href="#">1</a></li>
-										<li class="page-item"><a class="page-link" href="#">2</a>
-										</li>
-										<li class="page-item"><a class="page-link" href="#">3</a>
-										</li>
-										<li class="page-item"><a class="page-link" href="#">&raquo;</a>
-										</li>
+										<li class="page-item"> <a class="page-link" href="#">&laquo;</a> </li>
+										<li class="page-item active"> <a class="page-link" href="#">1</a> </li>
+										<li class="page-item"> <a class="page-link" href="#">2</a> </li>
+										<li class="page-item"> <a class="page-link" href="#">3</a> </li>
+										<li class="page-item"> <a class="page-link" href="#">&raquo;</a> </li>
 									</ul>
 								</nav>
 							</div>

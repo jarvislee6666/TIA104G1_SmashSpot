@@ -11,13 +11,33 @@ import com.smashspot.coupon.model.CouponVO;
 
 @Service
 public class ProductService {
-	
+
 	@Autowired
 	ProductRepository repository;
-	
-	public ProductVO findById(Integer proclassid) {
-		Optional<ProductVO> optional = repository.findById(proclassid);
-		return optional.orElse(null);  // public T orElse(T other) : 如果值存在就回傳其值，否則回傳other的值
+
+	public void addProduct(ProductVO productVO) {
+		repository.save(productVO);
+	}
+
+	public void updateProduct(ProductVO productVO) {
+		repository.save(productVO);
+	}
+
+	public ProductVO getOneProduct(Integer proid) {
+		Optional<ProductVO> optional = repository.findById(proid);
+		return optional.orElse(null); // public T orElse(T other) : 如果值存在就回傳其值，否則回傳other的值
+	}
+
+	public List<ProductVO> findByBidsta(Integer bidstaid) {
+		return repository.findByBidstaid(bidstaid);
+	}
+
+	public List<ProductVO> findByBidstaAndMem(Integer bidstaid, Integer memid) {
+		return repository.findByBidstaidAndMemid(bidstaid, memid);
+	}
+
+	public List<ProductVO> findByBidstaAndProclass(Integer bidstaid, Integer proclassid) {
+		return repository.findByBidstaidAndProductClassVO_Proclassid(bidstaid, proclassid);
 	}
 	
 	public List<ProductVO> getAll() {
