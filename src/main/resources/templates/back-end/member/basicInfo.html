@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>基本資料</title>
+    <!-- 修改靜態資源引用 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body class="bg-light">
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main>
+        <div class="container position-relative mb-3">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 d-flex justify-content-center">
+                    <div style="width: 80%">
+                        <h5 class="mb-3" style="font-size: 24px">會員專區</h5>
+                        <a th:href="@{/member/basic-info}" class="action-button">
+                            <i class="bi bi-info-circle"></i>基本資料
+                        </a>
+                        <a th:href="@{/member/my-activities}" class="action-button">
+                            <i class="bi bi-calendar2-event"></i>我的活動
+                        </a>
+                        <a th:href="@{/member/ongoing-bids}" class="action-button">
+                            <i class="bi bi-cash-coin"></i>參加中競標
+                        </a>
+                        <a th:href="@{/member/winning-bids}" class="action-button">
+                            <i class="bi bi-bag-check"></i>得標清單
+                        </a>
+                        <a th:href="@{/member/appointment-records}" class="action-button">
+                            <i class="bi bi-journal-check"></i>場地預約紀錄
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    <div class="row mb-4">
+                        <div class="col-12 d-flex justify-content-center">
+                            <div class="register-container position-relative" style="width: 56%">
+                                <!-- 頭貼上傳區塊 -->
+                                <div class="photo position-absolute top-0 mt-2 me-2">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="rounded-circle overflow-hidden mb-2"
+                                            style="width: 120px; height: 120px; border: 2px solid #ddd;">
+                                            <img th:src="${member.avatarUrl != null ? member.avatarUrl : '/images/default-avatar.png'}"
+                                                alt="會員頭像" class="w-100 h-100 object-fit-cover" />
+                                        </div>
+                                        <form id="avatarForm" th:action="@{/member/upload-avatar}" method="post" enctype="multipart/form-data">
+                                            <div class="d-flex justify-content-center">
+                                                <label class="btn btn-sm btn-outline-secondary">
+                                                    <input type="file" name="avatar" accept="image/*" style="display: none"
+                                                        onchange="document.getElementById('avatarForm').submit();" />
+                                                    上傳頭像
+                                                </label>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <h2 class="register-title mb-3">基本資料</h2>
+                                <!-- 錯誤訊息顯示 -->
+                                <div th:if="${message}" class="alert" th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}" role="alert">
+                                    <p th:text="${message}"></p>
+                                </div>
+
+                                <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">
+                                    <div class="mb-3">
+                                        <label for="id" class="form-label">使用者帳號</label>
+                                        <input type="text" class="form-control" id="id" th:value="*{memberId}" disabled />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">姓名</label>
+                                        <input type="text" class="form-control" id="name" th:field="*{name}" required />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}" required />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">手機</label>
+                                        <input type="tel" class="form-control" id="phone" th:field="*{phone}" 
+                                               pattern="[0-9]{10}" required />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="birthday" class="form-label">生日</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="birthday" 
+                                                   th:field="*{birthday}" readonly required />
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar"></i>
+                                            </span>
+                                        </div>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">地址</label>
+                                        <input type="text" class="form-control" id="address" th:field="*{address}" required />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">密碼重設</label>
+                                        <input type="password" class="form-control" id="password" th:field="*{password}" />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="confirmPassword" class="form-label">確認密碼</label>
+                                        <input type="password" class="form-control" id="confirmPassword" 
+                                               th:field="*{confirmPassword}" />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" 
+                                             th:errors="*{confirmPassword}"></div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary w-25">儲存</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <!-- Scripts -->
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js}"></script>
+    <script th:src="@{/js/basic-info.js}"></script>
+</body>
+</html>
