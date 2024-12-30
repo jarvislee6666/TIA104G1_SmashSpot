@@ -97,7 +97,7 @@
 <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
 <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-						<form id="venueForm" class="venue-form"
+						<form id="venue-form" class="venue-form"
 							th:action="@{/stdm/insert}" method="post"
 							th:object="${stadiumVO}" enctype="multipart/form-data">
 							<div class="mb-4">
@@ -165,7 +165,7 @@
 										class="form-control"
 										th:class="${#fields.hasErrors('stdmPic')} ? 'form-control is-invalid' : 'form-control'"
 										accept="image/png,image/jpeg,image/gif"
-										onclick="previewImage()" multiple="multiple"
+										onc="previewImage()" multiple="multiple"
 										onchange="hideContent('upFiles.errors');">
 									
 									<div id="blob_holder" class="mt-2"></div>
@@ -180,7 +180,7 @@
 									th:utext="${errorMessage}"></div>
 							</div>
 
-							<!--<div class="mb-4">
+							<div class="mb-4">
 								<label class="form-label">開館時間</label>
 								<div class="input-group">
 									<input type="number" 
@@ -204,7 +204,7 @@
 										th:if="${#fields.hasErrors('closeTime')}"
 										th:errors="*{closeTime}"></div>
 								</div>
-							</div>-->
+							</div>
 							<div>以下測試用:</div>
 							<div class="mb-4">
 								<label class="form-label">經度</label>
@@ -262,7 +262,7 @@
 
 							<div class="text-end">
 								<a th:href="@{/stdm/listAllStdm}" class="btn btn-secondary">取消</a>
-								<button type="submit" class="btn btn-primary">刊登</button>
+								<button id="submit" type="submit" class="btn btn-primary">刊登</button>
 							</div>
 						</form>
 					</div>
@@ -326,7 +326,7 @@
 									};
 									
 									reader.readAsDataURL(file);
-									document.getElementById('submit').disabled = false;
+									// document.getElementById('submit').disabled = false;
 								} else {
 									// 如果檔案類型不正確，則顯示錯誤訊息
 									document.getElementById('blob_holder').innerHTML = "<div style='text-align: left;'>"
