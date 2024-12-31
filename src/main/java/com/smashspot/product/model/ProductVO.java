@@ -24,6 +24,7 @@ public class ProductVO {
 	// 與商品分類的多對一關係
     @ManyToOne
     @JoinColumn(name = "pro_class_id", nullable = false)
+    @NotNull(message = "商品分類不能為空")
     private ProductClassVO productClassVO;
 
 	@Column(name = "bid_sta_id", nullable = false)

@@ -1,7 +1,10 @@
 package com.smashspot.product.controller;
 
+import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.smashspot.coupon.model.CouponService;
 import com.smashspot.coupon.model.CouponVO;
@@ -39,12 +43,34 @@ public class ProductController {
 	@Autowired
 	ProductClassService proClassSvc;
 	
-//	@InitBinder
-//    public void initBinder(WebDataBinder binder) {
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//        dateFormat.setLenient(false);
-//        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
-//    }
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    // 增加 MultipartFile 到 byte[] 的轉換器
+	    binder.registerCustomEditor(byte[].class, new PropertyEditorSupport() {
+	        @Override
+	        public void setAsText(String text) {}
+	        
+	        @Override
+	        public void setValue(Object value) {
+	            if (value instanceof MultipartFile) {
+	                try {
+	                    super.setValue(((MultipartFile) value).getBytes());
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    });
+	    
+	    // 保留原有的 Timestamp 轉換器
+	    binder.registerCustomEditor(Timestamp.class, new PropertyEditorSupport() {
+	        @Override
+	        public void setAsText(String text) {
+	            LocalDateTime dateTime = LocalDateTime.parse(text);
+	            setValue(Timestamp.valueOf(dateTime));
+	        }
+	    });
+	}
 
     @GetMapping("/adm/listAllProduct")
 	public String listAllProduct(Model model) {
@@ -80,33 +106,35 @@ public class ProductController {
 		return list;
 	}
 	
-	@GetMapping("addProduct")
+	@GetMapping("/client/addProduct")
 	public String addProduct(ModelMap model) {
 		ProductVO productVO = new ProductVO();
+		productVO.setMemid(2);    // 設定預設值
+	    productVO.setBidstaid(1); // 設定預設值
 		model.addAttribute("productVO", productVO);
-		return "back-end/product/addProduct";
+		return "back-end/client/product/addProduct";
 	}
 
-	@PostMapping("insertProduct")
-	public String insert(@Valid ProductVO productVO, BindingResult result, ModelMap model) throws IOException {
-		
-//		if (proSvc.findByCopcode(couponVO.getCopcode()) != null) {
-//	        result.rejectValue("copcode", "error.couponVO", "此 優惠碼 已存在");
-//	    }
+	@PostMapping("/client/insertProduct")
+	public String insert(@Valid @ModelAttribute ProductVO productVO, BindingResult result, @RequestParam("propic") MultipartFile file, ModelMap model) throws IOException {
+        
+        if (!file.isEmpty()) {
+	        productVO.setPropic(file.getBytes());
+	    }
 	    
 		if (result.hasErrors()) {
-	        return "back-end/product/addProduct";
+			System.out.println("Validation errors: " + result.getAllErrors());
+	        return "back-end/client/product/addProduct";
 	    }
+		
 	    
 	    try {
 	    	proSvc.addProduct(productVO);
-	    	List<ProductVO> list = proSvc.findByBidsta(1); // 先模擬跳轉前台首頁，實際上應該要在賣家後台顯示其上架的產品
-			model.addAttribute("productListDataING", list);
-	        model.addAttribute("success", "新增成功");
-	        return "redirect:/product/listAllProductING";
+	    	return "redirect:/client/listAllProductING";
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        model.addAttribute("error", "新增失敗: " + e.getMessage());
-	        return "back-end/product/addProduct";
+	        return "back-end/client/product/addProduct";
 	    }
 	}
 
