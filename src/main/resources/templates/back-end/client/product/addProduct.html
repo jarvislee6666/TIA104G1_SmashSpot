@@ -1,10 +1,179 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<title>賣家商品刊登</title>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
 
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+
+/* Mobile-specific adjustments */
+      @media (max-width: 576px) {
+        .navbar-brand img {
+          width: 50px;
+          height: 50px;
+        }
+      }
+      .product-link {
+            color: #333;
+            text-decoration: none;
+        }
+        .product-link:hover {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .btn-toolbar .btn {
+            padding: .25rem .5rem;
+        }
+
+        .btn-toolbar .btn i {
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        @media (max-width: 768px) {
+        .btn-toolbar {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+    }
+
+</style>
+
+</head>
+<body class="bg-light">
+
+<div th:replace="back-end/client/Header :: header"></div>
+
+    <main class="mb-3">
+      <div class="container position-relative mb-3">
+        <div class="row">
+          <!-- Sidebar -->
+          <div class="col-md-3 d-flex justify-content-center" th:fragment="sidebar">
+            <div style="width: 80%">
+              <aside>
+                <h5 class="mb-3" style="font-size: 24px">賣家專區</h5>
+
+                <a href="#" class="action-button">
+                  <i class="bi bi-list-ul"></i>競標商品列表
+                </a>
+                <a href="#" class="action-button">
+                  <i class="bi bi-clipboard"></i>競標訂單管理
+                </a>
+                <a href="#" class="action-button">
+                  <i class="bi bi-graph-up-arrow"></i>營業成效統計
+                </a>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <form class="bg-white p-4 rounded shadow-sm" th:action="@{/client/insertProduct}" method="post" th:object="${productVO}" enctype="multipart/form-data">
+			    <!-- 商品名稱 -->
+			    <div class="mb-3">
+			        <label for="proname" class="form-label">商品名稱</label>
+			        <input type="text" class="form-control" id="proname" name="proname" th:field="*{proname}">
+			        <span class="text-danger" th:if="${#fields.hasErrors('proname')}" th:errors="*{proname}"></span>
+			    </div>
+			
+			    <!-- 競標時間 -->
+			    <div class="mb-3">
+			        <label for="endtime" class="form-label">競標時間</label>
+			        <input type="datetime-local" class="form-control" id="endtime" name="endtime" th:field="*{endtime}">
+			        <span class="text-danger" th:if="${#fields.hasErrors('endtime')}" th:errors="*{endtime}"></span>
+			    </div>
+			
+			    <!-- 底標價設定 -->
+			    <div class="mb-3">
+			        <label for="baseprice" class="form-label">底標價設定</label>
+			        <input type="number" class="form-control" id="baseprice" name="baseprice" th:field="*{baseprice}">
+			        <span class="text-danger" th:if="${#fields.hasErrors('baseprice')}" th:errors="*{baseprice}"></span>
+			    </div>
+			
+			    <!-- 直購價設定 -->
+			    <div class="mb-3">
+			        <label for="purprice" class="form-label">直購價設定</label>
+			        <input type="number" class="form-control" id="purprice" name="purprice" th:field="*{purprice}">
+			        <span class="text-danger" th:if="${#fields.hasErrors('purprice')}" th:errors="*{purprice}"></span>
+			    </div>
+			
+			    <!-- 最低增額 -->
+			    <div class="mb-3">
+			        <label for="minincr" class="form-label">最低增額</label>
+			        <input type="number" class="form-control" id="minincr" name="minincr" th:field="*{minincr}">
+			        <span class="text-danger" th:if="${#fields.hasErrors('minincr')}" th:errors="*{minincr}"></span>
+			    </div>
+			
+			    <!-- 商品類別 -->
+			    <div class="mb-3">
+			        <label for="productClassVO" class="form-label">商品類別</label>
+			        <select class="form-select" id="productClassVO" name="productClassVO" th:field="*{productClassVO}">
+			            <option value="">請選擇商品類別</option>
+			            <option th:each="proClass : ${proClassList}" 
+			                    th:value="${proClass.proclassid}" 
+			                    th:text="${proClass.catename}">
+			            </option>
+			        </select>
+			        <span class="text-danger" th:if="${#fields.hasErrors('productClassVO')}" th:errors="*{productClassVO}"></span>
+			    </div>
+			
+			    <!-- 商品圖片上傳 -->
+			    <div class="mb-3">
+			        <label for="propic" class="form-label">商品圖片上傳</label>
+			        <input type="file" class="form-control" id="propic" name="propic">
+			    </div>
+			
+			    <!-- 商品描述 -->
+			    <div class="mb-3">
+			        <label for="intro" class="form-label">商品描述</label>
+			        <textarea class="form-control" id="intro" name="intro" rows="5" th:field="*{intro}"></textarea>
+			        <span class="text-danger" th:if="${#fields.hasErrors('intro')}" th:errors="*{intro}"></span>
+			    </div>
+			    
+			    <input type="hidden" th:field="*{memid}">
+				<input type="hidden" th:field="*{bidstaid}">
+			
+			    <div class="d-flex justify-content-end gap-2">
+			        <a href="/client/listAllProductING" class="btn btn-secondary">返回商品列表</a>
+			        <button type="submit" class="btn btn-primary">送出</button>
+			    </div>
+			</form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+<div th:replace="back-end/client/Footer :: footer"></div>
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+
+</script>
 </body>
 </html>
