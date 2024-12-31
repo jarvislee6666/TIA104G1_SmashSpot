@@ -34,6 +34,12 @@ public class ProductClassVO {
 	@OrderBy("proid asc")
 	private Set<ProductVO> products = new HashSet<ProductVO>();
 
+	public long getActiveProductCount() {
+        return products.stream()
+                      .filter(product -> product.getBidstaid() == 1)
+                      .count();
+    }
+	
 	public Integer getProclassid() {
 		return proclassid;
 	}
