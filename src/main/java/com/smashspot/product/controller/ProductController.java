@@ -20,6 +20,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,11 +28,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.smashspot.coupon.model.CouponService;
 import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.product.model.*;
+import com.smashspot.productclass.model.ProductClassService;
+import com.smashspot.productclass.model.ProductClassVO;
 
 @Controller
 public class ProductController {
 	@Autowired
 	ProductService proSvc;
+	
+	@Autowired
+	ProductClassService proClassSvc;
 	
 //	@InitBinder
 //    public void initBinder(WebDataBinder binder) {
@@ -60,7 +66,17 @@ public class ProductController {
     @ModelAttribute("productListDataING")  // 買家首頁 迴圈顯示資料用
 	protected List<ProductVO> referenceListDataING(Model model) {
 		
-    	List<ProductVO> list = proSvc.findByBidsta(1);
+    	List<ProductVO> allActiveProducts = proSvc.findByBidsta(1);
+	    model.addAttribute("totalActiveProducts", allActiveProducts.size()); // 每次都可正確顯示全部商品數量
+	    
+    	List<ProductVO> list = proSvc.findByBidsta(1); // 根據所選分類更新頁面
+		return list;
+	}
+    
+    @ModelAttribute("proClassList")  // 買家首頁 迴圈顯示資料用
+	protected List<ProductClassVO> referenceProClassList(Model model) {
+		
+    	List<ProductClassVO> list = proClassSvc.getAll();
 		return list;
 	}
 	
@@ -122,6 +138,14 @@ public class ProductController {
 		model.addAttribute("success", "- (下架成功)");
 		return "back-end/adm/listAllProduct"; //後台手動下架
 	}
+	
+	@GetMapping("/client/listProductByClass/{proclassid}")
+	public String listProductByClass(@PathVariable Integer proclassid, Model model) {
+	    List<ProductVO> list = proSvc.findByBidstaAndProclass(1, proclassid);
+	    model.addAttribute("productListDataING", list);
+	    return "back-end/client/product/listAllProductING";
+	}
+	
 
 	public BindingResult removeFieldError(CouponVO couponVO, BindingResult result, String removedFieldname) {
 		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()

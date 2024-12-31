@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>競標商品瀏覽</title>
 <link
   href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
   rel="stylesheet"
@@ -13,35 +13,467 @@
 />
 <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+
+	.action-button {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 8px;
+        border: 1px solid #0d6efd;
+        border-radius: 4px;
+        background: white;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+
+      .action-button:hover {
+        background-color: #f8f9fa;
+        color: #0d6efd;
+        text-decoration: none;
+      }
+
+      @media (max-width: 768px) {
+        .footer-container {
+          flex-direction: column;
+          text-align: center;
+        }
+        .footer-contact {
+          margin-left: 0;
+          margin-top: 15px;
+        }
+        .social-icons {
+          margin-top: 15px;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .nav-container {
+          padding: 10px 15px;
+        }
+
+        .navbar {
+          position: relative;
+        }
+
+        .nav-list {
+          flex-direction: column;
+          align-items: flex-start;
+          display: none; /* Hidden by default */
+          width: 100%;
+          background-color: white;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+        }
+
+        .navbar-toggler {
+          position: absolute;
+          top: 50%;
+          right: 15px;
+          transform: translateY(-50%);
+          display: block;
+          border: none;
+          background: none;
+          z-index: 1001;
+        }
+
+        .nav-item {
+          width: 100%;
+          padding: 10px 15px;
+          border-bottom: 1px solid #e6e6e6;
+        }
+
+        .nav-list.show {
+          display: flex;
+        }
+
+        .nav-link {
+          display: block;
+          width: 100%;
+        }
+      }
+
+      /* Mobile-specific adjustments */
+      @media (max-width: 576px) {
+        .navbar-brand img {
+          width: 50px;
+          height: 50px;
+        }
+      }
+      .product-image-container {
+        position: relative;
+        width: 100%;
+        padding-top: 75%;
+        background-color: #f8f9fa;
+        overflow: hidden;
+      }
+
+      .product-image-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+      }
+
+      .image-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+      }
+
+      .favorite-btn {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        z-index: 1;
+      }
+
+      .favorite-btn.active {
+        color: #dc3545;
+      }
+
+      .category-badge {
+        position: absolute;
+        left: 1rem;
+        top: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        z-index: 1;
+      }
+
+      .time-remaining.urgent {
+        color: #dc3545;
+      }
+
+      .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .price-badge {
+        background-color: #0d6efd;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+      }
+
+
+    /* 保留原有的 action-button 樣式並添加新的樣式 */
+    .action-button {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #0d6efd;
+      border-radius: 4px;
+      background: white;
+      color: #0d6efd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .action-button:hover {
+      background-color: #f8f9fa;
+      color: #0d6efd;
+      text-decoration: none;
+    }
+
+    /* 為收闔按鈕添加過渡效果 */
+    .bi-chevron-down {
+      transition: transform 0.3s ease;
+    }
+
+    [aria-expanded="true"] .bi-chevron-down {
+      transform: rotate(180deg);
+    }
+
+    /* RWD 調整 */
+    @media (max-width: 768px) {
+      .col-md-3 {
+        margin-bottom: 20px;
+      }
+
+      .list-group {
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .col-md-3 > div {
+        width: 100% !important;
+      }
+    }
+
+</style>
+
 </head>
-<body>
+<body class="bg-light">
 
 <div th:replace="back-end/client/Header :: header"></div>
 
-<main>
+    <main>
+      <div class="container position-relative mb-3">
+        <div class="row">
+          <!-- Sidebar -->
+          <div class="col-md-3 d-flex justify-content-center" th:fragment="sidebar">
+            <div style="width: 80%">
+              <aside>
+                <h5 class="mb-3" style="font-size: 24px">競標專區</h5>
 
-<div>1</div>
-<div>2</div>
-<div>3</div>
-<div>4</div>
-<div>5</div>
-<div>6</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
-<div>7</div>
+                <button class="action-button"  type="button" data-bs-toggle="collapse"
+                data-bs-target="#categoryList"  aria-expanded="false"
+                aria-controls="categoryList">
+                
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="flex-grow-1 text-center d-flex justify-content-center align-items-center">
+                    <i class="bi bi-list-ul me-2"></i>商品一覽
+                  </div>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+                
+              	</button>
 
-</main>
+              <!-- 收闔的類別清單 -->
+              <div class="collapse" id="categoryList">
+                <div class="list-group mb-3">
+                <a 
+					  th:href="@{/client/listAllProductING}"
+					  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+					  onclick="javascript:event.preventDefault(); window.location.href='/client/listAllProductING';"	
+					>
+					  <span>全部商品</span>
+					  <span class="badge bg-primary rounded-pill" 
+					        th:text="${totalActiveProducts}">
+					  </span>
+				</a>
+                <th:block th:each="productClassVO : ${proClassList}">
+                  <a 
+					  th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid})}"
+					  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+					>
+					  <span th:text="${productClassVO.catename}"></span>
+					  <span class="badge bg-primary rounded-pill" 
+					        th:text="${productClassVO.activeProductCount}">
+					  </span>
+				  </a>
+                 </th:block>
+                </div>
+              </div>
+                
+                <a href=".#" class="action-button">
+                  <i class="bi bi-cash-coin"></i>參加中競標
+                </a>
+                <a href="#" class="action-button">
+                  <i class="bi bi-bag-heart"></i>收藏清單
+                </a>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="mb-3" style="font-size: 24px">商品一覽</h5>
+                <div
+                  class="d-flex flex-wrap gap-2 justify-content-between align-items-center"
+                >
+                  <div class="d-flex gap-2 flex-grow-1">
+                    <input
+                      type="search"
+                      class="form-control"
+                      placeholder="搜尋商品..."
+                      style="max-width: 250px"
+                    />
+                    <select class="form-select" style="max-width: 150px">
+                      <option value="最新上架">最新上架</option>
+                      <option value="即將結標">即將結標</option>
+                    </select>
+                  </div>
+                  <span class="text-muted">共 <span th:text="${productListDataING.size()}"></span> 件商品</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            
+              <!-- Product Card 1 -->
+              <th:block th:each="productVO : ${productListDataING}">
+              <div class="col" th:attr="data-start-time=${productVO.prostarttime}">
+                <div class="card h-100">
+                  <div class="product-image-container">
+                    <img
+                      src="/api/placeholder/400/320"
+                      alt="YONEX ASTROX 88D PRO"
+                      loading="lazy"
+                    />
+                    <span class="category-badge">球拍</span>
+                    <button class="favorite-btn">
+                      <i class="bi bi-heart-fill"></i>
+                    </button>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title" th:text="${productVO.proname}"></h5>
+                    <div class="mb-2">
+                      <span class="price-badge">目前最高價</span>
+                       <span class="ms-2 fw-bold text-primary">$ <th:block th:text="${productVO.maxprice}"></th:block></span>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <span class="time-remaining urgent">
+                        <i class="bi bi-clock me-1"></i>
+                        <span th:with="endDateTime=${productVO.endtime.toLocalDateTime()}"
+			                th:text="${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).isNegative()} ? '競標已結束' : 
+			                        ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toDays()} + '天 ' + 
+			                        ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toHoursPart()} + '小時 ' + 
+			                        ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toMinutesPart()} + '分鐘'">
+						</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="card-footer bg-transparent border-top-0">
+                    <button
+                      onclick=""
+                      type="button"
+                      class="btn btn-primary btn-lg w-100 mt-3"
+                    >
+                      <i class="bi bi-hammer"></i> 立即競標
+                    </button>
+                  </div>
+                </div>
+              </div>
+              </th:block>
+              
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-4">
+              <ul class="pagination justify-content-center">
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </main>
+
 
 <div th:replace="back-end/client/Footer :: footer"></div>
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // 監聽收闔狀態變化
+    const categoryList = document.getElementById("categoryList");
+    categoryList.addEventListener("show.bs.collapse", function () {
+      const button = document.querySelector(
+        '[data-bs-target="#categoryList"]'
+      );
+      button.classList.add("active");
+    });
+
+    categoryList.addEventListener("hide.bs.collapse", function () {
+      const button = document.querySelector(
+        '[data-bs-target="#categoryList"]'
+      );
+      button.classList.remove("active");
+    });
+    
+    if (window.location.pathname.includes('/listProductByClass/') || 
+    	    window.location.pathname.includes('/listAllProductING')) {
+    	    const categoryList = document.getElementById("categoryList");
+    	    const bootstrapCollapse = new bootstrap.Collapse(categoryList, {
+    	      toggle: false
+    	    });
+    	    bootstrapCollapse.show();
+    	}
+    
+ 	// 根據所選時間需求排序
+    const sortSelect = document.querySelector('.form-select');
+    sortSelect.addEventListener('change', function() {
+        const products = Array.from(document.querySelectorAll('.col')); 
+        const sortBy = this.value;
+        
+        products.sort((a, b) => {
+            if (sortBy === '最新上架') {
+                const startTimeA = new Date(a.getAttribute('data-start-time'));
+                const startTimeB = new Date(b.getAttribute('data-start-time'));
+                return startTimeB - startTimeA;
+            } else {
+                // 解析時間文字並轉換為分鐘數
+                const timeA = a.querySelector('.time-remaining span').textContent;
+                const timeB = b.querySelector('.time-remaining span').textContent;
+                
+                if (timeA === '競標已結束') return 1;
+                if (timeB === '競標已結束') return -1;
+                
+                const minutesA = parseTimeToMinutes(timeA);
+                const minutesB = parseTimeToMinutes(timeB);
+                return minutesA - minutesB;
+            }
+        });
+        
+        const container = document.querySelector('.row.row-cols-1');
+        container.innerHTML = '';
+        products.forEach(product => container.appendChild(product));
+    });
+
+    function parseTimeToMinutes(timeText) {
+        const parts = timeText.split(' ');
+        const days = parseInt(parts[0]) || 0;
+        const hours = parseInt(parts[2]) || 0;
+        const minutes = parseInt(parts[4]) || 0;
+        return days * 24 * 60 + hours * 60 + minutes;
+    }
+  });
+</script>
 </body>
 </html>
