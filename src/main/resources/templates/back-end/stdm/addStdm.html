@@ -97,7 +97,7 @@
 <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
 <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-						<form id="venueForm" class="venue-form"
+						<form id="venue-form" class="venue-form"
 							th:action="@{/stdm/insert}" method="post"
 							th:object="${stadiumVO}" enctype="multipart/form-data">
 							<div class="mb-4">

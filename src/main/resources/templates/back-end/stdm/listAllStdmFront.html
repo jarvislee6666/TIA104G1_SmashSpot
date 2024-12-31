@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>所有場館資料 - listAllStdm.html</title>
+<title>場館一覽 - listAllStdmFront.html</title>
 <head th:insert="~{/back-end/stdm/included-fragment}"></head>
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -66,41 +66,45 @@
 
                 <!-- 修改後的右側內容 -->
                 <div class="col-md-9">
-                    <div class="search-section mb-4">
-                        <h5 class="section-title mb-3">球場預覽</h5>
-                        <div class="row g-3 align-items-center">
-                            <div class="col-md-3">
-                                <input type="search" class="form-control" placeholder="搜尋球館...">
-                            </div>
-                            <div class="col-md-3">
-                                <input type="date" class="form-control" placeholder="請選擇預約日期">
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-select">
-                                    <option selected disabled>地區選擇</option>
-                                    <option value="1">台北市</option>
-                                    <option value="2">新北市</option>
-                                    <option value="3">基隆市</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-primary w-100">
-                                    查詢
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+					<div class="search-section mb-4">
+						<h5 class="section-title mb-3">場館一覽</h5>
+						<form th:action="@{/stadium/listAllStadium}" method="get">
+							<div class="search-item">
+								<label for="stdmName" style="margin-right: 5px;">場館名稱：</label> 
+								<input
+									type="search" id="stdmName" name="stdmName"
+									th:value="${param.stdmName}"
+									style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
+							</div>
+							<div class="search-item">
+								<label for="locationVO" style="margin-right: 5px;">場館地區：</label>
+								<select id="locationVO" name="locationVO"
+									style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
+									<option value="">請選擇地區</option>
+									<option th:each="location : ${locMapData}"
+											th:value="${location.key}" 
+											th:text="${location.value}"
+											th:selected="${param.locationVO == location.key}" />
+								</select>
+							</div>
+							<div class="col-md-2">
+								<button type="submit" class="btn btn-primary w-100">查詢
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
 
                     <div class="row g-4">
                         <!-- 場地卡片 -->
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-4" th:each="stadiumVO : ${stdmListData}">
                             <div class="venue-card">
                                 <div class="venue-image-placeholder">
                                     預留圖片區塊
                                 </div>
                                 <div class="p-3">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="mb-0">飆汗羽球館</h6>
+                                        <h6 class="mb-0" th:text="${stadiumVO.stdmName}"> </h6>
                                         <i class="bi bi-heart heart-icon"></i>
                                     </div>
                                     <div class="star-rating mb-2">
