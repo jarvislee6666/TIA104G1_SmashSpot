@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import com.smashspot.coupon.model.CouponService;
 import com.smashspot.coupon.model.CouponVO;
@@ -81,6 +83,18 @@ public class ProductController {
 	public String listAllProductING(Model model) {
 		return "back-end/client/product/listAllProductING";
 	}
+    
+    @GetMapping("/client/memProductList")
+	public String memProductList(Model model) {
+		return "back-end/client/product/memProductList";
+	}
+    
+    @ModelAttribute("memProductListData")  // 賣家後台 迴圈顯示資料用
+    protected List<ProductVO> referenceMemProductListData(Model model) {
+        Integer memid = 2; // 暫時模擬會員ID
+        List<ProductVO> list = proSvc.findMem(memid);
+        return list;
+    }
     
     @ModelAttribute("productListData")  // 管理員後台 迴圈顯示資料用
 	protected List<ProductVO> referenceListData(Model model) {
@@ -185,5 +199,18 @@ public class ProductController {
 		}
 		return result;
 	}
+	
+	@GetMapping("/product/image/{proid}")
+	public ResponseEntity<byte[]> getProductImage(@PathVariable Integer proid) {
+	    ProductVO productVO = proSvc.getOneProduct(proid);
+	    if (productVO != null && productVO.getPropic() != null) {
+	        return ResponseEntity.ok()
+	                .contentType(MediaType.IMAGE_JPEG)
+	                .body(productVO.getPropic());
+	    }
+	    return ResponseEntity.notFound().build();
+	}
+	
+	
 
 }
