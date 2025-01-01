@@ -12,16 +12,25 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
       rel="stylesheet"
     />
+    <style>
+    .dashboard:hover{
+    	background-color:white;
+    	color:black;
+    }
+    </style>
   </head>
   <body>
     <footer th:fragment="footer">
       <div class="footer-container">
         <div class="d-flex align-items-center">
           <img th:src="@{/css/client/logo/logo.svg}" alt="網站logo" class="footer-logo"/>
-          <div class="footer-contact">
-            <p class="footer-text">連絡電話: (02) 1234-5678</p>
+          <div class="footer-contact mt-3">
+            <p class="footer-text align-items-center">連絡電話: (02) 1234-5678</p>
             <p>
               <a href="#" class="text-decoration-none footer-text">客服專區</a>
+            </p>
+            <p class=''>
+              <a th:href="@{/adm/listAllAdm}" class="text-decoration-none dashboard">後台登入</a>
             </p>
           </div>
         </div>
