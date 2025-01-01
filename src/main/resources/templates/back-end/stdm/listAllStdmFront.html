@@ -22,7 +22,7 @@
                             <a href="#" class="nav-link">競標專區</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">場地預約</a>
+                            <a th:href="@{/stadium/listAllStadium}" class="nav-link">場地預約</a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">球友論壇</a>
@@ -46,148 +46,87 @@
     </header>
 
     <main>
-        <div class="container">
-            <div class="row">
-                <!-- 修改後的左側選單 -->
-                <div class="col-md-3 d-flex justify-content-center">
-                    <div class="side-section">
-                        <h5 class="section-title">場地預約</h5>
-                        
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary">
-                                <i class="bi bi-calendar-check me-2"></i>球場預覽
-                            </button>
-                            <button class="btn btn-outline-primary">
-                                <i class="bi bi-heart-fill me-2"></i>收藏清單
-                            </button>
+    <div class="container">
+        <div class="row">
+            <!-- 左側選單 -->
+            <div class="col-md-3">
+                <h5 class="section-title mb-4">場地預約</h5>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-primary py-2" th:href="@{/stadium/listAllStadium}">
+                        <i class="bi bi-calendar-check me-2" ></i>球場一覽
+                    </button>
+                    <button class="btn btn-outline-primary py-2">
+                        <i class="bi bi-heart me-2"></i>收藏清單
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右側內容 -->
+            <div class="col-md-9">
+                <!-- 搜尋區域 -->
+                <div class="search-section mb-4">
+                    <h5 class="section-title">球場一覽</h5>
+                    <form th:action="@{/stadium/listAllStadium}" method="get" class="search-form">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <input type="search" class="form-control" placeholder="搜尋球館..."
+                                    th:value="${param.stdmName}" name="stdmName">
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <select class="form-select" name="locationVO">
+                                    <option value="">地區選擇</option>
+                                    <option th:each="location : ${locMapData}"
+                                            th:value="${location.key}" 
+                                            th:text="${location.value}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">查詢</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 場館卡片區域 -->
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4" th:each="stadiumVO : ${stdmListData}">
+                        <div class="venue-card">
+                            <div class="venue-image-container">
+                                <img th:if="${stadiumVO.stdmPic != null}"
+                                     th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}"
+                                     alt="場館圖片" class="venue-image">
+                                <div th:unless="${stadiumVO.stdmPic != null}"
+                                     class="venue-image-placeholder">預留圖片區塊</div>
+                            </div>
+                            <div class="venue-info">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="venue-title mb-0" th:text="${stadiumVO.stdmName}"></h6>
+                                    <button class="btn-favorite">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                </div>
+                                <div class="rating-container">
+                                    <div class="star-rating">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                    </div>
+                                    <span class="rating-text">4.5 (120則評價)</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- 修改後的右側內容 -->
-                <div class="col-md-9">
-					<div class="search-section mb-4">
-						<h5 class="section-title mb-3">場館一覽</h5>
-						<form th:action="@{/stadium/listAllStadium}" method="get">
-							<div class="search-item">
-								<label for="stdmName" style="margin-right: 5px;">場館名稱：</label> 
-								<input
-									type="search" id="stdmName" name="stdmName"
-									th:value="${param.stdmName}"
-									style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
-							</div>
-							<div class="search-item">
-								<label for="locationVO" style="margin-right: 5px;">場館地區：</label>
-								<select id="locationVO" name="locationVO"
-									style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
-									<option value="">請選擇地區</option>
-									<option th:each="location : ${locMapData}"
-											th:value="${location.key}" 
-											th:text="${location.value}"
-											th:selected="${param.locationVO == location.key}" />
-								</select>
-							</div>
-							<div class="col-md-2">
-								<button type="submit" class="btn btn-primary w-100">查詢
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
 
-                    <div class="row g-4">
-                        <!-- 場地卡片 -->
-                        <div class="col-md-6 col-lg-4" th:each="stadiumVO : ${stdmListData}">
-                            <div class="venue-card">
-                                <div class="venue-image-placeholder">
-                                    預留圖片區塊
-                                </div>
-                                <div class="p-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="mb-0" th:text="${stadiumVO.stdmName}"> </h6>
-                                        <i class="bi bi-heart heart-icon"></i>
-                                    </div>
-                                    <div class="star-rating mb-2">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <small class="text-muted">4.5 (120則評價)</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 場地卡片 -->
-                        <div class="col-md-6 col-lg-4">
-                            <div class="venue-card">
-                                <!-- 預留圖片區塊 -->
-                                <div class="venue-image-placeholder">
-                                    預留圖片區塊
-                                </div>
-                                <div class="p-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="mb-0">台北羽球館</h6>
-                                        <i class="bi bi-heart heart-icon"></i>
-                                    </div>
-                                    <div class="star-rating mb-2">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <small class="text-muted">4.5 (120則評價)</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 重複的場地卡片 -->
-                        <div class="col-md-6 col-lg-4">
-                            <div class="venue-card">
-                                <div class="venue-image-placeholder">
-                                    預留圖片區塊
-                                </div>
-                                <div class="p-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="mb-0">力羽羽球館</h6>
-                                        <i class="bi bi-heart heart-icon active"></i>
-                                    </div>
-                                    <div class="star-rating mb-2">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star"></i>
-                                    </div>
-                                    <small class="text-muted">4.0 (85則評價)</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4">
-                            <div class="venue-card">
-                                <div class="venue-image-placeholder">
-                                    預留圖片區塊
-                                </div>
-                                <div class="p-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="mb-0">Tibame羽球館</h6>
-                                        <i class="bi bi-heart heart-icon"></i>
-                                    </div>
-                                    <div class="star-rating mb-2">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                    </div>
-                                    <small class="text-muted">5.0 (150則評價)</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                       
 
                     <!-- 分頁 -->
                      <nav class="mt-4">
@@ -226,19 +165,19 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 收藏按鈕點擊事件
-        document.querySelectorAll('.heart-icon').forEach(icon => {
-            icon.addEventListener('click', function() {
-                this.classList.toggle('active');
-                if(this.classList.contains('active')) {
-                    this.classList.add('bi-heart-fill');
-                    this.classList.remove('bi-heart');
-                } else {
-                    this.classList.remove('bi-heart-fill');
-                    this.classList.add('bi-heart');
-                }
-            });
+    document.querySelectorAll('.btn-favorite').forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const icon = this.querySelector('i');
+            if (this.classList.contains('active')) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            }
         });
+    });
     </script>
 </body>
 </html>
