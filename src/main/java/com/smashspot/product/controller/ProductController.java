@@ -6,7 +6,9 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -64,12 +67,19 @@ public class ProductController {
 	        }
 	    });
 	    
-	    // 保留原有的 Timestamp 轉換器
 	    binder.registerCustomEditor(Timestamp.class, new PropertyEditorSupport() {
 	        @Override
 	        public void setAsText(String text) {
-	            LocalDateTime dateTime = LocalDateTime.parse(text);
-	            setValue(Timestamp.valueOf(dateTime));
+	            try {
+	                if (text != null && !text.trim().isEmpty()) {
+	                    LocalDateTime dateTime = LocalDateTime.parse(text);
+	                    setValue(Timestamp.valueOf(dateTime));
+	                } else {
+	                    setValue(null);
+	                }
+	            } catch (Exception e) {
+	                setValue(null);
+	            }
 	        }
 	    });
 	}
@@ -91,8 +101,8 @@ public class ProductController {
     
     @ModelAttribute("memProductListData")  // 賣家後台 迴圈顯示資料用
     protected List<ProductVO> referenceMemProductListData(Model model) {
-        Integer memid = 2; // 暫時模擬會員ID
-        List<ProductVO> list = proSvc.findMem(memid);
+        model.addAttribute("memid", 3);  // 暫時模擬會員ID
+        List<ProductVO> list = proSvc.findMem((Integer) model.getAttribute("memid"));
         return list;
     }
     
@@ -123,33 +133,113 @@ public class ProductController {
 	@GetMapping("/client/addProduct")
 	public String addProduct(ModelMap model) {
 		ProductVO productVO = new ProductVO();
-		productVO.setMemid(2);    // 設定預設值
+		productVO.setMemid((Integer) model.getAttribute("memid"));    // 先寫死
 	    productVO.setBidstaid(1); // 設定預設值
 		model.addAttribute("productVO", productVO);
 		return "back-end/client/product/addProduct";
 	}
 
-	@PostMapping("/client/insertProduct")
-	public String insert(@Valid @ModelAttribute ProductVO productVO, BindingResult result, @RequestParam("propic") MultipartFile file, ModelMap model) throws IOException {
-        
-        if (!file.isEmpty()) {
-	        productVO.setPropic(file.getBytes());
+//	@PostMapping("/client/insertProduct")
+//	public String insert(@Valid @ModelAttribute ProductVO productVO, BindingResult result, @RequestParam("propic") MultipartFile file, ModelMap model) throws IOException {
+//		
+//		// 檢查結標時間是否為空
+//	    if (productVO.getEndtime() == null) {
+//	        return "back-end/client/product/addProduct";
+//	    }
+//	    
+//	    // 檢查結標時間是否在現在時間之後
+//	    if (productVO.getEndtime().before(new Timestamp(System.currentTimeMillis()))) {
+//	        result.rejectValue("endtime", "error.endtime", "結標時間必須在現在時間之後");
+//	        return "back-end/client/product/addProduct";
+//	    }
+//		
+//	    // 保存上傳的圖片
+//	    if (!file.isEmpty()) {
+//	        try {
+//	            productVO.setPropic(file.getBytes());
+//	        } catch (IOException e) {
+//	            e.printStackTrace();
+//	        }
+//	    }
+//	    
+//	    if (result.hasErrors()) {
+//	        System.out.println("Validation errors: " + result.getAllErrors());
+//	        return "back-end/client/product/addProduct";
+//	    }
+//		
+//	    
+//	    try {
+//	        proSvc.addProduct(productVO);
+//	        return "redirect:/client/memProductList";
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        model.addAttribute("error", "新增失敗: " + e.getMessage());
+//	        return "back-end/client/product/addProduct";
+//	    }
+//	}
+	
+	@PostMapping("/client/insertProduct") // 避免圖片因頁面錯誤驗證刷新而丟失，改用ajax
+	@ResponseBody  // 這個註解很重要
+	public Map<String, Object> insert(@Valid @ModelAttribute ProductVO productVO, 
+	                                BindingResult result,
+	                                @RequestParam("propic") MultipartFile file) {
+	    Map<String, Object> response = new HashMap<>();
+	    Map<String, String> errors = new HashMap<>();
+	    
+	    // 驗證結標時間
+	    if (productVO.getEndtime() == null) {
+	        errors.put("endtime", "請選擇結標時間");
+	    } else if (productVO.getEndtime().before(new Timestamp(System.currentTimeMillis()))) {
+	        errors.put("endtime", "結標時間必須在現在時間之後");
 	    }
 	    
-		if (result.hasErrors()) {
-			System.out.println("Validation errors: " + result.getAllErrors());
-	        return "back-end/client/product/addProduct";
+	    // 處理圖片上傳
+	    if (!file.isEmpty()) {
+	        try {
+	            productVO.setPropic(file.getBytes());
+	        } catch (IOException e) {
+	            errors.put("propic", "圖片上傳失敗");
+	        }
+	    } else {
+	        errors.put("propic", "請選擇圖片");
 	    }
-		
 	    
+	    // 價格比較驗證
+	    if (productVO.getBaseprice() != null && productVO.getPurprice() != null) {
+	        if (productVO.getBaseprice() >= productVO.getPurprice()) {
+	            errors.put("validPriceRange", "底標價必須小於直購價");
+	        }
+	    }
+	    
+	    // 處理其他驗證錯誤
+	    if (result.hasErrors()) {
+	        result.getFieldErrors().forEach(error -> {
+	            // 檢查是否是價格比較的錯誤
+	            if ("validPriceRange".equals(error.getField())) {
+	                errors.put("validPriceRange", error.getDefaultMessage());
+	            } else {
+	                errors.put(error.getField(), error.getDefaultMessage());
+	            }
+	        });
+	    }
+	    
+	    // 如果有任何錯誤
+	    if (!errors.isEmpty()) {
+	        response.put("success", false);
+	        response.put("errors", errors);
+	        return response;
+	    }
+	    
+	    // 嘗試保存數據
 	    try {
-	    	proSvc.addProduct(productVO);
-	    	return "redirect:/client/listAllProductING";
+	        proSvc.addProduct(productVO);
+	        response.put("success", true);
 	    } catch (Exception e) {
-	    	e.printStackTrace();
-	        model.addAttribute("error", "新增失敗: " + e.getMessage());
-	        return "back-end/client/product/addProduct";
+	        response.put("success", false);
+	        response.put("message", "新增失敗: " + e.getMessage());
 	    }
+	    
+	    return response;
 	}
 
 	@PostMapping("getOneProduct_For_Bid") // 點擊單一商品頁面
