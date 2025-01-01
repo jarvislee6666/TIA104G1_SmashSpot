@@ -93,76 +93,160 @@
 
           <!-- Main Content -->
           <div class="col-md-9">
-            <form class="bg-white p-4 rounded shadow-sm" th:action="@{/client/insertProduct}" method="post" th:object="${productVO}" enctype="multipart/form-data">
-			    <!-- 商品名稱 -->
-			    <div class="mb-3">
-			        <label for="proname" class="form-label">商品名稱</label>
-			        <input type="text" class="form-control" id="proname" name="proname" th:field="*{proname}">
-			        <span class="text-danger" th:if="${#fields.hasErrors('proname')}" th:errors="*{proname}"></span>
-			    </div>
+<!--             <form class="bg-white p-4 rounded shadow-sm" th:action="@{/client/insertProduct}" method="post" th:object="${productVO}" enctype="multipart/form-data"> -->
+<!-- 			    商品名稱 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="proname" class="form-label">商品名稱</label> -->
+<!-- 			        <input type="text" class="form-control" id="proname" name="proname" th:field="*{proname}"> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('proname')}" th:errors="*{proname}"></span> -->
+<!-- 			    </div> -->
 			
-			    <!-- 競標時間 -->
-			    <div class="mb-3">
-			        <label for="endtime" class="form-label">競標時間</label>
-			        <input type="datetime-local" class="form-control" id="endtime" name="endtime" th:field="*{endtime}">
-			        <span class="text-danger" th:if="${#fields.hasErrors('endtime')}" th:errors="*{endtime}"></span>
-			    </div>
+<!-- 			    競標時間 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="endtime" class="form-label">結標時間</label> -->
+<!-- 			        <input type="datetime-local" class="form-control" id="endtime" name="endtime" th:field="*{endtime}"> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('endtime')}" th:errors="*{endtime}"></span> -->
+<!-- 			    </div> -->
 			
-			    <!-- 底標價設定 -->
-			    <div class="mb-3">
-			        <label for="baseprice" class="form-label">底標價設定</label>
-			        <input type="number" class="form-control" id="baseprice" name="baseprice" th:field="*{baseprice}">
-			        <span class="text-danger" th:if="${#fields.hasErrors('baseprice')}" th:errors="*{baseprice}"></span>
-			    </div>
+<!-- 			    底標價設定 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="baseprice" class="form-label">底標價設定</label> -->
+<!-- 			        <input type="number" class="form-control" id="baseprice" name="baseprice" th:field="*{baseprice}"> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('baseprice')}" th:errors="*{baseprice}"></span> -->
+<!-- 			    </div> -->
 			
-			    <!-- 直購價設定 -->
-			    <div class="mb-3">
-			        <label for="purprice" class="form-label">直購價設定</label>
-			        <input type="number" class="form-control" id="purprice" name="purprice" th:field="*{purprice}">
-			        <span class="text-danger" th:if="${#fields.hasErrors('purprice')}" th:errors="*{purprice}"></span>
-			    </div>
-			
-			    <!-- 最低增額 -->
-			    <div class="mb-3">
-			        <label for="minincr" class="form-label">最低增額</label>
-			        <input type="number" class="form-control" id="minincr" name="minincr" th:field="*{minincr}">
-			        <span class="text-danger" th:if="${#fields.hasErrors('minincr')}" th:errors="*{minincr}"></span>
-			    </div>
-			
-			    <!-- 商品類別 -->
-			    <div class="mb-3">
-			        <label for="productClassVO" class="form-label">商品類別</label>
-			        <select class="form-select" id="productClassVO" name="productClassVO" th:field="*{productClassVO}">
-			            <option value="">請選擇商品類別</option>
-			            <option th:each="proClass : ${proClassList}" 
-			                    th:value="${proClass.proclassid}" 
-			                    th:text="${proClass.catename}">
-			            </option>
-			        </select>
-			        <span class="text-danger" th:if="${#fields.hasErrors('productClassVO')}" th:errors="*{productClassVO}"></span>
-			    </div>
-			
-			    <!-- 商品圖片上傳 -->
-			    <div class="mb-3">
-			        <label for="propic" class="form-label">商品圖片上傳</label>
-			        <input type="file" class="form-control" id="propic" name="propic">
-			    </div>
-			
-			    <!-- 商品描述 -->
-			    <div class="mb-3">
-			        <label for="intro" class="form-label">商品描述</label>
-			        <textarea class="form-control" id="intro" name="intro" rows="5" th:field="*{intro}"></textarea>
-			        <span class="text-danger" th:if="${#fields.hasErrors('intro')}" th:errors="*{intro}"></span>
-			    </div>
+<!-- 			    直購價設定 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="purprice" class="form-label">直購價設定</label> -->
+<!-- 			        <input type="number" class="form-control" id="purprice" name="purprice" th:field="*{purprice}"> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('purprice')}" th:errors="*{purprice}"></span> -->
+<!-- 			    </div> -->
 			    
-			    <input type="hidden" th:field="*{memid}">
-				<input type="hidden" th:field="*{bidstaid}">
+<!-- 			    價格比較的錯誤訊息 -->
+<!-- 				<div class="mb-3"> -->
+<!-- 				    <span class="text-danger" th:if="${#fields.hasErrors('validPriceRange')}" th:errors="*{validPriceRange}"></span> -->
+<!-- 				</div> -->
 			
-			    <div class="d-flex justify-content-end gap-2">
-			        <a href="/client/listAllProductING" class="btn btn-secondary">返回商品列表</a>
-			        <button type="submit" class="btn btn-primary">送出</button>
-			    </div>
-			</form>
+<!-- 			    最低增額 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="minincr" class="form-label">最低增額</label> -->
+<!-- 			        <input type="number" class="form-control" id="minincr" name="minincr" th:field="*{minincr}"> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('minincr')}" th:errors="*{minincr}"></span> -->
+<!-- 			    </div> -->
+			
+<!-- 			    商品類別 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="productClassVO" class="form-label">商品類別</label> -->
+<!-- 			        <select class="form-select" id="productClassVO" name="productClassVO" th:field="*{productClassVO}"> -->
+<!-- 			            <option value="">請選擇商品類別</option> -->
+<!-- 			            <option th:each="proClass : ${proClassList}"  -->
+<!-- 			                    th:value="${proClass.proclassid}"  -->
+<!-- 			                    th:text="${proClass.catename}"> -->
+<!-- 			            </option> -->
+<!-- 			        </select> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('productClassVO')}" th:errors="*{productClassVO}"></span> -->
+<!-- 			    </div> -->
+			
+<!-- 				商品圖片上傳 -->
+<!-- 				<div class="mb-3"> -->
+<!-- 				    <label for="propic" class="form-label">商品圖片上傳</label> -->
+<!-- 				    <input type="file" class="form-control" id="propic" name="propic"  -->
+<!-- 				           required -->
+<!-- 				           accept="image/*"> -->
+<!-- 				</div> -->
+			
+<!-- 			    商品描述 -->
+<!-- 			    <div class="mb-3"> -->
+<!-- 			        <label for="intro" class="form-label">商品描述</label> -->
+<!-- 			        <textarea class="form-control" id="intro" name="intro" rows="5" th:field="*{intro}"></textarea> -->
+<!-- 			        <span class="text-danger" th:if="${#fields.hasErrors('intro')}" th:errors="*{intro}"></span> -->
+<!-- 			    </div> -->
+			    
+<!-- 			    <input type="hidden" th:field="*{memid}"> -->
+<!-- 				<input type="hidden" th:field="*{bidstaid}"> -->
+			
+<!-- 			    <div class="d-flex justify-content-end gap-2"> -->
+<!-- 			        <a href="/client/listAllProductING" class="btn btn-secondary">返回商品列表</a> -->
+<!-- 			        <button type="submit" class="btn btn-primary">送出</button> -->
+<!-- 			    </div> -->
+<!-- 			</form> -->
+				<form id="productForm" class="bg-white p-4 rounded shadow-sm" enctype="multipart/form-data">
+				    <!-- 商品名稱 -->
+				    <div class="mb-3">
+				        <label for="proname" class="form-label">商品名稱</label>
+				        <input type="text" class="form-control" id="proname" name="proname">
+				        <span class="text-danger error-message" id="proname-error"></span>
+				    </div>
+				
+				    <!-- 競標時間 -->
+				    <div class="mb-3">
+				        <label for="endtime" class="form-label">結標時間</label>
+				        <input type="datetime-local" class="form-control" id="endtime" name="endtime" onfocus="this.showPicker()">
+				        <span class="text-danger error-message" id="endtime-error"></span>
+				    </div>
+				
+				    <!-- 底標價設定 -->
+				    <div class="mb-3">
+				        <label for="baseprice" class="form-label">底標價設定</label>
+				        <input type="number" class="form-control" id="baseprice" name="baseprice">
+				        <span class="text-danger error-message" id="baseprice-error"></span>
+				    </div>
+				
+				    <!-- 直購價設定 -->
+				    <div class="mb-3">
+				        <label for="purprice" class="form-label">直購價設定</label>
+				        <input type="number" class="form-control" id="purprice" name="purprice">
+				        <span class="text-danger error-message" id="purprice-error"></span>
+				    </div>
+				    
+				    <!-- 在直購價設定之後添加 -->
+					<div class="mb-3">
+					    <span class="text-danger error-message" id="validPriceRange-error"></span>
+					</div>
+					
+				    <!-- 最低增額 -->
+				    <div class="mb-3">
+				        <label for="minincr" class="form-label">最低增額</label>
+				        <input type="number" class="form-control" id="minincr" name="minincr">
+				        <span class="text-danger error-message" id="minincr-error"></span>
+				    </div>
+				
+				    <!-- 商品類別 -->
+				    <div class="mb-3">
+				        <label for="productClassVO" class="form-label">商品類別</label>
+				        <select class="form-select" id="productClassVO" name="productClassVO">
+				            <option value="">請選擇商品類別</option>
+				            <option th:each="proClass : ${proClassList}" 
+				                    th:value="${proClass.proclassid}" 
+				                    th:text="${proClass.catename}">
+				            </option>
+				        </select>
+				        <span class="text-danger error-message" id="productClassVO-error"></span>
+				    </div>
+				
+				    <!-- 商品圖片上傳 -->
+				    <div class="mb-3">
+				        <label for="propic" class="form-label">商品圖片上傳</label>
+				        <input type="file" class="form-control" id="propic" name="propic" required accept="image/*">
+				        <span class="text-danger error-message" id="propic-error"></span>
+				    </div>
+				
+				    <!-- 商品描述 -->
+				    <div class="mb-3">
+				        <label for="intro" class="form-label">商品描述</label>
+				        <textarea class="form-control" id="intro" name="intro" rows="5"></textarea>
+				        <span class="text-danger error-message" id="intro-error"></span>
+				    </div>
+				
+				    <!-- 隱藏欄位 -->
+				    <input type="hidden" id="memid" name="memid" th:value="${productVO.memid}">
+				    <input type="hidden" id="bidstaid" name="bidstaid" th:value="${productVO.bidstaid}">
+				
+				    <div class="d-flex justify-content-end gap-2">
+				        <a href="/client/listAllProductING" class="btn btn-secondary">返回商品列表</a>
+				        <button type="submit" class="btn btn-primary">送出</button>
+				    </div>
+				</form>
           </div>
         </div>
       </div>
@@ -173,7 +257,60 @@
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
+document.getElementById('productForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // 清除之前的錯誤訊息
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    
+    const formData = new FormData(this);
+    
+    fetch('/client/insertProduct', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 成功後導向列表頁
+            window.location.href = '/client/memProductList';
+        } else {
+            // 顯示驗證錯誤
+            if (data.errors) {
+                Object.keys(data.errors).forEach(field => {
+                    const errorElement = document.getElementById(field + '-error');
+                    if (errorElement) {
+                        errorElement.textContent = data.errors[field];
+                    }
+                });
+            }
+            // 顯示一般錯誤
+            if (data.message) {
+                alert(data.message);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('發生錯誤，請稍後再試');
+    });
+});
 
+// 添加即時驗證
+document.getElementById('baseprice').addEventListener('input', validatePrices);
+document.getElementById('purprice').addEventListener('input', validatePrices);
+
+function validatePrices() {
+    const basePrice = Number(document.getElementById('baseprice').value);
+    const purPrice = Number(document.getElementById('purprice').value);
+    const errorElement = document.getElementById('validPriceRange-error');
+    
+    if (basePrice && purPrice && basePrice >= purPrice) {
+        errorElement.textContent = '底標價必須小於直購價';
+    } else {
+        errorElement.textContent = '';
+    }
+}
 </script>
 </body>
 </html>

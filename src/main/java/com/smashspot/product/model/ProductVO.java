@@ -33,10 +33,12 @@ public class ProductVO {
 
 	@Column(name = "base_price", nullable = false)
 	@NotNull(message = "商品底價不能為空")
+	@Min(value = 1, message = "最小增額不得小於{value}")
 	private Integer baseprice;
 
 	@Column(name = "pur_price", nullable = false)
 	@NotNull(message = "商品直購價不能為空")
+	@Min(value = 1, message = "最小增額不得小於{value}")
 	private Integer purprice;
 	
 	@Column(name = "intro", nullable = false)
@@ -48,7 +50,7 @@ public class ProductVO {
 	private Timestamp prostarttime;
 	
 	@Column(name = "end_time", nullable = false)
-	@NotNull(message = "商品結束時間不能為空")
+	@NotNull(message = "請選擇商品結標時間")
 	private Timestamp endtime;
 	
 	@Column(name = "mod_time", insertable = false, updatable = false)
@@ -71,6 +73,19 @@ public class ProductVO {
 	@Column(name = "max_price")
 	private Integer maxprice; // 最高金額(競標中、結標)
 
+	
+	@AssertTrue(message = "底標價必須小於直購價")
+	private boolean isValidPriceRange() {
+	    if (baseprice != null && purprice != null) {
+	        return baseprice < purprice;
+	    }
+	    return true;
+	}
+	
+	public boolean getValidPriceRange() {
+	    return isValidPriceRange();
+	}
+	
 	public Integer getProid() {
 		return proid;
 	}

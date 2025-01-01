@@ -128,12 +128,12 @@
 			        </td>
 			        <td>待補出價者資訊</td>
 			        <td>
-			          <span th:switch="${productVO.bidstaid}">
-			            <span th:case="1" class="badge bg-success">競標中</span>
-			            <span th:case="2" class="badge bg-secondary">已結標</span>
-			            <span th:case="3" class="badge bg-danger">已下架</span>
-			          </span>
-			        </td>
+					  <span th:data-status="${productVO.bidstaid}" th:switch="${productVO.bidstaid}">
+					    <span th:case="1" class="badge bg-success">競標中</span>
+					    <span th:case="2" class="badge bg-secondary">已結標</span>
+					    <span th:case="3" class="badge bg-danger">已下架</span>
+					  </span>
+					</td>
 			
 			      </tr>
 			    </tbody>
@@ -166,22 +166,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const allRows = Array.from(tableBody.getElementsByTagName('tr'));
 
     // 搜尋和過濾功能
-    function filterProducts() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const statusValue = statusFilter.value;
+     function filterProducts() {
+     const searchTerm = searchInput.value.toLowerCase();
+     const statusValue = statusFilter.value;
 
-        allRows.forEach(row => {
-            const productName = row.querySelector('.fw-medium').textContent.toLowerCase();
-            const productStatus = row.querySelector('.badge').parentElement.getAttribute('th:switch');
-            
-            const matchesSearch = productName.includes(searchTerm);
-            const matchesStatus = statusValue === '' || productStatus === statusValue;
+     allRows.forEach(row => {
+         const productName = row.querySelector('.fw-medium').textContent.toLowerCase();
+         const productStatus = row.querySelector('[data-status]').getAttribute('data-status');
+         
+         const matchesSearch = productName.includes(searchTerm);
+         const matchesStatus = statusValue === '' || productStatus === statusValue;
 
-            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
-        });
+         row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+     });
 
-        // 更新顯示的商品數量
-        updateProductCount();
+     // 更新顯示的商品數量
+     updateProductCount();
     }
 
     // 更新顯示的商品數量
@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化狀態
     filterProducts();
+    
 });
 </script>
 </body>
