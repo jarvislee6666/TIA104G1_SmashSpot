@@ -47,7 +47,6 @@ public class StdmController {
 	        @RequestParam(required = false) String stdmName,
 	        @RequestParam(required = false) String oprSta,
 	        @RequestParam(required = false) String admname,
-	        @RequestParam(required = false) String locationVO,
 	        Model model) {
     
     Map<String, String[]> map = new HashMap<>();

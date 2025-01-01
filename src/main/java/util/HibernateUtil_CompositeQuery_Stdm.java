@@ -37,11 +37,11 @@ public class HibernateUtil_CompositeQuery_Stdm {
 	    } else if ("admname".equals(columnName)) {
 	    	predicate = builder.like(root.get("admVO").get("admname"), "%" + value + "%");
 		}
-//		else if ("locationVO".equals(columnName)) {
-//			LocationVO locationVO = new LocationVO();
-//			locationVO.setLocId(Integer.valueOf(value));
-//			predicate = builder.equal(root.get("locationVO"), locationVO);
-//		}
+		else if ("locationVO".equals(columnName)) {
+			LocationVO locationVO = new LocationVO();
+			locationVO.setLocId(Integer.valueOf(value));
+			predicate = builder.equal(root.get("locationVO"), locationVO);
+		}
 
 		return predicate;
 	}

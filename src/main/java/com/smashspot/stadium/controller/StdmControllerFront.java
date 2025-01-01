@@ -28,9 +28,7 @@ public class StdmControllerFront {
 
 	@Autowired
 	StdmService stdmSvc;
-	
-	@Autowired
-	AdmService admSvc;
+
 	
 	@GetMapping("/listAllStadium")
 	public String listAllStdm(
