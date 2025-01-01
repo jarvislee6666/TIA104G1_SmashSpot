@@ -388,12 +388,12 @@
                   </div>
                   <div class="card-footer bg-transparent border-top-0">
                     <button
-                      onclick=""
-                      type="button"
-                      class="btn btn-primary btn-lg w-100 mt-3"
-                    >
-                      <i class="bi bi-hammer"></i> 立即競標
-                    </button>
+					  th:onclick="'window.location.href=\'/client/getOneProduct/' + ${productVO.proid} + '\''"
+					  type="button"
+					  class="btn btn-primary btn-lg w-100 mt-3"
+					>
+					  <i class="bi bi-hammer"></i> 立即競標
+					</button>
                   </div>
                 </div>
               </div>
