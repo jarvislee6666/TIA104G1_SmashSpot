@@ -49,7 +49,7 @@ public class StdmService {
             ReservationTimeVO rsvVO = new ReservationTimeVO();
             rsvVO.setStadium(stdmVO);
             rsvVO.setDates(Date.valueOf(targetDay));
-            rsvVO.setBooked("xxx00000000x");
+            rsvVO.setBooked("xxxx0000000x");
             
             // 動態產生
             String rsvAvaStr = buildRsvAvaByCourtCount(stdmVO.getCourtCount());
