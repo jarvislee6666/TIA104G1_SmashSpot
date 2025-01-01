@@ -1,0 +1,252 @@
+/* 基本布局樣式 */
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	overflow-y: scroll;
+	scrollbar-gutter: stable;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background-color: #f8f9fa;
+}
+
+main {
+    margin-top: 7rem; 
+    padding: 2rem 0;
+}
+
+/* 導航欄樣式 */
+.nav-container {
+	display: flex;
+	border-bottom: 1px solid #e6e6e6;
+	padding: 15px 0;
+	background: #fff;
+	margin-bottom: 20px;
+}
+
+.navbar-brand img {
+	height: 6rem;
+	width: 6rem;
+}
+
+.nav-list {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.nav-item {
+	padding: 0 20px;
+}
+
+.nav-link {
+	color: #333;
+	text-decoration: none;
+	font-size: 16px;
+}
+
+.nav-link:hover {
+	color: #0066cc;
+}
+
+/* 頁尾樣式 */
+footer {
+	background-color: #7d7d7d;
+	padding: 30px 0;
+	flex-shrink: 0;
+}
+
+.footer-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.footer-logo {
+	height: 6rem;
+	width: 6rem;
+}
+
+.footer-text {
+	color: #e0e0e0;
+	font-size: 14px;
+}
+
+/* 場館卡片樣式 */
+.venue-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    height: 100%;
+    border: none;
+}
+
+.venue-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.venue-image-container {
+    position: relative;
+    padding-top: 66.67%; /* 保持 3:2 的圖片比例 */
+}
+
+
+.venue-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.venue-image-placeholder {
+	width: 100%;
+	height: 200px;
+	background-color: #e9ecef;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #6c757d;
+}
+
+.venue-info {
+    padding: 1.25rem;
+}
+
+.venue-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* 收藏按鈕樣式 */
+.btn-favorite {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-favorite:hover {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.btn-favorite.active i {
+	color: #dc3545;
+}
+
+/* 星級評分樣式 */
+.rating-container {
+    margin-top: 0.5rem;
+}
+
+.star-rating {
+	font-size: 0.9rem;
+	color: #ffc107;
+	margin-bottom: 0.5rem;
+}
+
+.rating-text {
+	color: #6c757d;
+	margin-left: 0.5rem;
+	font-size: 0.85rem;
+}
+
+/* 場館詳細資訊樣式 */
+.venue-details {
+	font-size: 0.9rem;
+	color: #666;
+}
+
+.venue-details i {
+	width: 20px;
+	color: #0d6efd;
+}
+
+/* 搜尋區域樣式 */
+.search-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+	font-size: 24px;
+	margin-bottom: 1rem;
+	color: #333;
+}
+
+.side-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.search-form {
+    margin-top: 1.5rem;
+}
+
+/* 搜尋表單樣式 */
+.search-item {
+	margin-bottom: 1rem;
+}
+
+.search-item label {
+	font-weight: 500;
+	margin-bottom: 0.5rem;
+	color: #333;
+}
+
+.search-item select, .search-item input {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	transition: border-color 0.2s;
+}
+
+.search-item select:focus, .search-item input:focus {
+	border-color: #0d6efd;
+	outline: none;
+	box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* 響應式設計 */
+@media ( max-width : 768px) {
+	.footer-container {
+		flex-direction: column;
+		text-align: center;
+	}
+	.side-section {
+		width: 100%;
+		margin-bottom: 1rem;
+	}
+	.venue-card {
+		margin-bottom: 1rem;
+	}
+	.search-section {
+		padding: 1rem;
+	}
+}

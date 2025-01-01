@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,20 +35,14 @@ public class StdmControllerFront {
 	@GetMapping("/listAllStadium")
 	public String listAllStdm(
 	        @RequestParam(required = false) String stdmName,
-	        @RequestParam(required = false) String oprSta,
-	        @RequestParam(required = false) String admname,
 	        @RequestParam(required = false) String locationVO,
 	        Model model) {
     
-    Map<String, String[]> map = new HashMap<>();
+    
+		
+		Map<String, String[]> map = new HashMap<>();
     if (stdmName != null && !stdmName.trim().isEmpty()) {
         map.put("stdmName", new String[]{stdmName});
-    }
-    if (oprSta != null && !oprSta.trim().isEmpty()) {
-        map.put("oprSta", new String[]{oprSta});
-    }
-    if (admname != null && !admname.trim().isEmpty()) {
-        map.put("admname", new String[]{admname});
     }
     if (locationVO != null && !locationVO.isEmpty()) {
         map.put("locationVO", new String[]{locationVO});
@@ -57,10 +56,6 @@ public class StdmControllerFront {
         stdmList = stdmSvc.getAll(map);
     }
     
-    // 確保管理員列表資料有被加載
-    if (!model.containsAttribute("admListData")) {
-        model.addAttribute("admListData", admSvc.getAll());
-    }
     
     model.addAttribute("stadiumVO", new StadiumVO());
     model.addAttribute("stdmListData", stdmList);
@@ -80,5 +75,17 @@ public class StdmControllerFront {
 		map.put(8, "新竹市");
 		map.put(9, "嘉義市");
 		return map;
+	}
+
+
+	@GetMapping("/getImage/{id}")
+	public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
+		StadiumVO stdmVO = stdmSvc.getOneStdm(id);
+		byte[] image = stdmVO.getStdmPic();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_JPEG); // 或其他適當的媒體類型
+
+		return new ResponseEntity<>(image, headers, HttpStatus.OK);
 	}
 }
