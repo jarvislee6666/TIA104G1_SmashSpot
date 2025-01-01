@@ -50,6 +50,15 @@ footer {
   margin-left: 20px;
 }
 
+.dashboard{
+  font-size: 14px;
+  color:#393939;
+}
+
+.dashboard:hover{
+  color:white;
+}
+
 .social-icons {
   display: flex;
   flex-direction: column;
