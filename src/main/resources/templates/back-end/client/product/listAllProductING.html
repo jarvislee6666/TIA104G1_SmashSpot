@@ -187,7 +187,15 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
-      .price-badge {
+      .price-badge-bid {
+        background-color: #0d6efd;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+      }
+      
+      .price-badge-buy {
         background-color: #0d6efd;
         color: white;
         padding: 0.25rem 0.5rem;
@@ -345,10 +353,10 @@
                 <div class="card h-100">
                   <div class="product-image-container">
                     <img
-                      src="/api/placeholder/400/320"
-                      alt="YONEX ASTROX 88D PRO"
-                      loading="lazy"
-                    />
+					  th:src="${'/product/image/' + productVO.proid}"
+					  th:alt="${productVO.proname}"
+					  loading="lazy"
+					/>
                     <span class="category-badge">球拍</span>
                     <button class="favorite-btn">
                       <i class="bi bi-heart-fill"></i>
@@ -357,8 +365,12 @@
                   <div class="card-body">
                     <h5 class="card-title" th:text="${productVO.proname}"></h5>
                     <div class="mb-2">
-                      <span class="price-badge">目前最高價</span>
-                       <span class="ms-2 fw-bold text-primary">$ <th:block th:text="${productVO.maxprice}"></th:block></span>
+                      <span class="badge bg-primary">目前最高價</span>
+                       <span class="ms-2 fw-bold text-primary">$ <th:block th:text="${productVO.maxprice} != null ? ${productVO.maxprice} : '暫無出價'"></th:block></span>
+                    </div>
+                    <div class="mb-2">
+                      <span class="badge bg-danger">直購價</span>
+                       <span class="ms-2 fw-bold text-primary">$ <th:block th:text="${productVO.purprice}"></th:block></span>
                     </div>
                     <div
                       class="d-flex justify-content-between align-items-center"

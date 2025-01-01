@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>賣家競標商品管理</title>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+	
+	.table img {
+    object-fit: cover;
+    }
+
+</style>
+
+</head>
+<body class="bg-light">
+
+<div th:replace="back-end/client/Header :: header"></div>
+
+    <main class="mb-3">
+      <div class="container position-relative mb-3">
+      <div
+         class="position-absolute top-0 end-0"
+         style="margin-top: 10px; margin-right: 15px; z-index: 2">
+         <a  th:href="@{/client/addProduct}" class="btn btn-primary">
+         	<i class="bi bi-plus-circle"></i> 競標商品刊登
+         </a>
+       </div>
+        <div class="row">
+          <!-- Sidebar -->
+          <div class="col-md-3 d-flex justify-content-center" th:fragment="sidebar">
+            <div style="width: 80%">
+              <aside>
+                <h5 class="mb-3" style="font-size: 24px">賣家專區</h5>
+
+                <a th:href="@{/client/memProductList}" class="action-button">
+                  <i class="bi bi-list-ul"></i>競標商品列表
+                </a>
+                <a href="#" class="action-button">
+                  <i class="bi bi-clipboard"></i>競標訂單管理
+                </a>
+                <a href="#" class="action-button">
+                  <i class="bi bi-graph-up-arrow"></i>營業成效統計
+                </a>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <!-- Search -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="mb-3" style="font-size: 24px">競標商品列表</h5>
+                <div class="d-flex gap-2">
+				  <input type="search" 
+				         class="form-control" 
+				         placeholder="搜尋商品..." 
+				         style="max-width: 250px" 
+				         id="productSearch"/>
+				  <select class="form-select" 
+				          style="max-width: 150px" 
+				          id="statusFilter">
+				    <option value="">全部商品</option>
+				    <option value="1">競標中</option>
+				    <option value="2">已結標</option>
+				    <option value="3">已下架</option>
+				  </select>
+				</div>
+              </div>
+            </div>
+            <!-- Table Content -->
+            <div class="table-responsive">
+			  <table class="table table-hover align-middle bg-white shadow-sm rounded">
+			    <thead class="bg-light">
+			      <tr>
+			        <th style="width: 5%"></th>
+			        <th style="width: 15%">商品圖片</th>
+			        <th style="width: 40%">商品資訊</th>
+			        <th style="width: 15%">目前最高價</th>
+			        <th style="width: 15%">出價者</th>
+			        <th style="width: 10%">商品狀態</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr th:each="productVO : ${memProductListData}">
+			        <td></td>
+			        <td>
+			          <!-- 使用Bootstrap的比例容器來固定圖片大小 -->
+			          <div style="width: 100px; height: 100px;" class="rounded overflow-hidden bg-light">
+			            <img th:src="${'/product/image/' + productVO.proid}"
+			                 th:alt="${productVO.proname}"
+			                 class="w-100 h-100"
+			                 style="object-fit: cover;">
+			          </div>
+			        </td>
+			        <td>
+			          <a href="#" class="text-decoration-none fw-medium mb-1 d-block" th:text="${productVO.proname}"></a>
+			          <div class="text-secondary small mb-1" th:text="${productVO.productClassVO.catename}"></div>
+			          <div class="small" th:with="endDateTime=${productVO.endtime.toLocalDateTime()}"
+			               th:classappend="${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toDays() <= 1 ? 'text-danger' : 'text-secondary'}">
+			            <i class="bi bi-clock me-1"></i>
+			            <span th:text="${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).isNegative()} ? '競標已結束' : 
+			                          '剩餘 ' + ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toDays()} + '天 ' + 
+			                          ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toHoursPart()} + '小時 ' + 
+			                          ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toMinutesPart()} + '分鐘'">
+			            </span>
+			          </div>
+			        </td>
+			        <td class="fw-medium text-primary">
+			          NT$ <span th:text="${productVO.maxprice != null ? #numbers.formatDecimal(productVO.maxprice, 1, 'COMMA', 0, 'POINT') : '暫無出價'}"></span>
+			        </td>
+			        <td>待補出價者資訊</td>
+			        <td>
+			          <span th:switch="${productVO.bidstaid}">
+			            <span th:case="1" class="badge bg-success">競標中</span>
+			            <span th:case="2" class="badge bg-secondary">已結標</span>
+			            <span th:case="3" class="badge bg-danger">已下架</span>
+			          </span>
+			        </td>
+			
+			      </tr>
+			    </tbody>
+			  </table>
+			</div>
+            <nav class="mt-2">
+              <ul class="pagination justify-content-center">
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+<div th:replace="back-end/client/Footer :: footer"></div>
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('productSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const tableBody = document.querySelector('tbody');
+    const allRows = Array.from(tableBody.getElementsByTagName('tr'));
+
+    // 搜尋和過濾功能
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+
+        allRows.forEach(row => {
+            const productName = row.querySelector('.fw-medium').textContent.toLowerCase();
+            const productStatus = row.querySelector('.badge').parentElement.getAttribute('th:switch');
+            
+            const matchesSearch = productName.includes(searchTerm);
+            const matchesStatus = statusValue === '' || productStatus === statusValue;
+
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+        });
+
+        // 更新顯示的商品數量
+        updateProductCount();
+    }
+
+    // 更新顯示的商品數量
+    function updateProductCount() {
+        const visibleRows = allRows.filter(row => row.style.display !== 'none');
+        const countDisplay = document.querySelector('.text-muted span');
+        if (countDisplay) {
+            countDisplay.textContent = visibleRows.length;
+        }
+    }
+
+    // 添加事件監聽器
+    searchInput.addEventListener('input', filterProducts);
+    statusFilter.addEventListener('change', filterProducts);
+    
+    // 初始化狀態
+    filterProducts();
+});
+</script>
+</body>
+</html>
