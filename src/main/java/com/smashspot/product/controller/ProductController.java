@@ -94,6 +94,16 @@ public class ProductController {
 		return "back-end/client/product/listAllProductING";
 	}
     
+    @GetMapping("/client/getOneProduct/{proid}")
+    public String getOneProduct(@PathVariable Integer proid, Model model) {
+        ProductVO productVO = proSvc.getOneProduct(proid);
+        model.addAttribute("productVO", productVO);
+        // 將結標時間轉換為毫秒數傳給前端
+        model.addAttribute("endTimeMillis", productVO.getEndtime().getTime());
+
+        return "back-end/client/product/getOneProduct";
+    }
+    
     @GetMapping("/client/memProductList")
 	public String memProductList(Model model) {
 		return "back-end/client/product/memProductList";
