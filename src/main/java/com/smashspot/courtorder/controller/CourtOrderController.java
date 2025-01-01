@@ -1,5 +1,8 @@
 package com.smashspot.courtorder.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,8 +24,11 @@ public class CourtOrderController {
 	 */
 	@PostMapping
 	public CourtOrderVO createOrder(@RequestBody CourtOrderVO requestOrder) {
+		System.out.println("接收到 requestOrder: " + requestOrder); 
 		// 呼叫 Service 做新增
-		CourtOrderVO saved = courtOrderSvc.createOrder(requestOrder);
+		CourtOrderVO saved = courtOrderSvc.createOrderAndUpdateReservationTime(requestOrder);
 		return saved;
 	}
+
+
 }

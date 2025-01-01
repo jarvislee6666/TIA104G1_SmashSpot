@@ -57,4 +57,7 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
    void insertTodayReservationDynamicIfNotExists(
        @Param("insertDate") Date insertDate
    );
+   
+   ReservationTimeVO findByStadium_StdmIdAndDates(Integer stdmId, Date dates);
+
 }
