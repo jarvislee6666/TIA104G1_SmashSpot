@@ -44,10 +44,6 @@
       }
 
       @media (max-width: 768px) {
-        .footer-container {
-          flex-direction: column;
-          text-align: center;
-        }
         .footer-contact {
           margin-left: 0;
           margin-top: 15px;
@@ -56,63 +52,7 @@
           margin-top: 15px;
         }
       }
-
-      @media (max-width: 992px) {
-        .nav-container {
-          padding: 10px 15px;
-        }
-
-        .navbar {
-          position: relative;
-        }
-
-        .nav-list {
-          flex-direction: column;
-          align-items: flex-start;
-          display: none; /* Hidden by default */
-          width: 100%;
-          background-color: white;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
-        }
-
-        .navbar-toggler {
-          position: absolute;
-          top: 50%;
-          right: 15px;
-          transform: translateY(-50%);
-          display: block;
-          border: none;
-          background: none;
-          z-index: 1001;
-        }
-
-        .nav-item {
-          width: 100%;
-          padding: 10px 15px;
-          border-bottom: 1px solid #e6e6e6;
-        }
-
-        .nav-list.show {
-          display: flex;
-        }
-
-        .nav-link {
-          display: block;
-          width: 100%;
-        }
-      }
-
-      /* Mobile-specific adjustments */
-      @media (max-width: 576px) {
-        .navbar-brand img {
-          width: 50px;
-          height: 50px;
-        }
-      }
+      
       .product-image-container {
         position: relative;
         width: 100%;
@@ -257,75 +197,75 @@
     	cursor: pointer;
     }
     
-/*     add */
-.product-image-container {
-  position: relative;
-  width: 100%;
-  padding-top: 100%;  /* 1:1 比例 */
-  background-color: #f8f9fa;
-  overflow: hidden;
-}
-
-.product-image-container img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.product_card:hover .product-image-container img {
-  transform: scale(1.05);
-}
-
-.category-badge {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.35rem 0.75rem;
-  border-radius: 1rem;
-  z-index: 1;
-  font-size: 0.85rem;
-}
-
-.favorite-btn {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  z-index: 1;
-}
-
-.favorite-btn:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: scale(1.1);
-}
-
-.favorite-btn.active {
-  color: #dc3545;
-}
-
-.product_card {
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.product_card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
-}
+	/*     add */
+	.product-image-container {
+	  position: relative;
+	  width: 100%;
+	  padding-top: 100%;  /* 1:1 比例 */
+	  background-color: #f8f9fa;
+	  overflow: hidden;
+	}
+	
+	.product-image-container img {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	  transition: transform 0.3s ease;
+	}
+	
+	.product_card:hover .product-image-container img {
+	  transform: scale(1.05);
+	}
+	
+	.category-badge {
+	  position: absolute;
+	  left: 1rem;
+	  top: 1rem;
+	  background: rgba(255, 255, 255, 0.9);
+	  padding: 0.35rem 0.75rem;
+	  border-radius: 1rem;
+	  z-index: 1;
+	  font-size: 0.85rem;
+	}
+	
+	.favorite-btn {
+	  position: absolute;
+	  right: 1rem;
+	  top: 1rem;
+	  background: rgba(255, 255, 255, 0.9);
+	  border: none;
+	  border-radius: 50%;
+	  width: 2.5rem;
+	  height: 2.5rem;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  cursor: pointer;
+	  transition: all 0.2s;
+	  z-index: 1;
+	}
+	
+	.favorite-btn:hover {
+	  background: rgba(255, 255, 255, 1);
+	  transform: scale(1.1);
+	}
+	
+	.favorite-btn.active {
+	  color: #dc3545;
+	}
+	
+	.product_card {
+	  cursor: pointer;
+	  transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+	
+	.product_card:hover {
+	  transform: translateY(-4px);
+	  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+	}
 
 </style>
 
