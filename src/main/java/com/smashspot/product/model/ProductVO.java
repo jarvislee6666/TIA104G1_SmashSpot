@@ -2,11 +2,13 @@ package com.smashspot.product.model;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
-
+import com.smashspot.orders.model.OrdersVO;
 import com.smashspot.productclass.model.ProductClassVO;
 
 @Entity
@@ -73,6 +75,17 @@ public class ProductVO {
 	@Column(name = "max_price")
 	private Integer maxprice; // 最高金額(競標中、結標)
 
+	@OneToMany(mappedBy = "productVO")
+	private Set<OrdersVO> orders = new HashSet<>();
+	
+	public Set<OrdersVO> getOrders() {
+	    return orders;
+	}
+
+	public void setOrders(Set<OrdersVO> orders) {
+	    this.orders = orders;
+	}
+	
 	
 	@AssertTrue(message = "底標價必須小於直購價")
 	private boolean isValidPriceRange() {
