@@ -10,9 +10,11 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.smashspot.admin.model.AdmVO;
 import com.smashspot.member.model.EmailService;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
@@ -110,7 +112,7 @@ public class MemberController {
      */
     @GetMapping("/login")
     public String showLoginPage() {
-        return "login.html";
+        return "back-end/member/login";
     }
 
     /**
@@ -118,84 +120,62 @@ public class MemberController {
      */
     @PostMapping("/login")
     public String login(@RequestParam String account, 
-                       @RequestParam String password, 
+                       @RequestParam String password,
                        HttpSession session,
-                       RedirectAttributes redirectAttributes) {
-        try {
-            MemberVO member = memberService.getRepository().findByAccount(account);
-            
-            if (member == null) {
-                redirectAttributes.addFlashAttribute("error", "帳號不存在");
-                return "login.html";
-            }
-            
-            if (!member.getPassword().equals(password)) {
-                redirectAttributes.addFlashAttribute("error", "密碼錯誤");
-                return "login.html";
-            }
-            
-            if (!member.getStatus()) {
-                redirectAttributes.addFlashAttribute("error", "帳號已被停用");
-                return "login.html";
-            }
-            
-            // 登入成功，將會員資訊存入session
-            session.setAttribute("memberId", member.getMemid());
-            
-            redirectAttributes.addFlashAttribute("message", "登入成功");
-            return "login.html";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "登入失敗: " + e.getMessage());
-            return "login.html";
+                       Model model) {
+        MemberVO mem = memberService.login(account, password);
+        if (mem != null) {
+            session.setAttribute("login", mem);
+            return "redirect:/member/basic-info";
         }
+        model.addAttribute("error", true);
+        return "back-end/member/login";
     }
 
     /**
      * 顯示會員資料頁面
      */
-    @GetMapping("/profile")
-    public String showProfile(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            // 從session取得會員ID
-            Integer memberId = (Integer) session.getAttribute("memberId");
-            
-            if (memberId == null) {
-                redirectAttributes.addFlashAttribute("error", "請先登入");
-                return "basicInfo.html";
-            }
-            
-            MemberVO member = memberService.getOneMember(memberId);
-            
-            if (member == null) {
-                redirectAttributes.addFlashAttribute("error", "找不到會員資料");
-                return "basicInfo.html";
-            }
-            
-            // 移除敏感資料
-            member.setPassword(null);
-            
-            // 將會員資料傳給view
-            model.addAttribute("member", member);
-            
-            return "basicInfo.html";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "查詢失敗: " + e.getMessage());
-            return "basicInfo.html";
+    @GetMapping("/basic-info")
+    public String showBasicInfo(HttpSession session, Model model) {
+        MemberVO member = (MemberVO) session.getAttribute("login");
+        if (member == null) {
+            return "redirect:/member/login";
         }
+        
+        model.addAttribute("memberForm", member);
+        return "back-end/member/basicInfo";
+    }
+    
+    @PostMapping("/update-info")
+    public String updateInfo(@Valid @ModelAttribute("memberForm") MemberVO memberVO,
+                            BindingResult result,
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "back-end/member/basicInfo";
+        }
+        
+        MemberVO original = memberService.getOneMember(memberVO.getMemid());
+        original.setName(memberVO.getName());
+        original.setEmail(memberVO.getEmail());
+        original.setPhone(memberVO.getPhone());
+        original.setBday(memberVO.getBday());
+        original.setAddr(memberVO.getAddr());
+        original.setChgtime(new Timestamp(System.currentTimeMillis()));
+        
+        if (memberVO.getPassword() != null && !memberVO.getPassword().isEmpty()) {
+            original.setPassword(memberVO.getPassword());
+        }
+        
+        memberService.updateMember(original);
+        session.setAttribute("login", original);
+        redirectAttributes.addFlashAttribute("message", "更新成功");
+        return "redirect:/member/basic-info";
     }
 
-    /**
-     * 會員登出處理
-     */
     @PostMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
-        try {
-            session.invalidate();
-            redirectAttributes.addFlashAttribute("message", "登出成功");
-            return "back-end/member/login";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "登出失敗: " + e.getMessage());
-            return "login.html";
-        }
-    }
+	public String logout(HttpSession session) {
+	    session.invalidate();
+	    return "redirect:/member/login";
+	}
 }

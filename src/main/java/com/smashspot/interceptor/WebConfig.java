@@ -12,6 +12,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new AdmLoginInterceptor())
                .addPathPatterns("/adm/**")
                .excludePathPatterns("/adm/login");
+        
+        registry.addInterceptor(new LoginInterceptor())
+	        .addPathPatterns("/member/basic-info")
+	        .excludePathPatterns("/member/login");
     }
     
 }

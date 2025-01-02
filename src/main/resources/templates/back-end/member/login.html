@@ -3,72 +3,132 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>會員登入</title>
     <!-- 修改靜態資源引用 -->
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/style.css}" /> <!-- 將原有的 style 移到獨立的 CSS 文件 -->
+    <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/login.css}"/>
 </head>
 <body class="bg-light">
     <!-- Header -->
-    <header th:replace="~{fragments/header :: header}"></header>
+    <header th:replace="back-end/client/Header :: header"></header>
 
-    <main>
-        <div class="container">
-            <div class="login-container">
-                <h2 class="login-title">會員登入</h2>
-                <!-- 添加 Thymeleaf 表單處理 -->
-                <form id="loginForm" th:action="@{/auth/login}" method="post" th:object="${loginForm}">
-                    <!-- 添加錯誤訊息顯示 -->
-                    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">帳號</label>
-                        <input type="text" class="form-control" id="username" th:field="*{username}" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">密碼</label>
-                        <input type="password" class="form-control" id="password" th:field="*{password}" required />
-                    </div>
-                    <div class="links-container">
-                        <a th:href="@{/auth/register}" class="register-link">沒有帳號，前往註冊</a>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">忘記密碼...</a>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-login">登入</button>
-                </form>
+      <main>
+      <div class="container">
+        <div class="login-container">
+          <h2 class="login-title">會員登入</h2>
+          <div th:if="${error}" class="alert alert-danger">帳號或密碼錯誤</div>
+          <form th:action="@{/member/login}" method="post">
+			  <div class="mb-3">
+			    <label for="account" class="form-label">帳號</label>
+			    <input type="text" class="form-control" id="account" name="account" required />
+			  </div>
+			  <div class="mb-3">
+			    <label for="password" class="form-label">密碼</label>
+			    <input type="password" class="form-control" id="password" name="password" required />
+			  </div>
+            <div class="links-container">
+              <a href="#" class="register-link">沒有帳號，前往註冊</a>
+              <a
+                href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#forgotPasswordModal"
+                >忘記密碼...</a
+              >
             </div>
+            <button type="submit" class="btn btn-primary btn-login">登入</button>
+          </form>
         </div>
+      </div>
 
-        <!-- 忘記密碼 Modal -->
-        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="forgotPasswordModalLabel">忘記密碼</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>請輸入您的會員註冊信箱，系統將發送新密碼至該信箱...</p>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" required />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" id="sendPasswordBtn">發送密碼</button>
-                    </div>
-                </div>
+      <!-- 忘記密碼 Modal -->
+      <div
+        class="modal fade"
+        id="forgotPasswordModal"
+        tabindex="-1"
+        aria-labelledby="forgotPasswordModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="forgotPasswordModalLabel">
+                忘記密碼
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
+            <div class="modal-body">
+              <p>請輸入您的會員註冊信箱，系統將發送新密碼至該信箱...</p>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  required
+                  placeholder=""
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="sendPasswordBtn"
+              >
+                發送密碼
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </main>
 
+
     <!-- Footer -->
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <footer th:replace="back-end/client/Footer :: footer"></footer>
 
     <!-- Scripts -->
-    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{/js/login.js}"></script> <!-- 將原有的 JavaScript 移到獨立的 JS 文件 -->
+    <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+	<script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.querySelector(".navbar-toggler");
+        const navList = document.querySelector(".nav-list");
+
+        toggleBtn.addEventListener("click", function () {
+          navList.classList.toggle("show");
+        });
+      });
+
+      // 忘記密碼彈窗
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          // 這裡添加登入邏輯
+          console.log("登入請求已送出");
+        });
+      </script>
 </body>
 </html>

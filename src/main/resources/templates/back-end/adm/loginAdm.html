@@ -16,7 +16,7 @@
                 <h4>管理者登入</h4>
             </div>
             <div class="card-body">
-           	  	<div th:if="${error}" class="alert alert-danger" role="alert">帳號或密碼錯誤，請重新輸入 
+           	  	<div th:if="${error}" class="alert alert-danger" role="alert">Email或密碼錯誤，請重新輸入 
     		</div>
                 <form th:action="@{/adm/login}" method="post">
                     <div class="mb-3">
