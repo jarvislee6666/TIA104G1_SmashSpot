@@ -297,27 +297,48 @@
 				        </button>
 				
 				        <!-- 收闔的類別清單 -->
-				        <div class="collapse ps-3" id="categoryList">
-				          <div class="d-flex flex-column gap-1 mt-1">
-				            <a th:href="@{/client/listAllProductING}"
-				               class="sidebar-link rounded p-2 text-decoration-none">
-				              <div class="d-flex justify-content-between align-items-center">
-				                <span>全部商品</span>
-				                <span class="badge bg-primary rounded-pill" th:text="${totalActiveProducts}"></span>
-				              </div>
-				            </a>
+<!-- 				        <div class="collapse ps-3" id="categoryList"> -->
+<!-- 				          <div class="d-flex flex-column gap-1 mt-1"> -->
+<!-- 				            <a th:href="@{/client/listAllProductING}" -->
+<!-- 				               class="sidebar-link rounded p-2 text-decoration-none"> -->
+<!-- 				              <div class="d-flex justify-content-between align-items-center"> -->
+<!-- 				                <span>全部商品</span> -->
+<!-- 				                <span class="badge bg-primary rounded-pill" th:text="${totalActiveProducts}"></span> -->
+<!-- 				              </div> -->
+<!-- 				            </a> -->
 				            
-				            <th:block th:each="productClassVO : ${proClassList}">
-				              <a th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid})}"
-				                 class="sidebar-link rounded p-2 text-decoration-none">
-				                <div class="d-flex justify-content-between align-items-center">
-				                  <span th:text="${productClassVO.catename}"></span>
-				                  <span class="badge bg-primary rounded-pill" th:text="${productClassVO.activeProductCount}"></span>
-				                </div>
-				              </a>
-				            </th:block>
-				          </div>
-				        </div>
+<!-- 				            <th:block th:each="productClassVO : ${proClassList}"> -->
+<!-- 				              <a th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid})}" -->
+<!-- 				                 class="sidebar-link rounded p-2 text-decoration-none"> -->
+<!-- 				                <div class="d-flex justify-content-between align-items-center"> -->
+<!-- 				                  <span th:text="${productClassVO.catename}"></span> -->
+<!-- 				                  <span class="badge bg-primary rounded-pill" th:text="${productClassVO.activeProductCount}"></span> -->
+<!-- 				                </div> -->
+<!-- 				              </a> -->
+<!-- 				            </th:block> -->
+<!-- 				          </div> -->
+<!-- 				        </div> -->
+							<div class="collapse ps-3" id="categoryList">
+							    <div class="d-flex flex-column gap-1 mt-1">
+							        <a th:href="@{/client/listAllProductING(sort=${currentSort})}"
+							           class="sidebar-link rounded p-2 text-decoration-none">
+							            <div class="d-flex justify-content-between align-items-center">
+							                <span>全部商品</span>
+							                <span class="badge bg-primary rounded-pill" th:text="${totalActiveProducts}"></span>
+							            </div>
+							        </a>
+							        
+							        <th:block th:each="productClassVO : ${proClassList}">
+							            <a th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid},sort=${currentSort})}"
+							               class="sidebar-link rounded p-2 text-decoration-none">
+							                <div class="d-flex justify-content-between align-items-center">
+							                    <span th:text="${productClassVO.catename}"></span>
+							                    <span class="badge bg-primary rounded-pill" th:text="${productClassVO.activeProductCount}"></span>
+							                </div>
+							            </a>
+							        </th:block>
+							    </div>
+							</div>
 				
 				        <a href=".#" class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
 				          <i class="bi bi-cash-coin"></i>
@@ -348,10 +369,27 @@
                       placeholder="搜尋商品..."
                       style="max-width: 250px"
                     />
-                    <select class="form-select" style="max-width: 150px">
-                      <option value="最新上架">最新上架</option>
-                      <option value="即將結標">即將結標</option>
-                    </select>
+<!--                     <select class="form-select" style="max-width: 150px"> -->
+<!--                       <option value="排序" disabled selected>依時間排序</option> -->
+<!--                       <option value="最新上架">最新上架</option> -->
+<!--                       <option value="即將結標">即將結標</option> -->
+<!--                     </select> -->
+					<select class="form-select" style="max-width: 150px" 
+				            onchange="window.location.href=this.value">
+				        <option value="排序" disabled>依時間排序</option>
+				        <option th:value="@{/client/listAllProductING(
+				            sort='default',
+				            proclassid=${currentProclassid})}"
+				            th:selected="${currentSort == 'default'}">預設排序</option>
+				        <option th:value="@{/client/listAllProductING(
+				            sort='latest',
+				            proclassid=${currentProclassid})}"
+				            th:selected="${currentSort == 'latest'}">最新上架</option>
+				        <option th:value="@{/client/listAllProductING(
+				            sort='endingSoon',
+				            proclassid=${currentProclassid})}"
+				            th:selected="${currentSort == 'endingSoon'}">即將結標</option>
+				    </select>
                   </div>
                   <span class="text-muted">共 <span th:text="${productListDataING.size()}"></span> 件商品</span>
                 </div>
@@ -492,44 +530,6 @@ document.addEventListener("DOMContentLoaded", function () {
     	    });
     	    bootstrapCollapse.show();
     	}
-    
- 	// 根據所選時間需求排序
-    const sortSelect = document.querySelector('.form-select');
-    sortSelect.addEventListener('change', function() {
-        const products = Array.from(document.querySelectorAll('.col')); 
-        const sortBy = this.value;
-        
-        products.sort((a, b) => {
-            if (sortBy === '最新上架') {
-                const startTimeA = new Date(a.getAttribute('data-start-time'));
-                const startTimeB = new Date(b.getAttribute('data-start-time'));
-                return startTimeB - startTimeA;
-            } else {
-                // 解析時間文字並轉換為分鐘數
-                const timeA = a.querySelector('.time-remaining span').textContent;
-                const timeB = b.querySelector('.time-remaining span').textContent;
-                
-                if (timeA === '競標已結束') return 1;
-                if (timeB === '競標已結束') return -1;
-                
-                const minutesA = parseTimeToMinutes(timeA);
-                const minutesB = parseTimeToMinutes(timeB);
-                return minutesA - minutesB;
-            }
-        });
-        
-        const container = document.querySelector('.row.row-cols-1');
-        container.innerHTML = '';
-        products.forEach(product => container.appendChild(product));
-    });
-
-    function parseTimeToMinutes(timeText) {
-        const parts = timeText.split(' ');
-        const days = parseInt(parts[0]) || 0;
-        const hours = parseInt(parts[2]) || 0;
-        const minutes = parseInt(parts[4]) || 0;
-        return days * 24 * 60 + hours * 60 + minutes;
-    }
   });
 </script>
 </body>
