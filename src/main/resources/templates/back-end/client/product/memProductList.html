@@ -26,6 +26,50 @@
     object-fit: cover;
     }
 
+
+	/* 設計方案 2：底線動畫效果 */
+	.product-link-underline {
+	  color: #2c3e50;
+	  font-size: 1rem;
+	  font-weight: 500;
+	  text-decoration: none;
+	  transition: color 0.3s ease;
+	}
+	
+	.link-text {
+	  padding-bottom: 2px;
+	}
+	
+	.link-text::after {
+	  content: '';
+	  position: absolute;
+	  width: 0;
+	  height: 2px;
+	  bottom: 0;
+	  left: 0;
+	  background-color: #0d6efd;
+	  transition: width 0.3s ease;
+	}
+	
+	.product-link-underline:hover {
+	  color: #0d6efd;
+	}
+	
+	.product-link-underline:hover .link-text::after {
+	  width: 100%;
+	}
+	
+	.bi-arrow-right {
+	  color: #6c757d;
+	  transition: transform 0.3s ease;
+	}
+	
+	.product-link-underline:hover .bi-arrow-right {
+	  transform: translateX(3px);
+	  color: #0d6efd;
+	}
+	
+
 </style>
 
 </head>
@@ -44,23 +88,33 @@
        </div>
         <div class="row">
           <!-- Sidebar -->
-          <div class="col-md-3 d-flex justify-content-center" th:fragment="sidebar">
-            <div style="width: 80%">
-              <aside>
-                <h5 class="mb-3" style="font-size: 24px">賣家專區</h5>
-
-                <a th:href="@{/client/memProductList}" class="action-button">
-                  <i class="bi bi-list-ul"></i>競標商品列表
-                </a>
-                <a href="#" class="action-button">
-                  <i class="bi bi-clipboard"></i>競標訂單管理
-                </a>
-                <a href="#" class="action-button">
-                  <i class="bi bi-graph-up-arrow"></i>營業成效統計
-                </a>
-              </aside>
-            </div>
-          </div>
+			<div class="col-md-3">
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">賣家專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/client/memProductList}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-list-ul"></i>
+			          <span>競標商品列表</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-clipboard"></i>
+			          <span>競標訂單管理</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-graph-up-arrow"></i>
+			          <span>營業成效統計</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
+			</div>
 
           <!-- Main Content -->
           <div class="col-md-9">
@@ -111,7 +165,15 @@
 			          </div>
 			        </td>
 			        <td>
-			          <a href="#" class="text-decoration-none fw-medium mb-1 d-block" th:text="${productVO.proname}"></a>
+					  <div class="mb-2">
+						  <a th:href="@{/client/getOneProduct/{proid}(proid=${productVO.proid})}"
+						     class="product-link-underline d-inline-flex align-items-center gap-2"
+						  >
+						    <span class="link-text position-relative" th:text="${productVO.proname}"></span>
+						    <i class="bi bi-arrow-right small"></i>
+						  </a>
+						</div>
+					  
 			          <div class="text-secondary small mb-1" th:text="${productVO.productClassVO.catename}"></div>
 			          <div class="small" th:with="endDateTime=${productVO.endtime.toLocalDateTime()}"
 			               th:classappend="${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toDays() <= 1 ? 'text-danger' : 'text-secondary'}">
