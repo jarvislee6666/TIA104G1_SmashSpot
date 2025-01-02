@@ -47,14 +47,40 @@
 		          <li class="nav-item">
 		            <a th:href="@{/client/memProductList}" class="nav-link px-3 py-2 rounded-2">賣家專區</a>
 		          </li>
-		          <li class="nav-item">
-		            <a href="#" class="nav-link px-3 py-2 rounded-2">
-		              <i class="bi bi-person"></i> Account
-		            </a>
-		          </li>
-		          <li class="nav-item">
-		            <a href="#" class="nav-link px-3 py-2 rounded-2">登出</a>
-		          </li>
+<!-- 		          <li class="nav-item"> -->
+<!-- 		            <a href="#" class="nav-link px-3 py-2 rounded-2"> -->
+<!-- 		              <i class="bi bi-person"></i> Account -->
+<!-- 		            </a> -->
+<!-- 		          </li> -->
+<!-- 		          <li class="nav-item"> -->
+<!-- 		            <a href="#" class="nav-link px-3 py-2 rounded-2">登出</a> -->
+<!-- 		          </li> -->
+					<!-- 修改後的版本 -->
+					<li class="nav-item">
+					  <a
+					    th:if="${session.login == null}"
+					    th:href="@{/member/login}"
+					    class="nav-link px-3 py-2 rounded-2"
+					  >
+					    <i class="bi bi-person"></i>
+					    <span>Account</span>
+					  </a>
+					  <a
+					    th:if="${session.login != null}"
+					    th:href="@{/member/basic-info}"
+					    class="nav-link px-3 py-2 rounded-2"
+					  >
+					    <i class="bi bi-person"></i>
+					    <span th:text="${session.login.name}"></span>
+					  </a>
+					</li>
+					<li class="nav-item">
+					  <form th:action="@{/member/logout}" method="post" style="margin: 0; padding: 0;">
+					    <button type="submit" class="nav-link px-3 py-2 rounded-2 w-100 text-start" style="border: none; background: none;">
+					      登出
+					    </button>
+					  </form>
+					</li>
 		        </ul>
 		      </div>
 		    </div>

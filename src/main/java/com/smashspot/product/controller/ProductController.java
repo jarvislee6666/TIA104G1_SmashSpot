@@ -90,9 +90,50 @@ public class ProductController {
 	}
     
     @GetMapping("/client/listAllProductING")
-	public String listAllProductING(Model model) {
-		return "back-end/client/product/listAllProductING";
-	}
+    public String listAllProductING(
+            @RequestParam(required = false) Integer proclassid,
+            @RequestParam(defaultValue = "default") String sort,
+            Model model) {
+        
+        List<ProductVO> list;
+        if (proclassid != null) {
+            // 如果有分類 ID，則按分類篩選
+            list = proSvc.findByBidstaAndProclass(1, proclassid);
+        } else {
+            // 否則獲取所有商品
+            list = proSvc.findByBidsta(1);
+        }
+        
+        // 根據排序參數進行排序
+        switch (sort) {
+            case "latest":
+                list.sort((a, b) -> b.getProid().compareTo(a.getProid()));
+                break;
+            case "endingSoon":
+                list.sort((a, b) -> {
+                    Timestamp now = new Timestamp(System.currentTimeMillis());
+                    boolean aEnded = a.getEndtime().before(now);
+                    boolean bEnded = b.getEndtime().before(now);
+                    
+                    if (aEnded && !bEnded) return 1;
+                    if (!aEnded && bEnded) return -1;
+                    if (aEnded && bEnded) return 0;
+                    
+                    return a.getEndtime().compareTo(b.getEndtime());
+                });
+                break;
+            default:
+                // 預設排序邏輯
+                break;
+        }
+        
+        model.addAttribute("productListDataING", list);
+        model.addAttribute("totalActiveProducts", proSvc.findByBidsta(1).size());
+        model.addAttribute("currentSort", sort);
+        model.addAttribute("currentProclassid", proclassid);
+        
+        return "back-end/client/product/listAllProductING";
+    }
     
     @GetMapping("/client/getOneProduct/{proid}")
     public String getOneProduct(@PathVariable Integer proid, Model model) {
@@ -148,45 +189,6 @@ public class ProductController {
 		model.addAttribute("productVO", productVO);
 		return "back-end/client/product/addProduct";
 	}
-
-//	@PostMapping("/client/insertProduct")
-//	public String insert(@Valid @ModelAttribute ProductVO productVO, BindingResult result, @RequestParam("propic") MultipartFile file, ModelMap model) throws IOException {
-//		
-//		// 檢查結標時間是否為空
-//	    if (productVO.getEndtime() == null) {
-//	        return "back-end/client/product/addProduct";
-//	    }
-//	    
-//	    // 檢查結標時間是否在現在時間之後
-//	    if (productVO.getEndtime().before(new Timestamp(System.currentTimeMillis()))) {
-//	        result.rejectValue("endtime", "error.endtime", "結標時間必須在現在時間之後");
-//	        return "back-end/client/product/addProduct";
-//	    }
-//		
-//	    // 保存上傳的圖片
-//	    if (!file.isEmpty()) {
-//	        try {
-//	            productVO.setPropic(file.getBytes());
-//	        } catch (IOException e) {
-//	            e.printStackTrace();
-//	        }
-//	    }
-//	    
-//	    if (result.hasErrors()) {
-//	        System.out.println("Validation errors: " + result.getAllErrors());
-//	        return "back-end/client/product/addProduct";
-//	    }
-//		
-//	    
-//	    try {
-//	        proSvc.addProduct(productVO);
-//	        return "redirect:/client/memProductList";
-//	    } catch (Exception e) {
-//	        e.printStackTrace();
-//	        model.addAttribute("error", "新增失敗: " + e.getMessage());
-//	        return "back-end/client/product/addProduct";
-//	    }
-//	}
 	
 	@PostMapping("/client/insertProduct") // 避免圖片因頁面錯誤驗證刷新而丟失，改用ajax
 	@ResponseBody  // 這個註解很重要
@@ -282,10 +284,13 @@ public class ProductController {
 	}
 	
 	@GetMapping("/client/listProductByClass/{proclassid}")
-	public String listProductByClass(@PathVariable Integer proclassid, Model model) {
-	    List<ProductVO> list = proSvc.findByBidstaAndProclass(1, proclassid);
-	    model.addAttribute("productListDataING", list);
-	    return "back-end/client/product/listAllProductING";
+	public String listProductByClass(
+	        @PathVariable Integer proclassid,
+	        @RequestParam(defaultValue = "default") String sort,
+	        Model model) {
+	    
+	    // 重定向到主列表頁面，保留分類和排序參數
+	    return "redirect:/client/listAllProductING?proclassid=" + proclassid + "&sort=" + sort;
 	}
 	
 
