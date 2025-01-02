@@ -260,7 +260,7 @@ public class StadiumVO implements java.io.Serializable {
 		this.stdmStartTime = stdmStartTime;
 	}
 
-//	// 圖片格式先以Base64處理，0205版本無下面getter/setter
+	// 圖片格式先以Base64處理，0205版本無下面getter/setter
 //	public String getStdmPicBase64() {
 //		return stdmPicBase64;
 //	}

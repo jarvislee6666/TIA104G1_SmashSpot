@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.smashspot.reservationtime.model.ReservationTimeService;
+import com.smashspot.stadium.model.StadiumVO;
+import com.smashspot.stadium.model.StdmService;
 
 @Controller
 @RequestMapping("/reservation")
@@ -22,6 +24,9 @@ public class ReservationTimeController {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
+    
+    @Autowired
+    private StdmService stdmService;
 
     @GetMapping("/week")
     public String getWeeklyReservation(
@@ -29,6 +34,10 @@ public class ReservationTimeController {
         @RequestParam(value = "week", defaultValue = "0") Integer week,
         Model model
     ) {
+        // 1) 查詢對應的場館資料
+        StadiumVO stadium = stdmService.getOneStdm(stdmId);
+        model.addAttribute("stadiumVO", stadium);
+        
         // 檢查 week 範圍
         if (week < 0) week = 0;
         if (week > 4) week = 4;

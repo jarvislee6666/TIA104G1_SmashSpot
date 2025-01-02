@@ -45,6 +45,7 @@ public class CourtOrderService {
      */
 	
     public CourtOrderVO createOrderAndUpdateReservationTime(CourtOrderVO requestOrder) {
+    	
         // 1. 先根據前端傳過來的 stadiumId, 撈出 DB 的 StadiumVO
         Integer stdmId = requestOrder.getStadium().getStdmId();
         StadiumVO stadium = stadiumRepository.findById(stdmId)
@@ -68,6 +69,16 @@ public class CourtOrderService {
             // 設到 order
             newOrder.setCourtOrderDetail(details);
         }
+
+//        if (details != null && !details.isEmpty()) {
+//            // 把每一筆 detail 都跟 order 綁定
+//            for (CourtOrderDetailVO detail : details) {
+//                // 綁定關聯
+//                detail.setCourtOrder(newOrder);
+//            }
+//            // 設到 order
+//            newOrder.setCourtOrderDetail(details);
+//        }
 
         // 4) 計算總金額 (依你規則，這裡示範: 場館價格 * 總時段數)
         int totalTimeSlots = 0;
@@ -98,7 +109,7 @@ public class CourtOrderService {
         // 逐筆 detail
         for (CourtOrderDetailVO detail : details) {
             Date ordDate = detail.getOrdDate(); // e.g. 2024-12-27
-            String ordTime = detail.getOrdTime(); // e.g. "xxx01000100x"
+            String ordTime = detail.getOrdTime(); // e.g. "xxxx1000100x"
             if (ordTime == null || ordTime.length() != 12 || !ordTime.matches("[0-1x]{12}")) {
                 throw new RuntimeException("訂單時段格式不正確: " + ordTime);
             }
