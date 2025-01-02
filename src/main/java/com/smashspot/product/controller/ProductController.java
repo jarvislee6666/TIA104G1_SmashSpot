@@ -3,18 +3,16 @@ package com.smashspot.product.controller;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -27,15 +25,14 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import com.smashspot.coupon.model.CouponService;
 import com.smashspot.coupon.model.CouponVO;
+import com.smashspot.member.model.MemberVO;
 import com.smashspot.product.model.*;
 import com.smashspot.productclass.model.ProductClassService;
 import com.smashspot.productclass.model.ProductClassVO;
@@ -151,9 +148,9 @@ public class ProductController {
 	}
     
     @ModelAttribute("memProductListData")  // 賣家後台 迴圈顯示資料用
-    protected List<ProductVO> referenceMemProductListData(Model model) {
-        model.addAttribute("memid", 3);  // 暫時模擬會員ID
-        List<ProductVO> list = proSvc.findMem((Integer) model.getAttribute("memid"));
+    protected List<ProductVO> referenceMemProductListData(Model model, HttpSession session) {
+    	MemberVO mem = (MemberVO) session.getAttribute("login");
+        List<ProductVO> list = proSvc.findMem(mem.getMemid());
         return list;
     }
     
@@ -182,10 +179,11 @@ public class ProductController {
 	}
 	
 	@GetMapping("/client/addProduct")
-	public String addProduct(ModelMap model) {
+	public String addProduct(ModelMap model, HttpSession session) {
+		MemberVO mem = (MemberVO) session.getAttribute("login");
 		ProductVO productVO = new ProductVO();
-		productVO.setMemid((Integer) model.getAttribute("memid"));    // 先寫死
-	    productVO.setBidstaid(1); // 設定預設值
+		productVO.setMemid(mem.getMemid());
+	    productVO.setBidstaid(1); // 剛上架的狀態一定是 1.上架中
 		model.addAttribute("productVO", productVO);
 		return "back-end/client/product/addProduct";
 	}
