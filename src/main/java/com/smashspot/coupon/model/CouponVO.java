@@ -2,6 +2,8 @@ package com.smashspot.coupon.model;
 
 //import java.sql.Date;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Calendar;
 
 import javax.persistence.Column;
@@ -9,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -17,6 +20,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.smashspot.orders.model.OrdersVO;
 
 @Entity // 要加上@Entity才能成為JPA的一個Entity類別
 @Table(name = "coupon") // 代表這個class是對應到資料庫的實體table
@@ -50,6 +55,17 @@ public class CouponVO implements java.io.Serializable {
 	@Max(value = 5000, message = "折扣金額不得大於{value}")
 	private Integer discount;
 
+	@OneToMany(mappedBy = "couponVO")
+	private Set<OrdersVO> orders = new HashSet<>();
+	
+	public Set<OrdersVO> getOrders() {
+	    return orders;
+	}
+
+	public void setOrders(Set<OrdersVO> orders) {
+	    this.orders = orders;
+	}
+	
 	// 用於驗證結束日期是否在兩個月內的方法
 	@AssertTrue(message = "結束日期不得超過兩個月")
 	private boolean isEndDateValid() {
