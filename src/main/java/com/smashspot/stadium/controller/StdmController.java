@@ -30,7 +30,7 @@ import com.smashspot.location.model.LocationVO;
 import com.smashspot.admin.model.AdmService;
 
 @Controller
-@RequestMapping("/stdm")
+@RequestMapping("/adm")
 public class StdmController {
 
 	@Autowired
@@ -59,9 +59,6 @@ public class StdmController {
     if (admname != null && !admname.trim().isEmpty()) {
         map.put("admname", new String[]{admname});
     }
-//    if (locationVO != null && !locationVO.isEmpty()) {
-//        map.put("locationVO", new String[]{locationVO});
-//    }
 
     
     List<StadiumVO> stdmList;
@@ -78,20 +75,12 @@ public class StdmController {
     
     model.addAttribute("stadiumVO", new StadiumVO());
     model.addAttribute("stdmListData", stdmList);
-    return "back-end/stdm/listAllStdm";
+    return "back-end/adm/listAllStdm";
 }
 
-//	
-//	@ModelAttribute("stdmListData")  // for listAllStdm.html 迴圈顯示資料用
-//	protected List<StadiumVO> referenceListData(Model model) {
-//		
-//    	List<StadiumVO> list = stdmSvc.getAll();
-//		return list;
-//	}
 	
 	@ModelAttribute("admListData")
 	protected List<AdmVO> referenceListData() {
-		// AdmService admSvc = new AdmService();
 		List<AdmVO> list = admSvc.getAll();
 		return list;
 	}
@@ -103,11 +92,11 @@ public class StdmController {
 	        model.addAttribute("stadiumVO", new StadiumVO());
 	    }
 	    
-	    return "back-end/stdm/addStdm";
+	    return "back-end/adm/addStdm";
 	}
 
 	
-	@PostMapping("/insert")
+	@PostMapping("/insertStdm")
 	public String insert(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
 			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
 
@@ -128,15 +117,15 @@ public class StdmController {
 		stdmVO.setCloseTime(22);
 		
 		if (result.hasErrors() || parts[0].isEmpty()) {
-			return "back-end/stdm/addStdm";
+			return "back-end/adm/addStdm";
 		}
 		try {
 	        stdmSvc.addStdm(stdmVO);
 	        model.addAttribute("success", "新增成功");
-	        return "redirect:/stdm/listAllStdm";
+	        return "redirect:/adm/listAllStdm";
 	    } catch (Exception e) {
 	        model.addAttribute("error", "新增失敗: " + e.getMessage());
-	        return "back-end/stdm/addStdm";
+	        return "back-end/adm/addStdm";
 	    }
 
 	}
@@ -146,19 +135,20 @@ public class StdmController {
 	public String getOne_For_Update(@RequestParam("stdmId") String stdmId, ModelMap model) {
 		StadiumVO stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmId));
 		model.addAttribute("stadiumVO", stdmVO);
-		return "back-end/stdm/update_stdm_input"; // 查詢完成後轉交update_stdm_input.html
+		return "back-end/adm/update_stdm_input"; // 查詢完成後轉交update_stdm_input.html
 	}
 
+	
 	/*
 	 * This method will be called on update_stdm_input.html form submission, handling POST request It also validates the user input
 	 */
-	@PostMapping("update")
+	@PostMapping("updateStdm")
 	public String update(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
-			@RequestParam("upFiles") MultipartFile[] parts) throws IOException {
+			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
 
 		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
 		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
-		result = removeFieldError(stdmVO, result, "upFiles");
+		result = removeFieldError(stdmVO, result, "stdmPic");
 
 		if (parts[0].isEmpty()) { // 使用者未選擇要上傳的新圖片時
 			byte[] upFiles = stdmSvc.getOneStdm(stdmVO.getStdmId()).getStdmPic();
@@ -170,7 +160,7 @@ public class StdmController {
 			}
 		}
 		if (result.hasErrors()) {
-			return "back-end/stdm/update_stdm_input";
+			return "back-end/adm/update_stdm_input";
 		}
 		/*************************** 2.開始修改資料 *****************************************/
 		stdmSvc.updateStdm(stdmVO);
@@ -179,7 +169,7 @@ public class StdmController {
 		model.addAttribute("success", "- (修改成功)");
 		stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmVO.getStdmId()));
 		model.addAttribute("stadiumVO", stdmVO);
-		return "back-end/stdm/listOneStdm"; // 修改成功後轉交listOneStdm.html
+		return "back-end/adm/listOneStdm"; // 修改成功後轉交listOneStdm.html
 	}
 
 

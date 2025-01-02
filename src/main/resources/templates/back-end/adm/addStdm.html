@@ -32,7 +32,7 @@
 					<a class="nav-link" href="#"> <i 
 						class="fas fa-store me-2"></i>商城管理
 					</a> 
-					<a class="nav-link active" th:href="@{/stdm/listAllStdm}"> <i
+					<a class="nav-link active" th:href="@{/adm/listAllStdm}"> <i
 						class="fas fa-map-marker-alt me-2"></i>場地管理
 					</a> 
 					<a class="nav-link" href="#"> <i 
@@ -69,10 +69,10 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link active" th:href="@{/stdm/addStdm}"> <i
+							<a class="nav-link active" th:href="@{/adm/addStdm}"> <i
 								class="fas fa-plus-circle me-2"></i>場館刊登
 							</a> 
-							<a class="nav-link" th:href="@{/stdm/listAllStdm}"> <i 
+							<a class="nav-link" th:href="@{/adm/listAllStdm}"> <i 
 								class="fas fa-list me-2"></i>場館刊登列表
 							</a> 
 							<a class="nav-link" href="#"> <i 
@@ -98,7 +98,7 @@
 <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
 						<form id="venue-form" class="venue-form"
-							th:action="@{/stdm/insert}" method="post"
+							th:action="@{/adm/insertStdm}" method="post"
 							th:object="${stadiumVO}" enctype="multipart/form-data">
 							<div class="mb-4">
 								<label class="form-label">場館名稱</label> 
@@ -261,7 +261,7 @@
 							</div>
 
 							<div class="text-end">
-								<a th:href="@{/stdm/listAllStdm}" class="btn btn-secondary">取消</a>
+								<a th:href="@{/adm/listAllStdm}" class="btn btn-secondary">取消</a>
 								<button id="submit" type="submit" class="btn btn-primary">刊登</button>
 							</div>
 						</form>
