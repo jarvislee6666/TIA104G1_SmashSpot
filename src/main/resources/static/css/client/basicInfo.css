@@ -1,291 +1,136 @@
 html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
-      body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-      main {
-        margin-top: 9rem;
-        flex: 1 0 auto;
-      }
+main {
+  margin-top: 9rem;
+  flex: 1 0 auto;
+}
 
-      .nav-container {
-        display: flex;
-        border-bottom: 1px solid #e6e6e6;
-        padding: 0.1rem 0;
-        background: #fff;
-      }
-      .navbar-brand img {
-        height: 6rem;
-        width: 6rem;
-      }
-      .nav-list {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
+.product-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #dee2e6;
+}
 
-      .nav-item {
-        padding: 0 20px;
-      }
+th {
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-bottom: 2px solid #dee2e6;
+}
 
-      .nav-link {
-        color: #333;
-        text-decoration: none;
-        font-size: 16px;
-      }
+td {
+  padding: 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
 
-      .nav-link:hover {
-        color: #0066cc;
-      }
+.main-title {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 16px;
+}
 
-      .product-img {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border: 1px solid #dee2e6;
-      }
+.category-container {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
 
-      th {
-        background-color: #f8f9fa;
-        padding: 12px;
-        border-bottom: 2px solid #dee2e6;
-      }
+.sub-title {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 12px;
+}
 
-      td {
-        padding: 12px;
-        vertical-align: middle;
-        border-bottom: 1px solid #dee2e6;
-      }
+category-list {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 
-      .main-title {
-        font-size: 20px;
-        color: #333;
-        margin-bottom: 16px;
-      }
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
+}
 
-      .category-container {
-        background: white;
-        border-radius: 8px;
-        padding: 16px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 16px;
-      }
+.category-item:last-child {
+  border-bottom: none;
+}
 
-      .sub-title {
-        font-size: 16px;
-        color: #666;
-        margin-bottom: 12px;
-      }
+.category-item.active {
+  background-color: #0d6efd;
+  color: white;
+}
 
-      category-list {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
+.badge-number {
+  background: #0d6efd;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 14px;
+}
 
-      .category-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        color: #333;
-        text-decoration: none;
-        border-bottom: 1px solid #f0f0f0;
-      }
+.active .badge-number {
+  background: white;
+  color: #0d6efd;
+}
 
-      .category-item:last-child {
-        border-bottom: none;
-      }
+.category-title {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 8px 4px;
+}
 
-      .category-item.active {
-        background-color: #0d6efd;
-        color: white;
-      }
+.action-button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #0d6efd;
+  border-radius: 4px;
+  background: white;
+  color: #0d6efd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
 
-      .badge-number {
-        background: #0d6efd;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 14px;
-      }
+.action-button:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+  text-decoration: none;
+}
 
-      .active .badge-number {
-        background: white;
-        color: #0d6efd;
-      }
+.input-group-text {
+  cursor: pointer;
+  background-color: #fff;
+}
 
-      .category-title {
-        font-size: 16px;
-        color: #666;
-        margin: 0 0 8px 4px;
-      }
+.form {
+  margin-top: 9rem;
+  width: 89%;
+}
 
-      .action-button {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 8px;
-        border: 1px solid #0d6efd;
-        border-radius: 4px;
-        background: white;
-        color: #0d6efd;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-decoration: none;
-      }
-
-      .action-button:hover {
-        background-color: #f8f9fa;
-        color: #0d6efd;
-        text-decoration: none;
-      }
-      footer {
-        background-color: #7d7d7d;
-        padding: 0.7rem 0;
-        flex-shrink: 0;
-      }
-      .footer-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .footer-logo {
-        height: 6rem;
-        width: 6rem;
-        object-fit: contain;
-      }
-      .footer-text {
-        color: #e0e0e0;
-        font-size: 14px;
-        text-align: center;
-      }
-      .footer-contact {
-        display: flex;
-        flex-direction: column;
-        margin-left: 20px;
-      }
-      .social-icons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .social-icons-row {
-        display: flex;
-        gap: 3rem;
-        margin-bottom: 10px;
-      }
-      .social-icons a {
-        color: #333;
-        font-size: 24px;
-        text-decoration: none;
-        transition: color 0.3s;
-      }
-      .social-icons a:hover {
-        color: #e0e0e0;
-      }
-
-      @media (max-width: 768px) {
-        .footer-container {
-          flex-direction: column;
-          text-align: center;
-        }
-        .footer-contact {
-          margin-left: 0;
-          margin-top: 15px;
-        }
-        .social-icons {
-          margin-top: 15px;
-        }
-      }
-
-      @media (max-width: 992px) {
-        .nav-container {
-          padding: 10px 15px;
-        }
-
-        .navbar {
-          position: relative;
-        }
-
-        .nav-list {
-          flex-direction: column;
-          align-items: flex-start;
-          display: none; /* Hidden by default */
-          width: 100%;
-          background-color: white;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
-        }
-
-        .navbar-toggler {
-          position: absolute;
-          top: 50%;
-          right: 15px;
-          transform: translateY(-50%);
-          display: block;
-          border: none;
-          background: none;
-          z-index: 1001;
-        }
-
-        .nav-item {
-          width: 100%;
-          padding: 10px 15px;
-          border-bottom: 1px solid #e6e6e6;
-        }
-
-        .nav-list.show {
-          display: flex;
-        }
-
-        .nav-link {
-          display: block;
-          width: 100%;
-        }
-      }
-
-      /* Mobile-specific adjustments */
-      @media (max-width: 576px) {
-        .navbar-brand img {
-          width: 50px;
-          height: 50px;
-        }
-      }
-
-      /* =========================== 以上為header、footer及全局設定 ============================== */
-      /* ======================================= 基本資料 ======================================= */
-
-      .input-group-text {
-        cursor: pointer;
-        background-color: #fff;
-      }
-
-      .form {
-        margin-top: 9rem;
-        width: 89%;
-      }
-
-      .photo {
-        right: 3rem;
-      }
+.photo {
+  right: 3rem;
+}
