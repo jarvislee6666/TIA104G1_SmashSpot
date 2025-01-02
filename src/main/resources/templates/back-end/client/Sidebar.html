@@ -19,29 +19,32 @@
       <div class="container position-relative mb-3">
         <div class="row">
           <!-- Sidebar -->
-          <div class="col-md-3 d-flex justify-content-center" th:fragment="sidebar">
-            <div style="width: 80%">
-              <aside>
-                <h5 class="mb-3" style="font-size: 24px">會員專區</h5>
-
-                <a href="./BasicInformation.html" class="action-button">
-                  <i class="bi bi-question-circle"></i>可視個別頁面需求
-                </a>
-                <a href=".#" class="action-button">
-                  <i class="bi bi-question-circle"></i>自行更換
-                </a>
-                <a href="#" class="action-button">
-                  <i class="bi bi-question-circle"></i>bootstrap icon
-                </a>
-                <a href="./WinningBids.html" class="action-button">
-                  <i class="bi bi-question-circle"></i>按鈕樣式可由css檔
-                </a>
-                <a href="./AppointmentRecord.html" class="action-button">
-                  <i class="bi bi-question-circle"></i>內的action-button類別自訂
-                </a>
-              </aside>
-            </div>
-          </div>
+			<div class="col-md-3" th:fragment="sidebar>
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">賣家專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/client/memProductList}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-list-ul"></i>
+			          <span>競標商品列表</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-clipboard"></i>
+			          <span>競標訂單管理</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-graph-up-arrow"></i>
+			          <span>營業成效統計</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
 
           <!-- Main Content -->
           <div class="col-md-9">
