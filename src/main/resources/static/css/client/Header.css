@@ -112,3 +112,32 @@ body {
     height: 50px;
   }
 }
+
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  color: #495057;  /* 深灰色作為預設文字顏色 */
+}
+
+.nav-link:hover {
+  color: #212529 !important;  /* 接近黑色的深灰色 */
+  transform: translateY(-2px) scale(1.05);
+  background-color: rgba(33, 37, 41, 0.05);  /* 使用深灰色的透明版本作為背景 */
+}
+
+.nav-item {
+  padding: 0 5px;
+}
+
+/* 保持原有的響應式設計 */
+@media (max-width: 992px) {
+  .nav-link:hover {
+    transform: none;
+    background-color: #f8f9fa;;
+  }
+  
+  .nav-item {
+    padding: 0;
+  }
+}
