@@ -14,63 +14,51 @@
     />
   </head>
   <body class="bg-light">
-    <header th:fragment="header">
-      <nav class="navbar nav-container position-fixed w-100 z-3 top-0">
-        <div class="container position-relative">
-          <a class="navbar-brand" th:href="@{/}">
-            <img th:src="@{/css/client/logo/logo.svg}" alt="Bootstrap" />
-          </a>
-
-          <!-- Mobile Toggle Button -->
-          <button
-            class="navbar-toggler d-lg-none"
-            type="button"
-            aria-label="Toggle navigation"
-          >
-            <span class="bi bi-list" style="font-size: 24px"></span>
-          </button>
-
-          <div class="justify-content-end">
-            <ul class="nav-list">
-              <li class="nav-item">
-                <a th:href="@{/client/listAllProductING}" class="nav-link">競標專區</a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">場地預約</a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">球友論壇</a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">客服中心</a>
-              </li>
-              <li class="nav-item">
-                <a th:href="@{/client/memProductList}" class="nav-link">賣家專區</a>
-              </li>
-              <li class="nav-item">
-				 <a th:if="${session.login == null}" 
-				    th:href="@{/member/login}" 
-				    class="nav-link">
-				   <i class="bi bi-person"></i>
-				   <span>Account</span>
-				 </a>
-				 <a th:if="${session.login != null}" 
-				    th:href="@{/member/basic-info}" 
-				    class="nav-link">
-				   <i class="bi bi-person"></i>
-				   <span th:text="${session.login.name}"></span>
-				 </a>
-				</li>
-              <form th:action="@{/member/logout}" method="post">
-			   <li class="nav-item">
-			       <button type="submit" class="nav-link btn btn-link">登出</button>
-			   </li>
-			</form>
-
-            </ul>
-          </div>	
-        </div>
-      </nav>
-    </header>
+    		<header th:fragment="header">
+		  <nav class="navbar nav-container position-fixed w-100 z-3 top-0">
+		    <div class="container position-relative">
+		      <a class="navbar-brand" th:href="@{/}">
+		        <img th:src="@{/css/client/logo/logo.svg}" alt="Bootstrap" />
+		      </a>
+		
+		      <!-- Mobile Toggle Button -->
+		      <button
+		        class="navbar-toggler d-lg-none"
+		        type="button"
+		        aria-label="Toggle navigation"
+		      >
+		        <span class="bi bi-list" style="font-size: 24px"></span>
+		      </button>
+		
+		      <div class="justify-content-end">
+		        <ul class="nav-list">
+		          <li class="nav-item">
+		            <a th:href="@{/client/listAllProductING}" class="nav-link px-3 py-2 rounded-2">競標專區</a>
+		          </li>
+		          <li class="nav-item">
+		            <a href="#" class="nav-link px-3 py-2 rounded-2">場地預約</a>
+		          </li>
+		          <li class="nav-item">
+		            <a href="#" class="nav-link px-3 py-2 rounded-2">球友論壇</a>
+		          </li>
+		          <li class="nav-item">
+		            <a href="#" class="nav-link px-3 py-2 rounded-2">客服中心</a>
+		          </li>
+		          <li class="nav-item">
+		            <a th:href="@{/client/memProductList}" class="nav-link px-3 py-2 rounded-2">賣家專區</a>
+		          </li>
+		          <li class="nav-item">
+		            <a href="#" class="nav-link px-3 py-2 rounded-2">
+		              <i class="bi bi-person"></i> Account
+		            </a>
+		          </li>
+		          <li class="nav-item">
+		            <a href="#" class="nav-link px-3 py-2 rounded-2">登出</a>
+		          </li>
+		        </ul>
+		      </div>
+		    </div>
+		  </nav>
+		</header>	
   </body>
 </html>
