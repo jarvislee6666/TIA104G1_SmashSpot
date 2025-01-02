@@ -11,6 +11,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.smashspot.admin.model.AdmVO;
+
 //import hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_Member;
 
 @Service("memberService")
@@ -34,12 +36,6 @@ public class MemberService {
     
     public void updateMember(MemberVO memberVO) {
         repository.save(memberVO);
-    }
-    
-    public void deleteMember(Integer memid) {
-        if (repository.existsById(memid))
-            repository.deleteByMemid(memid);
-            // repository.deleteById(memid);
     }
     
     public MemberVO getOneMember(Integer memid) {
@@ -110,7 +106,13 @@ public class MemberService {
 	}
 
 
-
+	public MemberVO login(String account, String password) {
+        MemberVO mem = repository.findByAccount(account);
+        if (mem != null && mem.getPassword().equals(password)) {
+            return mem;
+        }
+        return null;
+    }
 
 
 

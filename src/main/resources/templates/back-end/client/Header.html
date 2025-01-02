@@ -48,13 +48,24 @@
                 <a th:href="@{/client/memProductList}" class="nav-link">賣家專區</a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link"
-                  ><i class="bi bi-person"></i> Account</a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">登出</a>
-              </li>
+				 <a th:if="${session.login == null}" 
+				    th:href="@{/member/login}" 
+				    class="nav-link">
+				   <i class="bi bi-person"></i>
+				   <span>Account</span>
+				 </a>
+				 <a th:if="${session.login != null}" 
+				    th:href="@{/member/basic-info}" 
+				    class="nav-link">
+				   <i class="bi bi-person"></i>
+				   <span th:text="${session.login.name}"></span>
+				 </a>
+				</li>
+              <form th:action="@{/member/logout}" method="post">
+			   <li class="nav-item">
+			       <button type="submit" class="nav-link btn btn-link">登出</button>
+			   </li>
+			</form>
             </ul>
           </div>
         </div>

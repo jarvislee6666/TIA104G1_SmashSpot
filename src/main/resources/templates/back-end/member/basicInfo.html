@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>基本資料</title>
-    <!-- 修改靜態資源引用 -->
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css}" />
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <title>會員基本資料</title>
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+        rel="stylesheet"
+      />
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+      />
+    <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/client/basicInfo.css}" />
+    <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+	<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
 </head>
 <body class="bg-light">
     <!-- Header -->
-    <header th:replace="~{fragments/header :: header}"></header>
+    <div th:replace="back-end/client/Header :: header"></div>
 
     <main>
         <div class="container position-relative mb-3">
@@ -49,8 +56,7 @@
                                     <div class="d-flex flex-column align-items-center">
                                         <div class="rounded-circle overflow-hidden mb-2"
                                             style="width: 120px; height: 120px; border: 2px solid #ddd;">
-                                            <img th:src="${member.avatarUrl != null ? member.avatarUrl : '/images/default-avatar.png'}"
-                                                alt="會員頭像" class="w-100 h-100 object-fit-cover" />
+                                            <img th:src="@{/images/default-avatar.png}" alt="會員頭像" class="w-100 h-100 object-fit-cover" />
                                         </div>
                                         <form id="avatarForm" th:action="@{/member/upload-avatar}" method="post" enctype="multipart/form-data">
                                             <div class="d-flex justify-content-center">
@@ -73,7 +79,7 @@
                                 <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">
                                     <div class="mb-3">
                                         <label for="id" class="form-label">使用者帳號</label>
-                                        <input type="text" class="form-control" id="id" th:value="*{memberId}" disabled />
+                                        <input type="text" class="form-control" id="id" th:value="*{account}" disabled />
                                     </div>
 
                                     <div class="mb-3">
@@ -98,19 +104,17 @@
                                     <div class="mb-3">
                                         <label for="birthday" class="form-label">生日</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="birthday" 
-                                                   th:field="*{birthday}" readonly required />
+                                            <input type="text" class="form-control" id="birthday" th:field="*{bday}" required />
                                             <span class="input-group-text">
                                                 <i class="bi bi-calendar"></i>
                                             </span>
                                         </div>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="address" class="form-label">地址</label>
-                                        <input type="text" class="form-control" id="address" th:field="*{address}" required />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                                        <input type="text" class="form-control" id="address" th:field="*{addr}" required />
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('addr')}" th:errors="*{addr}"></div>
                                     </div>
 
                                     <div class="mb-3">
@@ -120,12 +124,9 @@
                                     </div>
 
                                     <div class="mb-4">
-                                        <label for="confirmPassword" class="form-label">確認密碼</label>
-                                        <input type="password" class="form-control" id="confirmPassword" 
-                                               th:field="*{confirmPassword}" />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" 
-                                             th:errors="*{confirmPassword}"></div>
-                                    </div>
+									    <label for="confirmPassword" class="form-label">確認密碼</label>
+									    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
+									</div>
 
                                     <div class="d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary w-25">儲存</button>
@@ -140,12 +141,43 @@
     </main>
 
     <!-- Footer -->
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="back-end/client/Footer :: footer"></div>
 
     <!-- Scripts -->
-    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js}"></script>
-    <script th:src="@{/js/basic-info.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+      rel="stylesheet"
+    />
+	<script>
+      // header RWD
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.querySelector(".navbar-toggler");
+        const navList = document.querySelector(".nav-list");
+
+        toggleBtn.addEventListener("click", function () {
+          navList.classList.toggle("show");
+        });
+      });
+
+      $(document).ready(function () {
+        // 初始化日期選擇器
+        $("#birthday").datepicker({
+          format: "yyyy-mm-dd",
+          autoclose: true,
+          todayHighlight: true,
+          language: "zh-TW",
+        });
+
+        // 點擊月曆 icon 時觸發日期選擇器
+        $(".input-group-text").click(function () {
+          $("#birthday").datepicker("show");
+        });
+      });
+    </script>
 </body>
 </html>
