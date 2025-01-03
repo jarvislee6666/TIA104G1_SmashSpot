@@ -84,6 +84,8 @@ public class ProductController {
 
     @GetMapping("/adm/listAllProduct")
 	public String listAllProduct(Model model) {
+    	List<ProductVO> list = proSvc.getAll();
+    	model.addAttribute("productListData",list);
 		return "back-end/adm/listAllProduct";
 	}
     
@@ -126,6 +128,7 @@ public class ProductController {
         }
         
         model.addAttribute("productListDataING", list);
+        model.addAttribute("proClassList", proClassSvc.getAll());
         model.addAttribute("totalActiveProducts", proSvc.findByBidsta(1).size());
         model.addAttribute("currentSort", sort);
         model.addAttribute("currentProclassid", proclassid);
@@ -149,37 +152,6 @@ public class ProductController {
         List<ProductVO> list = proSvc.findMem(mem.getMemid());
     	model.addAttribute("memProductListData",list);
 		return "back-end/client/product/memProductList";
-	}
-    
-//    @ModelAttribute("memProductListData")  // 賣家後台 迴圈顯示資料用
-//    protected List<ProductVO> referenceMemProductListData(Model model, HttpSession session) {
-//    	MemberVO mem = (MemberVO) session.getAttribute("login");
-//        List<ProductVO> list = proSvc.findMem(mem.getMemid());
-//        return list;
-//    }
-    
-    @ModelAttribute("productListData")  // 管理員後台 迴圈顯示資料用
-	protected List<ProductVO> referenceListData(Model model) {
-		
-    	List<ProductVO> list = proSvc.getAll();
-		return list;
-	}
-    
-    @ModelAttribute("productListDataING")  // 買家首頁 迴圈顯示資料用
-	protected List<ProductVO> referenceListDataING(Model model) {
-		
-    	List<ProductVO> allActiveProducts = proSvc.findByBidsta(1);
-	    model.addAttribute("totalActiveProducts", allActiveProducts.size()); // 每次都可正確顯示全部商品數量
-	    
-    	List<ProductVO> list = proSvc.findByBidsta(1); // 根據所選分類更新頁面
-		return list;
-	}
-    
-    @ModelAttribute("proClassList")  // 買家首頁 迴圈顯示資料用
-	protected List<ProductClassVO> referenceProClassList(Model model) {
-		
-    	List<ProductClassVO> list = proClassSvc.getAll();
-		return list;
 	}
 	
 	@GetMapping("/client/addProduct")

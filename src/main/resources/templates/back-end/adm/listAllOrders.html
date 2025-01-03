@@ -101,8 +101,8 @@
                         <option>訂單取消</option>
                       </select>
                     </div>
-                    <div class="col-md-2">
-                      <button type="submit" class="btn btn-primary w-100">
+                    <div class="col-md-2 d-flex justify-content-center">
+                      <button type="submit" class="btn btn-primary w-75">
                         搜尋
                       </button>
                     </div>
@@ -125,14 +125,19 @@
                     </tr>
                   </thead>
                   <tbody>
+                    <th:block th:each="ordersVO : ${ordersListData}">
                     <tr>
-                      <td>0001</td>
-                      <td>羽球拍</td>
-                      <td>2023/12/12 00:00</td>
-                      <td>李worldgym</td>
-                      <td>陳之漢</td>
-                      <td>12000 TWD</td>
-                      <td>付款完成</td>
+                      <td th:text="${ordersVO.ordid}"></td>
+                      <td th:text="${ordersVO.productVO.proname}"></td>
+                      <td th:text="${ordersVO.proordtime}"></td>
+                      <td th:text="${ordersVO.memid}"></td>
+                      <td th:text="${ordersVO.productVO.memberVO.memid}"></td>
+                      <td th:text="${ordersVO.afterdis}"></td>
+                      <td th:text="${ordersVO.ordstaid == 1 ? '尚未付款' : 
+	                                 ordersVO.ordstaid == 2 ? '付款完成' : 
+	                                 ordersVO.ordstaid == 3 ? '已出貨' :
+	                                 ordersVO.ordstaid == 4 ? '訂單完成' :
+	                                 ordersVO.ordstaid == 5 ? '訂單取消' : ''}"></td>
                       <td>
                         <button class="btn btn-sm btn-outline-primary me-2">
                           查看
@@ -142,7 +147,7 @@
                         </button>
                       </td>
                     </tr>
-                    <!-- 更多訂單資料... -->
+                    </th:block>
                   </tbody>
                 </table>
 

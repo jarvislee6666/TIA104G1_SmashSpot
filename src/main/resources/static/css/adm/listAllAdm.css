@@ -54,8 +54,11 @@
         }
         
         .nav-buttons .nav-link:hover {
-            background-color: var(--background);
-            color: var(--primary);
+/*             background-color: var(--background); */
+            background-color: #EDEEEE;
+/*             color: var(--primary); */
+            color: #328FE5;
+            transform: translateY(-2px) scale(1.05);
         }
 
         .nav-pills .nav-link {
