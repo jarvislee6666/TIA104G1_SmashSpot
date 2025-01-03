@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Header</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    	  <header th:fragment="header">
+		  <!-- Navbar -->
+			<nav class="navbar navbar-light mb-4">
+				<div class="container-fluid">
+					<div class="navbar-content">
+						<a class="navbar-brand" href="#">管理員後台</a>
+						<div class="nav-buttons">
+							<a class="nav-link" th:href="@{listAllAdm}"><i class="fas fa-users me-2"></i>員工帳號管理</a>					
+							<a class="nav-link" th:href="@{listAllCoupon}"><i class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
+							<a class="nav-link" th:href="@{listAllProduct}"><i class="fas fa-store me-2"></i>商城管理	</a> 
+							<a class="nav-link" th:href="@{listAllStdm}"><i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
+							<a class="nav-link" href="#"><i class="fas fa-comments me-2"></i>論壇管理</a> 
+							<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
+							<a class="nav-link" th:href="@{listAllMember}"><i class="fas fa-user-circle me-2"></i>會員帳號管理</a>
+						</div>
+						<div class="d-flex align-items-center border-start ps-4">
+							<div class="nav-item me-3">
+								<span class="nav-link">
+									<i class="fas fa-user me-1"></i> 
+									<span th:text="${session.loginAdm.admname}"></span>
+								</span>
+							</div>
+							<form th:action="@{/adm/logout}" method="post" style="display: inline;">
+							<button  type="submit" class="btn btn-outline-secondary btn-sm">
+								<i class="fas fa-sign-out-alt me-1"></i>登出
+							</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</header>	
+  </body>
+</html>

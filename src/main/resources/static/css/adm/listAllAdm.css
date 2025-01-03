@@ -40,6 +40,8 @@
         .nav-buttons {
             display: flex;
             gap: 1rem;
+            flex-grow: 1;
+            justify-content: flex-end;
         }
 
         .nav-buttons .nav-link {
@@ -49,6 +51,11 @@
             transition: all 0.2s;
             white-space: nowrap;
             font-size: 1rem;
+        }
+        
+        .nav-buttons .nav-link:hover {
+            background-color: var(--background);
+            color: var(--primary);
         }
 
         .nav-pills .nav-link {

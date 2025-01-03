@@ -297,48 +297,27 @@
 				        </button>
 				
 				        <!-- 收闔的類別清單 -->
-<!-- 				        <div class="collapse ps-3" id="categoryList"> -->
-<!-- 				          <div class="d-flex flex-column gap-1 mt-1"> -->
-<!-- 				            <a th:href="@{/client/listAllProductING}" -->
-<!-- 				               class="sidebar-link rounded p-2 text-decoration-none"> -->
-<!-- 				              <div class="d-flex justify-content-between align-items-center"> -->
-<!-- 				                <span>全部商品</span> -->
-<!-- 				                <span class="badge bg-primary rounded-pill" th:text="${totalActiveProducts}"></span> -->
-<!-- 				              </div> -->
-<!-- 				            </a> -->
-				            
-<!-- 				            <th:block th:each="productClassVO : ${proClassList}"> -->
-<!-- 				              <a th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid})}" -->
-<!-- 				                 class="sidebar-link rounded p-2 text-decoration-none"> -->
-<!-- 				                <div class="d-flex justify-content-between align-items-center"> -->
-<!-- 				                  <span th:text="${productClassVO.catename}"></span> -->
-<!-- 				                  <span class="badge bg-primary rounded-pill" th:text="${productClassVO.activeProductCount}"></span> -->
-<!-- 				                </div> -->
-<!-- 				              </a> -->
-<!-- 				            </th:block> -->
-<!-- 				          </div> -->
-<!-- 				        </div> -->
-							<div class="collapse ps-3" id="categoryList">
-							    <div class="d-flex flex-column gap-1 mt-1">
-							        <a th:href="@{/client/listAllProductING(sort=${currentSort})}"
-							           class="sidebar-link rounded p-2 text-decoration-none">
-							            <div class="d-flex justify-content-between align-items-center">
-							                <span>全部商品</span>
-							                <span class="badge bg-primary rounded-pill" th:text="${totalActiveProducts}"></span>
-							            </div>
-							        </a>
-							        
-							        <th:block th:each="productClassVO : ${proClassList}">
-							            <a th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid},sort=${currentSort})}"
-							               class="sidebar-link rounded p-2 text-decoration-none">
-							                <div class="d-flex justify-content-between align-items-center">
-							                    <span th:text="${productClassVO.catename}"></span>
-							                    <span class="badge bg-primary rounded-pill" th:text="${productClassVO.activeProductCount}"></span>
-							                </div>
-							            </a>
-							        </th:block>
-							    </div>
-							</div>
+						<div class="collapse ps-3" id="categoryList">
+						    <div class="d-flex flex-column gap-1 mt-1">
+						        <a th:href="@{/client/listAllProductING(sort=${currentSort})}"
+						           class="sidebar-link rounded p-2 text-decoration-none">
+						            <div class="d-flex justify-content-between align-items-center">
+						                <span>全部商品</span>
+						                <span class="badge bg-primary rounded-pill" th:text="${totalActiveProducts}"></span>
+						            </div>
+						        </a>
+						        
+						        <th:block th:each="productClassVO : ${proClassList}">
+						            <a th:href="@{/client/listProductByClass/{proclassid}(proclassid=${productClassVO.proclassid},sort=${currentSort})}"
+						               class="sidebar-link rounded p-2 text-decoration-none">
+						                <div class="d-flex justify-content-between align-items-center">
+						                    <span th:text="${productClassVO.catename}"></span>
+						                    <span class="badge bg-primary rounded-pill" th:text="${productClassVO.activeProductCount}"></span>
+						                </div>
+						            </a>
+						        </th:block>
+						    </div>
+						</div>
 				
 				        <a href=".#" class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
 				          <i class="bi bi-cash-coin"></i>
