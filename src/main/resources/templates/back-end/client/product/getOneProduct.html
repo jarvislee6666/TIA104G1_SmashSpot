@@ -104,7 +104,14 @@
     }
     
     .back-link:hover .bi-arrow-left {
-        transform: translateX(-4px);
+        transform: translateX(-4px) scale(1.05);
+    }
+    
+    .back-link, .btn_action{
+    	transition: transform 0.3s ease;
+    }
+    .back-link:hover, .btn_action:hover {
+    	transform: translateY(-3px) scale(1.05);
     }
 </style>
 
@@ -199,11 +206,11 @@
 
                     <!-- 操作按鈕 -->
                     <div class="action-buttons d-grid gap-2 d-md-flex mb-4">
-                        <button type="button" class="btn btn-primary flex-fill"
+                        <button type="button" class="btn btn-primary flex-fill btn_action"
                                 data-bs-toggle="modal" data-bs-target="#biddingModal">
                             <i class="bi bi-hammer me-2"></i>出價競標
                         </button>
-                        <button type="button" class="btn btn-danger flex-fill"
+                        <button type="button" class="btn btn-danger flex-fill btn_action"
                                 data-bs-toggle="modal" data-bs-target="#checkoutModal">
                             <i class="bi bi-cart-fill me-2"></i>直接購買
                         </button>
