@@ -11,12 +11,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
  import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,8 @@ import com.smashspot.stadium.model.StdmService;
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.location.model.LocationVO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smashspot.admin.model.AdmService;
 
 @Controller
@@ -41,6 +45,38 @@ public class StdmController {
 	
 	@Autowired
 	AdmService admSvc;
+	
+	@GetMapping("/getHolidays")//by麒安
+	@ResponseBody
+	public List<LocalDate> getHolidays(@RequestParam Integer stdmId) {
+	    // 取出已設定的休館日
+	    return stdmSvc.findAllHolidays(stdmId);
+	}
+	
+	@PostMapping("/updateHolidays")//by麒安
+	@ResponseBody
+	public Map<String, Object> updateHolidays(@RequestParam Integer stdmId,
+	                                          @RequestParam String closedDatesJson) {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        // 轉成 List<LocalDate>
+	        ObjectMapper mapper = new ObjectMapper();
+	        List<String> closedDateStrs = mapper.readValue(closedDatesJson, new TypeReference<List<String>>() {});
+	        List<LocalDate> closedDates = closedDateStrs.stream()
+	                .map(LocalDate::parse)
+	                .collect(Collectors.toList());
+
+	        stdmSvc.updateHolidays(stdmId, closedDates);
+	        result.put("success", true);
+	        result.put("message", "成功更新休館日設定");
+	    } catch(Exception e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+	    return result;
+	}
+
+
 
 	@GetMapping("/listAllStdm")
 	public String listAllStdm(

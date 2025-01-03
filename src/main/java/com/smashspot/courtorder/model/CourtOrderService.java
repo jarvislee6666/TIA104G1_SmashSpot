@@ -116,7 +116,7 @@ public class CourtOrderService {
 
             // 找出對應 reservation_time
             ReservationTimeVO rsvTime = reservationTimeRepository
-                .findByStadium_StdmIdAndDates(stdmId, ordDate);
+                .findByStadiumIdAndDates(stdmId, ordDate);
             if (rsvTime == null) {
                 // 代表還沒有對應那天的資料，或查不到
                 return false;
