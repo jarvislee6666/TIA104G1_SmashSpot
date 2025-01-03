@@ -50,6 +50,13 @@
 		.form-control:focus, .form-select:focus {
 		    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
 		}
+		
+	    .action_button{
+   			transition: transform 0.3s ease;
+	    }
+	    .action_button:hover {
+	    	transform: translateY(-3px) scale(1.05);
+	    }
 
 </style>
 
@@ -169,13 +176,13 @@
 			            </div>
 			
 			            <!-- Hidden Fields -->
-			            <input type="hidden" id="memid" name="memid" th:value="${productVO.memid}">
+			            <input type="hidden" id="memid" name="memid" th:value="${productVO.memberVO.memid}">
 			            <input type="hidden" id="bidstaid" name="bidstaid" th:value="${productVO.bidstaid}">
 			
 			            <!-- Action Buttons -->
 			            <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-			                <a href="/client/listAllProductING" class="btn btn-outline-secondary btn-sm px-3">返回商品列表</a>
-			                <button type="submit" class="btn btn-primary btn-sm px-4">送出</button>
+			                <a href="/client/listAllProductING" class="btn btn-outline-secondary btn-sm px-3 action_button">返回商品列表</a>
+			                <button type="submit" class="btn btn-primary btn-sm px-4 action_button">送出</button>
 			            </div>
 			        </div>
 			    </form>
