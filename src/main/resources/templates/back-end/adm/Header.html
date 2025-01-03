@@ -21,13 +21,24 @@
 					<div class="navbar-content">
 						<a class="navbar-brand" href="">管理員後台</a>
 						<div class="nav-buttons">
-							<a class="nav-link" th:href="@{listAllAdm}"><i class="fas fa-users me-2"></i>員工帳號管理</a>					
-							<a class="nav-link" th:href="@{listAllCoupon}"><i class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
-							<a class="nav-link" th:href="@{listAllProduct}"><i class="fas fa-store me-2"></i>商城管理	</a> 
-							<a class="nav-link" th:href="@{listAllStdm}"><i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
+							<a class="nav-link" th:href="@{listAllAdm}"
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllAdm')} ? 'active' : ''">
+							<i class="fas fa-users me-2"></i>員工帳號管理</a>					
+							<a class="nav-link" th:href="@{listAllCoupon}"
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllCoupon')} ? 'active' : ''">
+							<i class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
+							<a class="nav-link" th:href="@{listAllProduct}"
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllProduct') or
+							   					 #httpServletRequest.getRequestURI().contains('listAllOrders')} ? 'active' : ''">
+							<i class="fas fa-store me-2"></i>商城管理</a> 
+							<a class="nav-link" th:href="@{listAllStdm}"
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllStdm')} ? 'active' : ''">
+							<i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
 							<a class="nav-link" href="#"><i class="fas fa-comments me-2"></i>論壇管理</a> 
 							<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
-							<a class="nav-link" th:href="@{listAllMember}"><i class="fas fa-user-circle me-2"></i>會員帳號管理</a>
+							<a class="nav-link" th:href="@{listAllMember}"
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllMember')} ? 'active' : ''">
+							<i class="fas fa-user-circle me-2"></i>會員帳號管理</a>
 						</div>
 						<div class="d-flex align-items-center border-start ps-4">
 							<div class="nav-item me-3">
