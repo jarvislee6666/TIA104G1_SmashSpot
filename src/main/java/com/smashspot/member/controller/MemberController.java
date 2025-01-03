@@ -69,53 +69,39 @@ public class MemberController {
      */
     @PostMapping("/register")
     public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
-            @RequestParam("confirmPassword") String confirmPassword) {
-    	
-    	// 設置必要欄位
-        memberVO.setCrttime(new Timestamp(System.currentTimeMillis()));
-        memberVO.setChgtime(new Timestamp(System.currentTimeMillis()));
-        memberVO.setStatus(true);
+                        @RequestParam("confirmPassword") String confirmPassword) {
         
-    	logger.info("Account: {}", memberVO.getAccount());
-    	logger.info("Email: {}", memberVO.getEmail());
-    	logger.info("Name: {}", memberVO.getName());
-    	logger.info("Phone: {}", memberVO.getPhone());
-    	logger.info("Bday: {}", memberVO.getBday());
-    	logger.info("Addr: {}", memberVO.getAddr());
-    	logger.info("Password: {}", memberVO.getPassword());
-    	logger.info("Confirm Password: {}", confirmPassword);
-    	
-        // 檢查帳號是否存在
+        // 先檢查重複項目
         if (memberService.findByAccount(memberVO.getAccount()) != null) {
             result.rejectValue("account", "error.memberVO", "此帳號已存在");
         }
-        // 檢查 Email 是否存在 
         if (memberService.findByEmail(memberVO.getEmail()) != null) {
             result.rejectValue("email", "error.memberVO", "此 Email 已存在");
         }
-        // 檢查電話是否存在
         if (memberService.findByPhone(memberVO.getPhone()) != null) {
             result.rejectValue("phone", "error.memberVO", "此電話號碼已存在");
         }
-        // 如果有錯誤，返回註冊頁面
+               
+        if (!memberVO.getPassword().equals(confirmPassword)) {
+	        result.rejectValue("password", "error.memberVO", "密碼與確認密碼不符");
+	    }
+
+        memberVO.setStatus(true);
+
         if (result.hasErrors()) {
-        	System.out.println(result.toString());
             return "back-end/member/register";
         }
-
         
-
         try {
-            memberService.addMember(memberVO);
-            logger.info("Successfully registered member: {}", memberVO.getAccount());
-            return "redirect:/member/login";
-        } catch (Exception e) {
-            logger.error("Registration failed: ", e);
-            model.addAttribute("error", "註冊失敗: " + e.getMessage());
-            return "back-end/member/register";
-        }
-    }
-
+        	memberService.addMember(memberVO);
+	        model.addAttribute("success", "新增成功");
+	        return "redirect:/member/login";
+	    } catch (Exception e) {
+	        model.addAttribute("error", "新增失敗: " + e.getMessage());
+	        return "back-end/member/register";
+	    }
+	}
+        
     /**
      * 顯示登入頁面
      */

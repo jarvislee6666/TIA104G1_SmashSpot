@@ -28,110 +28,116 @@
             <div class="register-container">
                 <h2 class="register-title">會員註冊</h2>
                 <!-- 添加 Thymeleaf 表單處理 -->
-                <form id="registerForm" th:action="@{/member/register}" method="post" th:object="${memberVO}">
-                    <!-- 添加錯誤訊息顯示 -->
-                  
-                    
+                <form id="registerForm" th:action="@{/member/register}" th:object="${memberVO}" method="post">
+                                      
                     <div class="mb-3">
-                        <label for="account" class="form-label">帳號</label>
-                        <input type="text" class="form-control" id="account" th:field="*{account}" required />
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('account')}" th:errors="*{account}"></div>
-                    </div>
+                    <label for="account" class="form-label">帳號</label>
+                    <input type="text" th:field="*{account}" class="form-control" 
+                           th:errorclass="is-invalid" required>
+                    <div class="invalid-feedback" th:errors="*{account}"></div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" th:field="*{email}" required />
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                    </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" th:field="*{email}" class="form-control" 
+                           th:errorclass="is-invalid" required>
+                    <div class="invalid-feedback" th:errors="*{email}"></div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="name" class="form-label">姓名</label>
-                        <input type="text" class="form-control" id="name" th:field="*{name}" required />
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-                    </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">姓名</label>
+                    <input type="text" th:field="*{name}" class="form-control" 
+                           th:errorclass="is-invalid" required>
+                    <div class="invalid-feedback" th:errors="*{name}"></div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">手機</label>
-                        <input type="tel" class="form-control" id="phone" th:field="*{phone}" pattern="[0-9]{10}" required />
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
-                    </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">手機</label>
+                    <input type="tel" th:field="*{phone}" class="form-control" 
+                           pattern="^09\d{8}$" th:errorclass="is-invalid" required>
+                    <div class="invalid-feedback" th:errors="*{phone}"></div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="bday" class="form-label">生日</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="bday" th:field="*{bday}" required />
-                            <span class="input-group-text">
-                                <i class="bi bi-calendar"></i>
-                            </span>
-                        </div>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('bday')}" th:errors="*{bday}"></div>
-                    </div>
+                <div class="mb-3">
+				    <label for="bday" class="form-label">生日</label>
+				    <div class="input-group">
+				        <input type="text" th:field="*{bday}" class="form-control datepicker" 
+				               th:errorclass="is-invalid" required
+				               th:attr="data-date-format='yyyy-mm-dd'">
+				        <span class="input-group-text">
+				            <i class="bi bi-calendar"></i>
+				        </span>
+				    </div>
+				    <div class="invalid-feedback" th:errors="*{bday}"></div>
+				</div>
 
-                    <div class="mb-3">
-                        <label for="addr" class="form-label">地址</label>
-                        <input type="text" class="form-control" id="addr" th:field="*{addr}" required />
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('addr')}" th:errors="*{addr}"></div>
-                    </div>
+                <div class="mb-3">
+                    <label for="addr" class="form-label">地址</label>
+                    <input type="text" th:field="*{addr}" class="form-control" 
+                           th:errorclass="is-invalid" required>
+                    <div class="invalid-feedback" th:errors="*{addr}"></div>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">密碼</label>
-                        <input type="password" class="form-control" id="password" th:field="*{password}" required />
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" id="password.errors"></div>
-                    </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密碼</label>
+                    <input type="password" th:field="*{password}" class="form-control" 
+                           th:errorclass="is-invalid" required>
+                    <div class="invalid-feedback" th:errors="*{password}"></div>
+                </div>
 
-                    <div class="mb-3">
-						 <label for="confirmPassword" class="form-label">確認密碼</label>
-						 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required />
-					</div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">確認密碼</label>
+                    <input type="password" name="confirmPassword" id="confirmPassword" 
+                           class="form-control" required>
+                    <div class="invalid-feedback">密碼與確認密碼不符</div>
+                </div>
 
-                    <div class="links-container">
-                        <a th:href="@{/member/login}" class="login-link">已有帳號，前往登入...</a>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">註冊</button>
-                    <div class="spinner-border text-primary d-none" id="loadingSpinner" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </form>
-            </div>
+                <div class="links-container">
+                    <a th:href="@{/member/login}" class="login-link">已有帳號，前往登入...</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">註冊</button>
+            </form>
         </div>
+    </div>
     </main>
 
     <!-- Footer -->
     <footer th:replace="back-end/client/Footer :: footer"></footer>
 
     <!-- Scripts -->
-    <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    const password = document.querySelector('[name="password"]').value;
-    const confirmPassword = document.querySelector('[name="confirmPassword"]').value;
-    const confirmPasswordInput = document.querySelector('#confirmPassword');
-    const confirmPasswordError = document.querySelector('#confirmPasswordError');
-    
-    if (password !== confirmPassword) {
-        e.preventDefault();
-        confirmPasswordInput.classList.add('is-invalid');
-        confirmPasswordError.textContent = '密碼與確認密碼不符';
-    }
-});
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true,
+                language: 'zh-TW',
+                endDate: new Date()
+            });
+            
+            $('.input-group-text').click(function() {
+                $(this).closest('.input-group').find('.datepicker').datepicker('show');
+            });
 
-$(document).ready(function () {
-    // 初始化日期選擇器
-    $("#bday").datepicker({
-      format: "yyyy-mm-dd",
-      autoclose: true,
-      todayHighlight: true,
-      language: "zh-TW",
-    });
-
-    // 點擊月曆 icon 時觸發日期選擇器
-    $(".input-group-text").click(function () {
-      $("#bday").datepicker("show");
-    });
-  });
-</script>
+            function clearErrors() {
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback').hide();
+            }
+            
+            $('#registerForm').on('submit', function(e) {
+                const password = $('[name="password"]').val();
+                const confirmPassword = $('[name="confirmPassword"]').val();
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    $('#confirmPassword').addClass('is-invalid');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

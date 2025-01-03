@@ -60,8 +60,8 @@ public class MemberVO implements Serializable {
 
     @Column(name = "account", length = 100)
     @NotEmpty(message="帳號: 請勿空白")
-    @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,100}$", 
-             message = "帳號: 只能是中、英文字母、數字和_ , 且長度必需在2到100之間")
+    @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{5,20}$", 
+             message = "帳號: 只能是中、英文字母、數字和_ , 且長度必需在5到20之間")
     public String getAccount() {
         return this.account;
     }
@@ -104,8 +104,7 @@ public class MemberVO implements Serializable {
         this.email = email;
     }
 
-    @Column(name = "crt_time")
-    @NotNull(message="建立時間: 請勿空白")
+    @Column(name = "crt_time", insertable = false)
     public Timestamp getCrttime() {
         return this.crttime;
     }
@@ -114,8 +113,7 @@ public class MemberVO implements Serializable {
         this.crttime = crttime;
     }
 
-    @Column(name = "chg_time")
-    @NotNull(message="修改時間: 請勿空白")
+    @Column(name = "chg_time", updatable = false, insertable = false)
     public Timestamp getChgtime() {
         return this.chgtime;
     }
@@ -158,7 +156,6 @@ public class MemberVO implements Serializable {
     }
 
     @Column(name = "status")
-    @NotNull(message="帳號狀態: 請勿空白")
     public Boolean getStatus() {
         return this.status;
     }
