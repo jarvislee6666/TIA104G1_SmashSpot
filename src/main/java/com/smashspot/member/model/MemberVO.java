@@ -2,13 +2,18 @@ package com.smashspot.member.model;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -16,6 +21,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import com.smashspot.product.model.ProductVO;
 
 @Entity
 @Table(name = "member")
@@ -34,10 +41,12 @@ public class MemberVO implements Serializable {
     private String addr;
     private Boolean status;
     private byte[] mempic;
+    
+    private Set<ProductVO> products = new HashSet<ProductVO>();
 
     public MemberVO() {
     }
-
+    
     @Id
     @Column(name = "mem_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -167,9 +176,28 @@ public class MemberVO implements Serializable {
     public void setMempic(byte[] mempic) {
         this.mempic = mempic;
     }
+    
+    @OneToMany(mappedBy = "memberVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public Set<ProductVO> getProducts() {
+        return products;
+    }
+ 
+    public void setProducts(Set<ProductVO> products) {
+        this.products = products;
+    }
+    
+   
+    public void addProduct(ProductVO product) {
+        getProducts().add(product);
+        product.setMemberVO(this);
+    }
 
-	
-	
+    public void removeProduct(ProductVO product) {
+        getProducts().remove(product);
+        product.setMemberVO(null);
+    }
+ 
+
 
 	
 }

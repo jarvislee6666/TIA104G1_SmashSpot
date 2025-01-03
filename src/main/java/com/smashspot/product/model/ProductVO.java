@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
+import com.smashspot.member.model.MemberVO;
 import com.smashspot.orders.model.OrdersVO;
 import com.smashspot.productclass.model.ProductClassVO;
 
@@ -19,10 +20,11 @@ public class ProductVO {
 	@Column(name = "pro_id")
 	private Integer proid;
 
-	@Column(name = "mem_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "mem_id", nullable = false)
 	@NotNull(message = "會員ID不能為空")
-	private Integer memid;
-	
+	private MemberVO memberVO;
+
 	// 與商品分類的多對一關係
     @ManyToOne
     @JoinColumn(name = "pro_class_id", nullable = false)
@@ -77,6 +79,7 @@ public class ProductVO {
 
 	@OneToMany(mappedBy = "productVO")
 	private Set<OrdersVO> orders = new HashSet<>();
+
 	
 	public Set<OrdersVO> getOrders() {
 	    return orders;
@@ -106,15 +109,15 @@ public class ProductVO {
 	public void setProid(Integer proid) {
 		this.proid = proid;
 	}
-
-	public Integer getMemid() {
-		return memid;
-	}
-
-	public void setMemid(Integer memid) {
-		this.memid = memid;
-	}
-
+	// ================================================================
+	public MemberVO getMemberVO() {
+        return memberVO;
+    }
+	
+    public void setMemberVO(MemberVO memberVO) {
+        this.memberVO = memberVO;
+    }
+    // =================================================================
 	public ProductClassVO getProductClassVO() {
 		return productClassVO;
 	}
@@ -213,11 +216,11 @@ public class ProductVO {
 
 	@Override
 	public String toString() {
-		return "ProductVO [proid=" + proid + ", memid=" + memid + ", productClassVO=" + productClassVO + ", bidstaid="
-				+ bidstaid + ", baseprice=" + baseprice + ", purprice=" + purprice + ", intro=" + intro
+		return "ProductVO [proid=" + proid + ", memberVO=" + memberVO + ", productClassVO=" + productClassVO
+				+ ", bidstaid=" + bidstaid + ", baseprice=" + baseprice + ", purprice=" + purprice + ", intro=" + intro
 				+ ", prostarttime=" + prostarttime + ", endtime=" + endtime + ", modtime=" + modtime + ", minincr="
 				+ minincr + ", proname=" + proname + ", propic=" + Arrays.toString(propic) + ", maxprice=" + maxprice
-				+ "]";
+				+ ", orders=" + orders + "]";
 	}
 
 

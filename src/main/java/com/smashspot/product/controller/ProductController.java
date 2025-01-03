@@ -147,12 +147,12 @@ public class ProductController {
 		return "back-end/client/product/memProductList";
 	}
     
-    @ModelAttribute("memProductListData")  // 賣家後台 迴圈顯示資料用
-    protected List<ProductVO> referenceMemProductListData(Model model, HttpSession session) {
-    	MemberVO mem = (MemberVO) session.getAttribute("login");
-        List<ProductVO> list = proSvc.findMem(mem.getMemid());
-        return list;
-    }
+//    @ModelAttribute("memProductListData")  // 賣家後台 迴圈顯示資料用
+//    protected List<ProductVO> referenceMemProductListData(Model model, HttpSession session) {
+//    	MemberVO mem = (MemberVO) session.getAttribute("login");
+//        List<ProductVO> list = proSvc.findMem(mem.getMemid());
+//        return list;
+//    }
     
     @ModelAttribute("productListData")  // 管理員後台 迴圈顯示資料用
 	protected List<ProductVO> referenceListData(Model model) {
@@ -182,7 +182,7 @@ public class ProductController {
 	public String addProduct(ModelMap model, HttpSession session) {
 		MemberVO mem = (MemberVO) session.getAttribute("login");
 		ProductVO productVO = new ProductVO();
-		productVO.setMemid(mem.getMemid());
+		productVO.setMemberVO(mem);
 	    productVO.setBidstaid(1); // 剛上架的狀態一定是 1.上架中
 		model.addAttribute("productVO", productVO);
 		return "back-end/client/product/addProduct";
