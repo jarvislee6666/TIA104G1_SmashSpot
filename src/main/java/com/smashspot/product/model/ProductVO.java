@@ -24,7 +24,7 @@ public class ProductVO {
 	@JoinColumn(name = "mem_id", nullable = false)
 	@NotNull(message = "會員ID不能為空")
 	private MemberVO memberVO;
-	
+
 	// 與商品分類的多對一關係
     @ManyToOne
     @JoinColumn(name = "pro_class_id", nullable = false)
@@ -109,15 +109,15 @@ public class ProductVO {
 	public void setProid(Integer proid) {
 		this.proid = proid;
 	}
-
+	// ================================================================
 	public MemberVO getMemberVO() {
         return memberVO;
     }
-
+	
     public void setMemberVO(MemberVO memberVO) {
         this.memberVO = memberVO;
     }
-
+    // =================================================================
 	public ProductClassVO getProductClassVO() {
 		return productClassVO;
 	}
