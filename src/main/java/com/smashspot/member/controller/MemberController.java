@@ -7,9 +7,12 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -28,82 +31,88 @@ public class MemberController {
     
     @Autowired
     private EmailService emailService;
+    
+    private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 
     /**
      * 顯示註冊頁面
      */
     @GetMapping("/register")
-    public String showRegisterPage() {
-        return "register.html";
+    public String showRegisterForm(Model model) {
+        model.addAttribute("memberVO", new MemberVO());
+        return "back-end/member/register";
     }
 
     /**
      * 發送驗證碼到指定email
      */
-    @PostMapping("/send-verification")
-    public String sendVerification(@RequestParam String email, RedirectAttributes redirectAttributes) {
-        try {
-            // 檢查Email是否已存在
-            if (memberService.getRepository().findByEmail(email) != null) {
-                redirectAttributes.addFlashAttribute("error", "Email已被使用");
-                return "register.html";
-            }
+//    @PostMapping("/send-verification")
+//    public String sendVerification(@RequestParam String email, RedirectAttributes redirectAttributes) {
+//        try {
+//            // 檢查Email是否已存在
+//            if (memberService.getRepository().findByEmail(email) != null) {
+//                redirectAttributes.addFlashAttribute("error", "Email已被使用");
+//                return "register.html";
+//            }
             
-            memberService.sendVerificationEmail(email);
-            redirectAttributes.addFlashAttribute("message", "驗證碼已發送至您的信箱");
-            return "register.html";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "驗證碼發送失敗: " + e.getMessage());
-            return "register.html";
-        }
-    }
+//            memberService.sendVerificationEmail(email);
+//            redirectAttributes.addFlashAttribute("message", "驗證碼已發送至您的信箱");
+//            return "register.html";
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "驗證碼發送失敗: " + e.getMessage());
+//            return "register.html";
+//        }
+//    }
 
     /**
      * 會員註冊處理
      */
     @PostMapping("/register")
-    public String register(
-            @Valid @ModelAttribute MemberVO memberVO,
-            @RequestParam String verificationCode,
-            RedirectAttributes redirectAttributes) {
+    public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
+            @RequestParam("confirmPassword") String confirmPassword) {
+    	
+    	// 設置必要欄位
+        memberVO.setCrttime(new Timestamp(System.currentTimeMillis()));
+        memberVO.setChgtime(new Timestamp(System.currentTimeMillis()));
+        memberVO.setStatus(true);
+        
+    	logger.info("Account: {}", memberVO.getAccount());
+    	logger.info("Email: {}", memberVO.getEmail());
+    	logger.info("Name: {}", memberVO.getName());
+    	logger.info("Phone: {}", memberVO.getPhone());
+    	logger.info("Bday: {}", memberVO.getBday());
+    	logger.info("Addr: {}", memberVO.getAddr());
+    	logger.info("Password: {}", memberVO.getPassword());
+    	logger.info("Confirm Password: {}", confirmPassword);
+    	
+        // 檢查帳號是否存在
+        if (memberService.findByAccount(memberVO.getAccount()) != null) {
+            result.rejectValue("account", "error.memberVO", "此帳號已存在");
+        }
+        // 檢查 Email 是否存在 
+        if (memberService.findByEmail(memberVO.getEmail()) != null) {
+            result.rejectValue("email", "error.memberVO", "此 Email 已存在");
+        }
+        // 檢查電話是否存在
+        if (memberService.findByPhone(memberVO.getPhone()) != null) {
+            result.rejectValue("phone", "error.memberVO", "此電話號碼已存在");
+        }
+        // 如果有錯誤，返回註冊頁面
+        if (result.hasErrors()) {
+        	System.out.println(result.toString());
+            return "back-end/member/register";
+        }
+
+        
+
         try {
-            // 檢查帳號是否已存在
-            if (memberService.getRepository().findByAccount(memberVO.getAccount()) != null) {
-                redirectAttributes.addFlashAttribute("error", "帳號已存在");
-                return "login.html";
-            }
-            
-            // 檢查手機號碼是否已存在
-            if (memberService.getRepository().findByPhone(memberVO.getPhone()) != null) {
-                redirectAttributes.addFlashAttribute("error", "手機號碼已被使用");
-                return "login.html";
-            }
-
-            // 驗證驗證碼
-            if (!memberService.verifyCode(memberVO.getEmail(), verificationCode)) {
-                redirectAttributes.addFlashAttribute("error", "驗證碼不正確或已過期");
-                return "login.html";
-            }
-
-            // 設置註冊時間和修改時間
-            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-            memberVO.setCrttime(currentTime);
-            memberVO.setChgtime(currentTime);
-            
-            // 設置帳號狀態為啟用
-            memberVO.setStatus(true);
-            
-            // 儲存會員資料
             memberService.addMember(memberVO);
-            
-            // 發送註冊確認信
-            emailService.sendRegistrationEmail(memberVO.getEmail(), memberVO.getName());
-            
-            redirectAttributes.addFlashAttribute("message", "註冊成功，已寄送確認信至您的信箱");
-            return "login.html";
+            logger.info("Successfully registered member: {}", memberVO.getAccount());
+            return "redirect:/member/login";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "註冊失敗: " + e.getMessage());
-            return "login.html";
+            logger.error("Registration failed: ", e);
+            model.addAttribute("error", "註冊失敗: " + e.getMessage());
+            return "back-end/member/register";
         }
     }
 

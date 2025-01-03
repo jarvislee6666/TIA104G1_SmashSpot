@@ -1,8 +1,8 @@
       main {
-        margin-top: 7rem;
+        margin-top: 8.5rem;
         flex: 1 0 auto;
       }
-    
+
       .product-img {
         width: 100px;
         height: 100px;
@@ -226,40 +226,40 @@
       }
 
       /* =========================== 以上為header、footer及全局設定 ============================== */
-      /* ========================================= login ========================================= */
+      /* ======================================= register ======================================= */
 
-      .login-container {
-        max-width: 400px;
-        margin: 3.5rem auto;
+      .register-container {
+        max-width: 500px;
+        margin: 2rem auto;
         padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        background-color: white;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
 
-      .login-title {
+      .register-title {
         text-align: center;
         margin-bottom: 2rem;
         color: #333;
       }
 
-      .form-control:focus {
-        box-shadow: none;
-        border-color: #86b7fe;
+      .form-label {
+        font-weight: 500;
       }
 
-      .btn-login {
-        width: 100%;
-        padding: 10px;
-        margin-top: 1rem;
-        background-color: #0d6efd;
-        border: none;
+      .datepicker-dropdown {
+        margin-top: 0;
       }
 
-      .btn-login:hover {
-        background-color: #0b5ed7;
+      .input-group .form-control {
+        height: auto;
+        padding: 0.375rem 0.75rem;
       }
 
+      .input-group-text {
+        cursor: pointer;
+        background-color: #fff;
+      }
       .links-container {
         display: flex;
         justify-content: space-between;
@@ -276,9 +276,13 @@
         color: #0d6efd;
       }
 
-      @media (max-width: 576px) {
-        .login-container {
-          margin: 1rem;
+      @media (max-width: 768px) {
+        .register-container {
           padding: 1.5rem;
+          margin: 1rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
         }
       }
