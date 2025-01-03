@@ -114,14 +114,14 @@ public class MemberController {
      * 會員登入處理
      */
     @PostMapping("/login")
-    public String login(@RequestParam String account, 
-                       @RequestParam String password,
-                       HttpSession session,
-                       Model model) {
+    public String login(@RequestParam String account, @RequestParam String password,
+                       HttpSession session, Model model) {
         MemberVO mem = memberService.login(account, password);
         if (mem != null) {
             session.setAttribute("login", mem);
-            return "redirect:/member/basic-info";
+            String redirectUrl = (String) session.getAttribute("redirectUrl");
+            session.removeAttribute("redirectUrl");
+            return redirectUrl != null ? "redirect:" + redirectUrl : "redirect:/member/basic-info";
         }
         model.addAttribute("error", true);
         return "back-end/member/login";
