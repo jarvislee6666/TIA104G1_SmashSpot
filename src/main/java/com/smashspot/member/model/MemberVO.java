@@ -42,8 +42,7 @@ public class MemberVO implements Serializable {
     private Boolean status;
     private byte[] mempic;
     
-    @OneToMany(mappedBy = "memberVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<ProductVO> products = new HashSet<>();
+    private Set<ProductVO> products = new HashSet<ProductVO>();
 
     public MemberVO() {
     }
@@ -177,8 +176,9 @@ public class MemberVO implements Serializable {
     public void setMempic(byte[] mempic) {
         this.mempic = mempic;
     }
-    
+ // =================================================================
     // getter 方法修改
+    @OneToMany(mappedBy = "memberVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public Set<ProductVO> getProducts() {
         return products;
     }
@@ -198,7 +198,7 @@ public class MemberVO implements Serializable {
         getProducts().remove(product);
         product.setMemberVO(null);
     }
-
+ // ==================================================================
 	public MemberVO findByAccount(
 			@NotEmpty(message = "帳號: 請勿空白") @Pattern(regexp = "^[(一-龥)(a-zA-Z0-9_)]{2,100}$", message = "帳號: 只能是中、英文字母、數字和_ , 且長度必需在2到100之間") String account2) {
 		// TODO Auto-generated method stub

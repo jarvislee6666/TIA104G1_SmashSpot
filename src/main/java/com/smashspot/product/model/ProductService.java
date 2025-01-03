@@ -32,9 +32,9 @@ public class ProductService {
 		return repository.findByBidstaid(bidstaid);
 	}
 
-	public List<ProductVO> findMem(Integer memid) {
-		return repository.findByMemid(memid);
-	}
+//	public List<ProductVO> findMem(Integer memid) {
+//		return repository.findByMemid(memid);
+//	}
 
 	public List<ProductVO> findByBidstaAndProclass(Integer bidstaid, Integer proclassid) {
 		return repository.findByBidstaidAndProductClassVO_Proclassid(bidstaid, proclassid);
