@@ -8,8 +8,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.smashspot.admin.model.AdmVO;
 
@@ -30,8 +33,18 @@ public class MemberService {
     @Autowired
     private SessionFactory sessionFactory;
     
+    private static final Logger logger = LoggerFactory.getLogger(MemberService.class);
+    
+    @Transactional
     public void addMember(MemberVO memberVO) {
-        repository.save(memberVO);
+        logger.info("開始新增會員: {}", memberVO.getAccount());
+        try {
+        	repository.save(memberVO);
+            logger.info("會員新增成功: {}", memberVO.getAccount());
+        } catch (Exception e) {
+            logger.error("會員新增失敗", e);
+            throw e;
+        }
     }
     
     public void updateMember(MemberVO memberVO) {
