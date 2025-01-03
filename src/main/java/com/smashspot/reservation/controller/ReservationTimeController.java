@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +34,7 @@ public class ReservationTimeController {
     public String getWeeklyReservation(
         @RequestParam("stdmId") Integer stdmId,
         @RequestParam(value = "week", defaultValue = "0") Integer week,
-        Model model
+        Model model, HttpSession session
     ) {
         // 1) 查詢對應的場館資料
         StadiumVO stadium = stdmService.getOneStdm(stdmId);

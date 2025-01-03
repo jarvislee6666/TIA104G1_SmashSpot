@@ -118,11 +118,22 @@ public class MemberController {
                        HttpSession session, Model model) {
         MemberVO mem = memberService.login(account, password);
         if (mem != null) {
+        	// 1. 放「已登入」資訊
             session.setAttribute("login", mem);
-            String redirectUrl = (String) session.getAttribute("redirectUrl");
-            session.removeAttribute("redirectUrl");
-            return redirectUrl != null ? "redirect:" + redirectUrl : "redirect:/member/basic-info";
+            
+            // 2. 取出攔截器中存的原請求路徑
+            String redirectURL = (String) session.getAttribute("redirectURL");
+            if (redirectURL != null) {
+                // 用完即刪，避免後續一直重複跳轉
+                session.removeAttribute("redirectURL");
+                // 3. 導回攔截器所記下的路徑
+                return "redirect:" + redirectURL;
+            } else {
+                // 如果沒有記錄任何原路徑，就導向預設頁 (ex: /member/basic-info)
+                return "redirect:/member/basic-info";
+            }
         }
+        // 帳密錯誤 => 回到登入頁，顯示錯誤
         model.addAttribute("error", true);
         return "back-end/member/login";
     }
