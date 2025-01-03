@@ -182,7 +182,7 @@ public class ProductController {
 	public String addProduct(ModelMap model, HttpSession session) {
 		MemberVO mem = (MemberVO) session.getAttribute("login");
 		ProductVO productVO = new ProductVO();
-		productVO.setMemid(mem.getMemid());
+		productVO.setMemberVO(mem);
 	    productVO.setBidstaid(1); // 剛上架的狀態一定是 1.上架中
 		model.addAttribute("productVO", productVO);
 		return "back-end/client/product/addProduct";
