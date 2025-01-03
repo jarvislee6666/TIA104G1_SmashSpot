@@ -176,19 +176,17 @@ public class MemberVO implements Serializable {
     public void setMempic(byte[] mempic) {
         this.mempic = mempic;
     }
- // =================================================================
-    // getter 方法修改
+    
     @OneToMany(mappedBy = "memberVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public Set<ProductVO> getProducts() {
         return products;
     }
-
-    // setter 方法修改
+ 
     public void setProducts(Set<ProductVO> products) {
         this.products = products;
     }
     
-    // 添加輔助方法來維護關係的兩端
+   
     public void addProduct(ProductVO product) {
         getProducts().add(product);
         product.setMemberVO(this);
@@ -198,23 +196,8 @@ public class MemberVO implements Serializable {
         getProducts().remove(product);
         product.setMemberVO(null);
     }
- // ==================================================================
-	public MemberVO findByAccount(
-			@NotEmpty(message = "帳號: 請勿空白") @Pattern(regexp = "^[(一-龥)(a-zA-Z0-9_)]{2,100}$", message = "帳號: 只能是中、英文字母、數字和_ , 且長度必需在2到100之間") String account2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+ 
 
-	public String findByEmail(@NotEmpty(message = "Email: 請勿空白") @Email(message = "Email格式不正確") String email2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String findByPhone(
-			@NotEmpty(message = "電話: 請勿空白") @Pattern(regexp = "^09\\d{8}$", message = "手機號碼格式不正確") String phone2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	
 }

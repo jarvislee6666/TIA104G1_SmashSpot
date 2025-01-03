@@ -13,5 +13,7 @@ import com.smashspot.admin.model.AdmVO;
 public interface MemberRepository extends JpaRepository<MemberVO, Integer> {
     
     MemberVO findByAccount(String account);
+    MemberVO findByEmail(String email);
+    MemberVO findByPhone(String phone);
     
 }
