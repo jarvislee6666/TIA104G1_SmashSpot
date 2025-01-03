@@ -22,35 +22,7 @@
 
 <body>
 	<!-- Navbar -->
-	<nav class="navbar navbar-light mb-4">
-		<div class="container-fluid">
-			<div class="navbar-content">
-				<a class="navbar-brand" href="#">管理員後台</a>
-				<div class="nav-buttons">
-					<a class="nav-link" th:href="@{listAllAdm}"><i class="fas fa-users me-2"></i>員工帳號管理</a>					
-					<a class="nav-link" th:href="@{listAllCoupon}"><i class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
-					<a class="nav-link" th:href="@{listAllProduct}"><i class="fas fa-store me-2"></i>商城管理	</a> 
-					<a class="nav-link" href="#"><i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
-					<a class="nav-link" href="#"><i class="fas fa-comments me-2"></i>論壇管理</a> 
-					<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
-					<a class="nav-link" href="#"><i	class="fas fa-user-circle me-2"></i>會員帳號管理</a>
-				</div>
-				<div class="d-flex align-items-center border-start ps-4">
-					<div class="nav-item me-3">
-						<span class="nav-link">
-							<i class="fas fa-user me-1"></i> 
-							<span th:text="${session.loginAdm.admname}"></span>
-						</span>
-					</div>
-					<form th:action="@{/adm/logout}" method="post" style="display: inline;">
-					<button  type="submit" class="btn btn-outline-secondary btn-sm">
-						<i class="fas fa-sign-out-alt me-1"></i>登出
-					</button>
-					</form>
-				</div>
-			</div>
-		</div>
-	</nav>
+	<header th:replace="back-end/adm/Header :: header"></header>
 
 	<div class="container-fluid">
 		<div class="row">
@@ -59,10 +31,10 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link active" href="#">
+							<a class="nav-link active" th:href="@{listAllProduct}">
                                 <i class="fas fa-shopping-cart me-2"></i>競標商品追蹤
                             </a>
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" th:href="@{listAllOrders}">
                                 <i class="fas fa-history me-2"></i>訂單紀錄追蹤
                             </a>
 						</div>
@@ -132,7 +104,7 @@
 								                        ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toHoursPart()} + '小時 ' + 
 								                        ${T(java.time.Duration).between(T(java.time.LocalDateTime).now(), endDateTime).toMinutesPart()} + '分鐘'">
 								            </td>
-											<td th:text="${productVO.memid}"></td>
+											<td th:text="${productVO.memberVO.memid}"></td>
 											<td th:text="${productVO.purprice}"></td>
 											<td th:text="${productVO.maxprice}"></td>
 											<td>

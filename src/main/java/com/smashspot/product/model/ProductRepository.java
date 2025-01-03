@@ -9,7 +9,7 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer>{
 	
 	public List<ProductVO> findByBidstaid(Integer bidstaid); // 買家總覽(尚未選擇商品分類時)
 	
-//	public List<ProductVO> findByMemid(Integer memid); // 賣家後台瀏覽(所有該賣家刊登的商品)
+	public List<ProductVO> findByMemberVO_Memid(Integer memid); // 賣家後台瀏覽(所有該賣家刊登的商品)
 	
 	public List<ProductVO> findByBidstaidAndProductClassVO_Proclassid(Integer bidstaid, Integer proclassid); // 買家依商品分類瀏覽
 	

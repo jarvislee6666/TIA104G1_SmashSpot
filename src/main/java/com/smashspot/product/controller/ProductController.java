@@ -45,6 +45,7 @@ public class ProductController {
 	@Autowired
 	ProductClassService proClassSvc;
 	
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 	    // 增加 MultipartFile 到 byte[] 的轉換器
@@ -143,7 +144,10 @@ public class ProductController {
     }
     
     @GetMapping("/client/memProductList")
-	public String memProductList(Model model) {
+	public String memProductList(Model model,  HttpSession session) {
+    	MemberVO mem = (MemberVO) session.getAttribute("login");
+        List<ProductVO> list = proSvc.findMem(mem.getMemid());
+    	model.addAttribute("memProductListData",list);
 		return "back-end/client/product/memProductList";
 	}
     
