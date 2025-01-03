@@ -14,7 +14,7 @@
     />
   </head>
   <body class="bg-light">
-    		<header th:fragment="header">
+    	<header th:fragment="header">
 		  <nav class="navbar nav-container position-fixed w-100 z-3 top-0">
 		    <div class="container position-relative">
 		      <a class="navbar-brand" th:href="@{/}">
@@ -33,7 +33,12 @@
 		      <div class="justify-content-end">
 		        <ul class="nav-list">
 		          <li class="nav-item">
-		            <a th:href="@{/client/listAllProductING}" class="nav-link px-3 py-2 rounded-2">競標專區</a>
+		            <a th:href="@{/client/listAllProductING}" class="nav-link px-3 py-2 rounded-2"
+		            th:classappend="${#httpServletRequest.getRequestURI().contains('/client/listAllProductING')or 
+								      #httpServletRequest.getRequestURI().contains('/client/getOneProduct') or 
+								      #httpServletRequest.getRequestURI().contains('/client/listProductByClass')
+		                              } ? 'active' : ''"
+		            >競標專區</a>
 		          </li>
 		          <li class="nav-item">
 		            <a href="#" class="nav-link px-3 py-2 rounded-2">場地預約</a>
@@ -45,16 +50,12 @@
 		            <a href="#" class="nav-link px-3 py-2 rounded-2">客服中心</a>
 		          </li>
 		          <li class="nav-item">
-		            <a th:href="@{/client/memProductList}" class="nav-link px-3 py-2 rounded-2">賣家專區</a>
+		            <a th:href="@{/client/memProductList}" class="nav-link px-3 py-2 rounded-2"
+		            th:classappend="${#httpServletRequest.getRequestURI().contains('/client/memProductList') or 
+								      #httpServletRequest.getRequestURI().contains('/client/addProduct') 
+		                            }? 'active' : ''"
+		            >賣家專區</a>
 		          </li>
-<!-- 		          <li class="nav-item"> -->
-<!-- 		            <a href="#" class="nav-link px-3 py-2 rounded-2"> -->
-<!-- 		              <i class="bi bi-person"></i> Account -->
-<!-- 		            </a> -->
-<!-- 		          </li> -->
-<!-- 		          <li class="nav-item"> -->
-<!-- 		            <a href="#" class="nav-link px-3 py-2 rounded-2">登出</a> -->
-<!-- 		          </li> -->
 					<!-- 修改後的版本 -->
 					<li class="nav-item">
 					  <a
@@ -69,6 +70,7 @@
 					    th:if="${session.login != null}"
 					    th:href="@{/member/basic-info}"
 					    class="nav-link px-3 py-2 rounded-2"
+					    th:classappend="${#httpServletRequest.getRequestURI().contains('/member/basic-info')}? 'active' : ''"
 					  >
 					    <i class="bi bi-person"></i>
 					    <span th:text="${session.login.name}"></span>

@@ -45,6 +45,12 @@ public class ProductController {
 	@Autowired
 	ProductClassService proClassSvc;
 	
+	@ModelAttribute("proClassList")  // 買家首頁 迴圈顯示資料用
+	protected List<ProductClassVO> referenceProClassList(Model model) {
+		
+    	List<ProductClassVO> list = proClassSvc.getAll();
+		return list;
+	}
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -128,7 +134,6 @@ public class ProductController {
         }
         
         model.addAttribute("productListDataING", list);
-        model.addAttribute("proClassList", proClassSvc.getAll());
         model.addAttribute("totalActiveProducts", proSvc.findByBidsta(1).size());
         model.addAttribute("currentSort", sort);
         model.addAttribute("currentProclassid", proclassid);
