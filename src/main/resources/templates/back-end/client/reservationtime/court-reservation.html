@@ -55,6 +55,13 @@ body {
 .court-cell.selected {
 	outline: 2px solid #0d6efd;
 }
+.venue-image {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 </style>
 </head>
 <body>
@@ -127,6 +134,12 @@ body {
 								<div class="info-icon">ℹ️<br></div>
 								<span>場館介紹：[[${stadiumVO.stdmIntro}]]</span>
 							</div>
+							<div class="list-group-item d-flex align-items-center">			
+							      <img th:if="${stadiumVO.stdmPic != null}"
+                                     th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}"
+                                     alt="場館圖片" class="venue-image">
+							</div>
+
 						</div>
 					</div>
 				</div>

@@ -36,15 +36,15 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
    );
    
    
-   // --- 方法 2: 動態依照 stadium.capacity 來拼出 rsv_ava ---
-   //   假設 stadium 有欄位叫 'capacity'
-   //   若你想用 'xxxx' + capacity*7 + 'x' 的方式組出 12 碼
+
+   //   stadium 有欄位叫 'court_count'
+   //   用 'xxxx' + court_count*7 + 'x' 的方式組出 12 碼
    //   下面範例以 MySQL 語法 CONCAT 與 REPEAT() 函式來實作
    @Modifying
    @Query(value = 
       "INSERT INTO reservation_time (stdm_id, dates, rsv_ava, booked) " +
       "SELECT s.stdm_id, :insertDate, " +
-      // 組出 12 碼： 'xxxx' + (capacity 重複 7 次) + 'x'
+      // 組出 12 碼： 'xxxx' + (court_count 重複 7 次) + 'x'
       "       CONCAT('xxxx', REPEAT(s.court_count, 7), 'x') AS dynamic_rsv_ava, " +
       "       'xxxx0000000x' AS bookedStr " +
       "FROM stadium s " +
@@ -58,6 +58,25 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
        @Param("insertDate") Date insertDate
    );
    
-   ReservationTimeVO findByStadium_StdmIdAndDates(Integer stdmId, Date dates);
+   // 查出「同場館、同日期」的 ReservationTimeVO 
+   @Query("SELECT r FROM ReservationTimeVO r "
+        + "WHERE r.stadium.stdmId = :stdmId AND r.dates = :dates")
+   ReservationTimeVO findByStadiumIdAndDates(@Param("stdmId") Integer stdmId,
+                                             @Param("dates") Date dates);
 
+   // 查出「同場館、且日期 >= :dates」的多筆
+   @Query("SELECT r FROM ReservationTimeVO r "
+        + "WHERE r.stadium.stdmId = :stdmId AND r.dates >= :dates")
+   List<ReservationTimeVO> findByStadiumIdAndDatesGreaterThanEqual(
+                   @Param("stdmId") Integer stdmId,
+                   @Param("dates") Date dates);
+
+   // 直接查「已經是休館日(rsvava=xxxxxxxxxxxx)」的清單
+   @Query("SELECT r FROM ReservationTimeVO r "
+        + "WHERE r.stadium.stdmId = :stdmId "
+        + "  AND r.dates >= :dates "
+        + "  AND r.rsvava = 'xxxxxxxxxxxx'")
+   List<ReservationTimeVO> findHolidayByStadiumIdAndDatesGreaterThanEqual(
+                   @Param("stdmId") Integer stdmId,
+                   @Param("dates") Date dates);
 }
