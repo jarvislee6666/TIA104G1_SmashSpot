@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.smashspot.member.model.MemberVO;
 import com.smashspot.reservationtime.model.ReservationTimeService;
 import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.stadium.model.StdmService;
@@ -36,6 +37,15 @@ public class ReservationTimeController {
         @RequestParam(value = "week", defaultValue = "0") Integer week,
         Model model, HttpSession session
     ) {
+        // 濾器/攔截器已確保使用者必須登入才能進到這裡
+        MemberVO member = (MemberVO) session.getAttribute("login");
+        if (member == null) {
+            return "redirect:/member/login";  // 再防一下，萬一還是沒登入
+        }
+
+        // 也可以直接放到 model
+        model.addAttribute("member", member);
+    	
         // 1) 查詢對應的場館資料
         StadiumVO stadium = stdmService.getOneStdm(stdmId);
         model.addAttribute("stadiumVO", stadium);

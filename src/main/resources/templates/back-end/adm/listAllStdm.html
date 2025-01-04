@@ -6,7 +6,7 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>全部場館列表 - listAllStdm.html</title>
 <th:block th:replace="back-end/adm/Header :: headContent" />
-<head th:insert="~{/back-end/stdm/included-fragment}"></head>
+<head th:insert="~{/back-end/adm/included-fragment}"></head>
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -29,7 +29,7 @@
 						<div class="nav flex-column nav-pills">
 							<a class="nav-link" th:href="@{/adm/addStdm}"> <i
 								class="fas fa-plus-circle me-2"></i>場館刊登
-							</a> <a class="nav-link active" th:href="@{/stdm/listAllStdm}"> <i
+							</a> <a class="nav-link active" th:href="@{/adm/listAllStdm}"> <i
 								class="fas fa-list me-2"></i>場館刊登列表
 							</a> <a class="nav-link" href="#"> <i class="fas fa-history me-2"></i>預約訂單紀錄
 							</a> <a class="nav-link" href="#"> <i
@@ -47,7 +47,7 @@
 						<h5 class="card-title mb-4">場地刊登列表</h5>
 						<form th:action="@{/stdm/listAllStdm}" method="get">
 							<div
-								style="display: flex; align-items: center; gap: 20px; padding: 15px; border-radius: 8px;">
+								style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
 
 								<div class="search-item">
 									<label for="stdmName" style="margin-right: 5px;">場館名稱：</label>
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     try {
       // 送 Ajax
-      const response = await fetch('/stdm/updateHolidays', {
+      const response = await fetch('/adm/updateHolidays', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
         body: new URLSearchParams({
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Modal 打開時: 讀取 data-stdm-id -> 發送Ajax到後端 /stdm/getHolidays
   const holidayModalEl = document.getElementById('editHolidayModal');
-  holidayModalEl.addEventListener('', async function(event) {
+  holidayModalEl.addEventListener('show.bs.modal', async function(event) {
     // 觸發按鈕
     const button = event.relatedTarget;
     editingStdmId = button.getAttribute('data-stdm-id');
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     holidayListEl.innerHTML = "";
 
     // 向後端查詢已有的休館日
-    const queryUrl = `/stdm/getHolidays?stdmId=${editingStdmId}`;
+    const queryUrl = `/adm/getHolidays?stdmId=${editingStdmId}`;
     try {
       const resp = await fetch(queryUrl);
       const existingHolidays = await resp.json(); 
