@@ -33,19 +33,31 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
+		<!-- ＠用途說明by念芸: 客服聊天使用websocket&mangoDB -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.websocket</groupId>
+			<artifactId>jakarta.websocket-api</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-mongodb</artifactId>
+</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
+			<scope>provided</scope>
+		</dependency>
 
 
 		<!-- 用途說明5: Starter for using Spring Data JPA with Hibernate -->
@@ -73,7 +85,7 @@
 			<artifactId>spring-boot-starter-log4j2</artifactId>
 			<!-- <version>2.7.0</version> -->
 		</dependency>
-		
+
 		<!-- ========================================================================================== -->
 		<!-- ●前面的jpa已經包含有hibernate，以下為純 hibernate 使用● -->
 
@@ -147,7 +159,6 @@
 		</dependency>
 
 
-		
 		<!-- ========================================================================================== -->
 		<!-- ●以下為 JSR 303/349/380 Bean Validation Framework 預備使用● -->
 
@@ -185,19 +196,7 @@
 			<!-- <version>8.0.29</version> -->       <!-- spring-boot(2.7.0) 已內建依賴8.029，但預設未下載 -->
 		</dependency>
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		<!-- ========================================================================================== -->
 		<!-- ●以下為 thymeleaf 預備使用● -->
 
