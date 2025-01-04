@@ -142,11 +142,17 @@ public class ProductController {
     }
     
     @GetMapping("/client/getOneProduct/{proid}")
-    public String getOneProduct(@PathVariable Integer proid, Model model) {
+    public String getOneProduct(@PathVariable Integer proid, Model model, HttpSession session) {
         ProductVO productVO = proSvc.getOneProduct(proid);
         model.addAttribute("productVO", productVO);
         // 將結標時間轉換為毫秒數傳給前端
         model.addAttribute("endTimeMillis", productVO.getEndtime().getTime());
+        
+        // 添加當前登入會員資訊的判斷
+        MemberVO loginMember = (MemberVO) session.getAttribute("login");
+        boolean isOwner = loginMember != null &&                        
+                          loginMember.getMemid().equals(productVO.getMemberVO().getMemid());
+        model.addAttribute("isOwner", isOwner);
 
         return "back-end/client/product/getOneProduct";
     }
