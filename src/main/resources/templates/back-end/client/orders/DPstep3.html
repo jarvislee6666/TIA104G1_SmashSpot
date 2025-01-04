@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>單一商品瀏覽</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 4.5rem;
+	  flex: 1 0 auto;
+	}
+	
+	body {
+        background-color: #f8f9fa;
+    }
+    .step-container {
+        position: relative;
+        padding: 2rem 0;
+    }
+    .step-line {
+        position: absolute;
+        top: 50%;
+        left: 20%;
+        right: 20%;
+        height: 2px;
+        background-color: #dee2e6;
+        z-index: 1;
+    }
+    .step-circle {
+        width: 3rem;
+        height: 3rem;
+        background-color: #fff;
+        border: 2px solid #dee2e6;
+        z-index: 2;
+        position: relative;
+        transition: all 0.3s;
+    }
+    .step-circle.active {
+        border-color: #212529;
+        background-color: #212529;
+        color: #fff;
+    }
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #198754;
+        animation: scaleIn 0.5s ease-out;
+    }
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+</style>
+
+</head>
+<body class="bg-light">
+
+	<div th:replace="back-end/client/Header :: header"></div>
+
+    <main>
+      <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Progress Steps -->
+                <div class="step-container mb-3">
+                    <div class="step-line"></div>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="step-circle active rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2">
+                                <i class="bi bi-check-lg"></i>
+                            </div>
+                            <div>確認購買清單</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="step-circle active rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2">
+                                <i class="bi bi-check-lg"></i>
+                            </div>
+                            <div>填寫運送資料</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="step-circle active rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2">
+                                <i class="bi bi-check-lg"></i>
+                            </div>
+                            <div>完成訂單</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="bg-white rounded-3 shadow-sm p-5 text-center">
+                    <div class="success-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4">
+                        <i class="bi bi-check-lg text-white" style="font-size: 2.5rem;"></i>
+                    </div>
+                    
+                    <h3 class="mb-4">訂單已完成！</h3>
+                    
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <p class="mb-2">訂單編號</p>
+                            <h4 class="mb-0">#20240104-001</h4>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">訂單資訊</h5>
+                            <div class="row g-3">
+                                <div class="col-sm-6 text-start">
+                                    <p class="text-muted mb-1">付款方式</p>
+                                    <p class="mb-0">ATM轉帳</p>
+                                </div>
+                                <div class="col-sm-6 text-start">
+                                    <p class="text-muted mb-1">付款金額</p>
+                                    <p class="mb-0">NT$ 3,000</p>
+                                </div>
+                                <div class="col-sm-6 text-start">
+                                    <p class="text-muted mb-1">收件人</p>
+                                    <p class="mb-0">王小明</p>
+                                </div>
+                                <div class="col-sm-6 text-start">
+                                    <p class="text-muted mb-1">聯絡電話</p>
+                                    <p class="mb-0">0912-345-678</p>
+                                </div>
+                                <div class="col-12 text-start">
+                                    <p class="text-muted mb-1">收件地址</p>
+                                    <p class="mb-0">台北市大安區復興南路一段390號2樓</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mx-auto">
+                      <div class="col-lg-6">
+                        <a href="../index.html" class="btn btn-dark w-100">
+                            <i class="bi bi-house-door me-2"></i>返回首頁
+                        </a>
+                      </div>
+                      <div class="col-lg-6">
+                        <a href="../orders.html" class="btn btn-outline-dark w-100">
+                            <i class="bi bi-list-ul me-2"></i>查看訂單
+                        </a>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </main>
+
+	<div th:replace="back-end/client/Footer :: footer"></div>
+	
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+
+</script>
+</body>
+</html>
