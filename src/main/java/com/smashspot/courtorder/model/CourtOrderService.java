@@ -3,12 +3,14 @@ package com.smashspot.courtorder.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailRepository;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.reservationtime.model.ReservationTimeRepository;
@@ -209,6 +211,9 @@ public class CourtOrderService {
         return cnt;
     }
     
+    public List<CourtOrderVO> getAll() {
+		return courtOrderRepository.findAll();
+	}
 
 
 }
