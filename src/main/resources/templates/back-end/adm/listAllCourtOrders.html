@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>全部場館列表 - listAllCourtOrders.html</title>
+<th:block th:replace="back-end/adm/Header :: headContent" />
+<head th:insert="~{/back-end/adm/included-fragment}"></head>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+</style>
+<body>
+
+	<div class="loading-overlay">
+		<div class="loading-spinner"></div>
+	</div>
+
+	<!-- Navbar -->
+	<header th:replace="back-end/adm/Header :: header"></header>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 mb-4">
+				<div class="card">
+					<div class="card-body p-0">
+						<div class="nav flex-column nav-pills">
+							<a class="nav-link" th:href="@{/adm/addStdm}"> <i
+								class="fas fa-plus-circle me-2"></i>場館刊登
+							</a> <a class="nav-link" th:href="@{/adm/listAllStdm}"> <i
+								class="fas fa-list me-2"></i>場館刊登列表
+							</a> <a class="nav-link active" href="#"> <i class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> <a class="nav-link" href="#"> <i
+								class="fas fa-chart-line me-2"></i>場館成效統計
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 主要內容區 -->
+			<div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title">預約訂單紀錄</h5>
+                        </div>
+                        
+                        <div class="search-section mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="場地名稱">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control" placeholder="預約日期">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="預約人ID">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">搜尋</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>場地ID</th>
+                                        <th>預約人ID</th>
+                                        <th>預約金額</th>
+                                        <th>預約狀態</th>
+                                        <th>球場星等</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>    
+								    <tr th:each="orderList : ${orderList}">
+										<td th:text="${orderList.courtordid}"></td>
+										<td th:text="${orderList.stadium.stdmId}"></td>
+										<td th:text="${orderList.memid}"></td>
+										<td th:text="${orderList.totamt}"></td>			
+										<td th:text="${orderList.ordsta ? '已預約' : '已取消'}"></td>			
+										<td th:text="${orderList.starrank}"></td>
+									</tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                
+                                <div class="col-md-4 d-flex justify-content-center">
+                                    <nav>
+                                        <ul class="pagination mb-0">
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <div class="col-md-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+</body>
+</html>

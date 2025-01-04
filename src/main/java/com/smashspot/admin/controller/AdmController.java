@@ -35,6 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
+import com.smashspot.courtorder.model.CourtOrderService;
+import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
 
@@ -49,6 +51,9 @@ public class AdmController {
 	
 	@Autowired
     private MemberService memberSvc;
+	
+	@Autowired
+    private CourtOrderService courtOrderService;
 	
 	@GetMapping("/listAllAdm")
 		public String listAllAdm(
@@ -242,5 +247,12 @@ public class AdmController {
 	   BindingResult newResult = new BeanPropertyBindingResult(memberVO, "memberVO");
 	   errorsToKeep.forEach(newResult::addError);
 	   return newResult;
+	}
+	
+	@GetMapping("/listAllCourtOrders")
+	public String listAllCourtOrders(Model model) {
+	    List<CourtOrderVO> orderList = courtOrderService.getAll();
+	    model.addAttribute("orderList", orderList);
+	    return "back-end/adm/listAllCourtOrders";
 	}
 }
