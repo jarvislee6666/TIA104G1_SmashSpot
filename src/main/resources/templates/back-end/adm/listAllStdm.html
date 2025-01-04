@@ -44,10 +44,11 @@
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-center mb-4">
 						<h5 class="card-title mb-4">場地刊登列表</h5>
 						<form th:action="@{/stdm/listAllStdm}" method="get">
-							<div
-								style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
+
+							<div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
 
 								<div class="search-item">
 									<label for="stdmName" style="margin-right: 5px;">場館名稱：</label>
@@ -87,55 +88,50 @@
 											th:value="${admVO.admname}" th:text="${admVO.admname}" />
 									</select>
 								</div>
-
 								<button type="submit" class="btn btn-primary"
 									style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">
 									查詢</button>
 							</div>
 						</form>
-
 					</div>
-				</div>
-
-
-				<div class="table-responsive">
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>場館名稱</th>
-								<th>上架時間</th>
-								<th>球場數量</th>
-								<th>場租費(元/小時)</th>
-								<th>管理員ID</th>
-								<th>場館狀態</th>
-								<th>設定公休日</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="stadiumVO : ${stdmListData}">
-								<td th:text="${stadiumVO.stdmId}"></td>
-								<td th:text="${stadiumVO.stdmName}"></td>
-								<!--<td th:text="${#dates.format(stadium.stdmStartTime, 'yyyy/MM/dd')}">2023/12/12</td>-->
-								<td th:text="${stadiumVO.stdmStartTime}"></td>
-								<td th:text="${stadiumVO.courtCount}"></td>
-								<td th:text="${stadiumVO.courtPrice}"></td>
-								<td th:text="${stadiumVO.admVO.admname}"></td>
-								<td><span
-									th:class="${stadiumVO.oprSta ? 'status-badge status-active' : 'status-badge status-inactive'}"
-									th:text="${stadiumVO.oprSta ? '正常' : '已下架'}"> </span></td>
-								<td>
-									<!-- 另一種寫法 -->
-									<button class="btn btn-sm btn-outline-primary"
-										th:attr="data-stdm-id=${stadiumVO.stdmId}"
-										data-bs-toggle="modal" data-bs-target="#editHolidayModal">
-										編輯</button>
-
-
-								</td>
-							</tr>
-						</tbody>
-					</table>
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>場館名稱</th>
+										<th>上架時間</th>
+										<th>球場數量</th>
+										<th>場租費(元/小時)</th>
+										<th>管理員ID</th>
+										<th>場館狀態</th>
+										<th>設定公休日</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="stadiumVO : ${stdmListData}">
+										<td th:text="${stadiumVO.stdmId}"></td>
+										<td th:text="${stadiumVO.stdmName}"></td>
+										<!--<td th:text="${#dates.format(stadium.stdmStartTime, 'yyyy/MM/dd')}">2023/12/12</td>-->
+										<td th:text="${stadiumVO.stdmStartTime}"></td>
+										<td th:text="${stadiumVO.courtCount}"></td>
+										<td th:text="${stadiumVO.courtPrice}"></td>
+										<td th:text="${stadiumVO.admVO.admname}"></td>
+										<td><span
+											th:class="${stadiumVO.oprSta ? 'status-badge status-active' : 'status-badge status-inactive'}"
+											th:text="${stadiumVO.oprSta ? '正常' : '已下架'}"> </span></td>
+										<td>
+											<!-- 另一種寫法 -->
+											<button class="btn btn-sm btn-outline-primary"
+												th:attr="data-stdm-id=${stadiumVO.stdmId}"
+												data-bs-toggle="modal" data-bs-target="#editHolidayModal">
+												編輯</button>
+		
+		
+										</td>
+									</tr>
+								</tbody>
+							</table>
 					<div class="d-flex justify-content-center mt-4">
 						<nav>
 							<ul class="pagination">
@@ -172,6 +168,8 @@
 									</ul>
 								</nav>
 							</div>-->
+				</div>
+					</div>
 				</div>
 			</div>
 		</div>

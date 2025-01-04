@@ -35,7 +35,8 @@
 							   					 #httpServletRequest.getRequestURI().contains('listAllOrders')} ? 'active' : ''">
 							<i class="fas fa-store me-2"></i>商城管理</a> 
 							<a class="nav-link" th:href="@{listAllStdm}"
-							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllStdm')} ? 'active' : ''">
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllStdm')or
+							   					 #httpServletRequest.getRequestURI().contains('addStdm')} ? 'active' : ''">
 							<i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
 							<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
 							<a class="nav-link" th:href="@{listAllMember}"
