@@ -55,12 +55,13 @@ body {
 .court-cell.selected {
 	outline: 2px solid #0d6efd;
 }
+
 .venue-image {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 </style>
 </head>
@@ -131,13 +132,15 @@ body {
 								<span>場地管理員：[[${stadiumVO.admVO.admname}]]</span>
 							</div>
 							<div class="list-group-item d-flex align-items-center">
-								<div class="info-icon">ℹ️<br></div>
+								<div class="info-icon">
+									ℹ️<br>
+								</div>
 								<span>場館介紹：[[${stadiumVO.stdmIntro}]]</span>
 							</div>
-							<div class="list-group-item d-flex align-items-center">			
-							      <img th:if="${stadiumVO.stdmPic != null}"
-                                     th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}"
-                                     alt="場館圖片" class="venue-image">
+							<div class="list-group-item d-flex align-items-center">
+								<img th:if="${stadiumVO.stdmPic != null}"
+									th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}"
+									alt="場館圖片" class="venue-image">
 							</div>
 
 						</div>
@@ -473,60 +476,65 @@ body {
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- (A) 信用卡資料輸入 Modal -->
 	<div class="modal fade" id="creditCardModal">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title">信用卡資訊</h5>
-	        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-	      </div>
-	      <div class="modal-body">
-	        <form id="creditCardForm">
-	          <!-- 信用卡號 -->
-	          <div class="mb-3">
-	            <label for="cardNumber" class="form-label">卡號</label>
-	            <input type="text" class="form-control" id="cardNumber" name="cardNumber"
-	                   placeholder="請輸入 16 位數字">
-	          </div>
-	          <!-- 有效期限 -->
-	          <div class="mb-3">
-	            <label for="cardExpiry" class="form-label">有效期限</label>
-	            <input type="text" class="form-control" id="cardExpiry" name="cardExpiry"
-	                   placeholder="MM/YY">
-	          </div>
-	          <!-- 安全碼 CVV -->
-	          <div class="mb-3">
-	            <label for="cardCvv" class="form-label">安全碼 (CVV)</label>
-	            <input type="text" class="form-control" id="cardCvv" name="cardCvv"
-	                   placeholder="3 位數字">
-	          </div>
-	          <!-- 持卡人姓名 -->
-	          <div class="mb-3">
-	            <label for="cardHolder" class="form-label">持卡人姓名</label>
-	            <input type="text" class="form-control" id="cardHolder" name="cardHolder"
-	                   placeholder="與信用卡相同">
-	          </div>
-	        </form>
-	      </div>
-	      <div class="modal-footer">
-	        <!-- 取消 -->
-	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-	        <!-- 下一步: 驗證信用卡 (若成功才下單) -->
-	        <button type="button" class="btn btn-primary" onclick="validateCreditCard()">
-	          確認付款
-	        </button>
-	      </div>
-	    </div>
-	  </div>
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">信用卡資訊</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<form id="creditCardForm">
+						<!-- 信用卡號 -->
+						<div class="mb-3">
+							<label for="cardNumber" class="form-label">卡號</label> <input
+								type="text" class="form-control" id="cardNumber"
+								name="cardNumber" placeholder="請輸入 16 位數字">
+						</div>
+						<!-- 有效期限 -->
+						<div class="mb-3">
+							<label for="cardExpiry" class="form-label">有效期限</label> <input
+								type="text" class="form-control" id="cardExpiry"
+								name="cardExpiry" placeholder="MM/YY">
+						</div>
+						<!-- 安全碼 CVV -->
+						<div class="mb-3">
+							<label for="cardCvv" class="form-label">安全碼 (CVV)</label> <input
+								type="text" class="form-control" id="cardCvv" name="cardCvv"
+								placeholder="3 位數字">
+						</div>
+						<!-- 持卡人姓名 -->
+						<div class="mb-3">
+							<label for="cardHolder" class="form-label">持卡人姓名</label> <input
+								type="text" class="form-control" id="cardHolder"
+								name="cardHolder" placeholder="與信用卡相同">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<!-- 取消 -->
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">取消</button>
+					<!-- 下一步: 驗證信用卡 (若成功才下單) -->
+					<button type="button" class="btn btn-primary"
+						onclick="validateCreditCard()">確認付款</button>
+				</div>
+			</div>
+		</div>
 	</div>
-	
+
+
+
+
 
 
 	<script th:inline="javascript">
   		let courtPrice = /*[[${stadiumVO.courtPrice}]]*/ 0; 
   		let courtCount = /*[[${stadiumVO.courtCount}]]*/ 0;
+  		const memIdFromServer = /*[[${member != null} ? ${member.memid} : 0]]*/
+
 	</script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -735,7 +743,7 @@ body {
         const stadiumInfo = document.getElementById('stadiumInfo');
 		const stadiumIdFromServer = stadiumInfo.dataset.stdmid;
         return {
-            memid: 1,                 // 範例: 假設會員 ID=1
+            memid:  memIdFromServer,                 // 範例: 假設會員 ID=1
             stadium: { stdmId: parseInt(stadiumIdFromServer) },  
             courtOrderDetail          // 同名屬性，ES6 簡寫
         };

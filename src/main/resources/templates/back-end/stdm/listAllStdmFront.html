@@ -10,161 +10,157 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <body>
- <header>
-        <nav class="navbar nav-container position-fixed w-100 z-3 top-0">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="/api/placeholder/96/96" alt="Logo" />
-                </a>
-                <div class="justify-content-end">
-                    <ul class="nav-list">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">競標專區</a>
-                        </li>
-                        <li class="nav-item">
-                            <a th:href="@{/stadium/listAllStadium}" class="nav-link">場地預約</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">球友論壇</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">客服中心</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">業主專區</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="bi bi-person"></i> Account</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">登出</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+	<header>
+		<nav class="navbar nav-container position-fixed w-100 z-3 top-0">
+			<div class="container">
+				<a class="navbar-brand" href="#"> <img
+					src="/api/placeholder/96/96" alt="Logo" />
+				</a>
+				<div class="justify-content-end">
+					<ul class="nav-list">
+						<li class="nav-item"><a href="#" class="nav-link">競標專區</a></li>
+						<li class="nav-item"><a th:href="@{/stadium/listAllStadium}"
+							class="nav-link">場地預約</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">球友論壇</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">客服中心</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">業主專區</a></li>
+						<li class="nav-item"><a href="#" class="nav-link"><i
+								class="bi bi-person"></i> Account</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">登出</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
 
-    <main>
-    <div class="container">
-        <div class="row">
-            <!-- 左側選單 -->
-            <div class="col-md-3">
-                <h5 class="section-title mb-4">場地預約</h5>
-                <div class="d-grid gap-3">
-                    <button class="btn btn-primary py-2" th:href="@{/stadium/listAllStadium}">
-                        <i class="bi bi-calendar-check me-2" ></i>球場一覽
-                    </button>
-                    <button class="btn btn-outline-primary py-2">
-                        <i class="bi bi-heart me-2"></i>收藏清單
-                    </button>
-                </div>
-            </div>
+	<main>
+		<div class="container">
+			<div class="row">
+				<!-- 左側選單 -->
+				<div class="col-md-3">
+					<h5 class="section-title mb-4">場地預約</h5>
+					<div class="d-grid gap-3">
+						<button class="btn btn-primary py-2"
+							th:href="@{/stadium/listAllStadium}">
+							<i class="bi bi-calendar-check me-2"></i>球場一覽
+						</button>
+						<button class="btn btn-outline-primary py-2">
+							<i class="bi bi-heart me-2"></i>收藏清單
+						</button>
+					</div>
+				</div>
 
-            <!-- 右側內容 -->
-            <div class="col-md-9">
-                <!-- 搜尋區域 -->
-                <div class="search-section mb-4">
-                    <h5 class="section-title">球場一覽</h5>
-                    <form th:action="@{/stadium/listAllStadium}" method="get" class="search-form">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-4">
-                                <input type="search" class="form-control" placeholder="搜尋球館..."
-                                    th:value="${param.stdmName}" name="stdmName">
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <select class="form-select" name="locationVO">
-                                    <option value="">地區選擇</option>
-                                    <option th:each="location : ${locMapData}"
-                                            th:value="${location.key}" 
-                                            th:text="${location.value}">
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary w-100">查詢</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+				<!-- 右側內容 -->
+				<div class="col-md-9">
+					<!-- 搜尋區域 -->
+					<div class="search-section mb-4">
+						<h5 class="section-title">球場一覽</h5>
+						<form th:action="@{/stadium/listAllStadium}" method="get"
+							class="search-form">
+							<div class="row g-3 align-items-end">
+								<div class="col-md-4">
+									<input type="search" class="form-control" placeholder="搜尋球館..."
+										th:value="${param.stdmName}" name="stdmName">
+								</div>
 
-                <!-- 場館卡片區域 -->
-                <div class="row g-4">
-                    <div class="col-md-6 col-lg-4" th:each="stadiumVO : ${stdmListData}">
-                        <div class="venue-card">
-                            <div class="venue-image-container">
-                                <img th:if="${stadiumVO.stdmPic != null}"
-                                     th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}"
-                                     alt="場館圖片" class="venue-image">
-                                <div th:unless="${stadiumVO.stdmPic != null}"
-                                     class="venue-image-placeholder">預留圖片區塊</div>
-                            </div>
-                            <div class="venue-info">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="venue-title mb-0" th:text="${stadiumVO.stdmName}"></h6>
-                                    <button class="btn-favorite">
-                                        <i class="bi bi-heart"></i>
-                                    </button>
-                                </div>
-                                <div class="rating-container">
-                                    <div class="star-rating">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <span class="rating-text">4.5 (120則評價)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+								<div class="col-md-3">
+									<select class="form-select" name="locationVO">
+										<option value="">地區選擇</option>
+										<option th:each="location : ${locMapData}"
+											th:value="${location.key}" th:text="${location.value}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-2">
+									<button type="submit" class="btn btn-primary w-100">查詢</button>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<!-- 場館卡片區域 -->
+					<div class="row g-4">
+						<div class="col-md-6 col-lg-4"
+							th:each="stadiumVO : ${stdmListData}">
+							<!-- 超連結包住整個卡片 -->
+							<a
+								th:href="@{/reservation/week(stdmId=${stadiumVO.stdmId}, week=0)}"
+								class="text-decoration-none text-dark">
+								<div class="venue-card">
+									<div class="venue-image-container">
+										<img th:if="${stadiumVO.stdmPic != null}"
+											th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}"
+											alt="場館圖片" class="venue-image">
+										<div th:unless="${stadiumVO.stdmPic != null}"
+											class="venue-image-placeholder">預留圖片區塊</div>
+									</div>
+									<div class="venue-info">
+										<div
+											class="d-flex justify-content-between align-items-center mb-2">
+											<h6 class="venue-title mb-0" th:text="${stadiumVO.stdmName}"></h6>
+											<button class="btn-favorite">
+												<i class="bi bi-heart"></i>
+											</button>
+										</div>
+										<div class="rating-container">
+											<div class="star-rating">
+												<i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i>
+												<i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i>
+												<i class="bi bi-star-half"></i>
+											</div>
+											<span class="rating-text">4.5 (120則評價)</span>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-                       
 
-                    <!-- 分頁 -->
-                     <nav class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">»</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
 
-    </main>
+		<!-- 分頁 -->
+		<nav class="mt-4">
+			<ul class="pagination justify-content-center">
+				<li class="page-item"><a class="page-link" href="#">1</a></li>
+				<li class="page-item"><a class="page-link" href="#">2</a></li>
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item"><a class="page-link" href="#">»</a></li>
+			</ul>
+		</nav>
+		</div>
+		</div>
+		</div>
 
-    <footer>
-        <div class="footer-container">
-            <div class="d-flex align-items-center">
-                <img src="/api/placeholder/96/96" alt="網站logo" class="footer-logo" />
-                <div class="footer-contact">
-                    <p class="footer-text">連絡電話: (02) 1234-5678</p>
-                    <p><a href="#" class="text-decoration-none footer-text">客服專區</a></p>
-                </div>
-            </div>
-            <div class="social-icons">
-                <div class="social-icons-row">
-                    <a href="#" class="bi bi-facebook"></a>
-                    <a href="#" class="bi bi-instagram"></a>
-                    <a href="#" class="bi bi-youtube"></a>
-                </div>
-                <p class="footer-text">追蹤我們的社群平台以取得最新資訊</p>
-            </div>
-        </div>
-    </footer>
+	</main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script>
+	<footer>
+		<div class="footer-container">
+			<div class="d-flex align-items-center">
+				<img src="/api/placeholder/96/96" alt="網站logo" class="footer-logo" />
+				<div class="footer-contact">
+					<p class="footer-text">連絡電話: (02) 1234-5678</p>
+					<p>
+						<a href="#" class="text-decoration-none footer-text">客服專區</a>
+					</p>
+				</div>
+			</div>
+			<div class="social-icons">
+				<div class="social-icons-row">
+					<a href="#" class="bi bi-facebook"></a> <a href="#"
+						class="bi bi-instagram"></a> <a href="#" class="bi bi-youtube"></a>
+				</div>
+				<p class="footer-text">追蹤我們的社群平台以取得最新資訊</p>
+			</div>
+		</div>
+	</footer>
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+	<script>
     document.querySelectorAll('.btn-favorite').forEach(button => {
         button.addEventListener('click', function() {
             this.classList.toggle('active');

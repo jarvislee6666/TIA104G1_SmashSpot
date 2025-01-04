@@ -47,7 +47,9 @@
 						<div class="d-flex justify-content-between align-items-center mb-4">
 						<h5 class="card-title mb-4">場地刊登列表</h5>
 						<form th:action="@{/stdm/listAllStdm}" method="get">
+
 							<div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
+
 								<div class="search-item">
 									<label for="stdmName" style="margin-right: 5px;">場館名稱：</label>
 									<input type="search" id="stdmName" name="stdmName"
@@ -239,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     try {
       // 送 Ajax
-      const response = await fetch('/stdm/updateHolidays', {
+      const response = await fetch('/adm/updateHolidays', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
         body: new URLSearchParams({
@@ -263,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Modal 打開時: 讀取 data-stdm-id -> 發送Ajax到後端 /stdm/getHolidays
   const holidayModalEl = document.getElementById('editHolidayModal');
-  holidayModalEl.addEventListener('', async function(event) {
+  holidayModalEl.addEventListener('show.bs.modal', async function(event) {
     // 觸發按鈕
     const button = event.relatedTarget;
     editingStdmId = button.getAttribute('data-stdm-id');
@@ -273,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     holidayListEl.innerHTML = "";
 
     // 向後端查詢已有的休館日
-    const queryUrl = `/stdm/getHolidays?stdmId=${editingStdmId}`;
+    const queryUrl = `/adm/getHolidays?stdmId=${editingStdmId}`;
     try {
       const resp = await fetch(queryUrl);
       const existingHolidays = await resp.json(); 
