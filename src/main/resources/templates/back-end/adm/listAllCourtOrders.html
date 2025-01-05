@@ -85,7 +85,7 @@
 										<td th:text="${orderList.member.account}"></td>
 										<td th:text="${orderList.totamt}"></td>			
 										<td th:text="${orderList.ordsta ? '已預約' : '已取消'}"></td>			
-										<td th:text="${orderList.starrank}"></td>
+										<td th:text="${orderList.starrank != null ? orderList.starrank : '未評價'}"></td>
 										<td>
                                             <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal" data-bs-target="#orderModal" th:attr="data-order-id=${orderList.courtordid}">>
                                                 查看詳情
@@ -140,7 +140,9 @@
                 
                 <div class="mb-3">
                     <h6>會員資訊</h6>
-                    <p id="modalMemberId" class="mb-1"></p>
+                    <p id="modalMemberName" class="mb-1"></p>
+                    <p id="modalMemberEmail" class="mb-1"></p>
+                    <p id="modalMemberPhone" class="mb-1"></p>
                 </div>
 
                 <div class="mb-3">
@@ -149,18 +151,11 @@
                 </div>
 
                 <div class="mb-3">
-                    <h6>預約詳情</h6>
-                    <div id="modalBookingDetails"></div>
-                    <p id="modalTotalAmount"></p>
-                </div>
-
-                <div class="mb-3">
-                    <h6>訂單狀態</h6>
-                    <p class="order-status">
-                        <span id="modalOrderStatus"></span>
-                    </p>
-                    <p id="modalStarRating" class="mb-1"></p>
-                </div>
+				    <h6>預約詳情</h6>
+				    <p id="modalBookingDate" class="mb-1">預約日期：</p>
+				    <p id="modalBookingTime" class="mb-1">預約時段：</p>
+				    <p id="modalTotalAmount">總金額：</p>
+				</div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
@@ -169,61 +164,73 @@
     </div>
 </div>
 
-<script th:inline="javascript">
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    const orderList = /*[[${orderList}]]*/ [];
-    
-    document.querySelectorAll('.view-details').forEach(button => {
+    document.querySelectorAll('button[data-bs-toggle="modal"]').forEach(button => {
         button.addEventListener('click', function() {
-            const orderId = this.getAttribute('data-order-id');
             const row = this.closest('tr');
-            
-            // 從表格行獲取資料
-            document.getElementById('modalOrderId').textContent = 
-                'ORD' + orderId.padStart(6, '0');
-            document.getElementById('modalMemberId').textContent = 
-                '會員 ID：' + row.children[2].textContent;
-            document.getElementById('modalVenueName').textContent = 
-                row.children[1].textContent;
-            document.getElementById('modalTotalAmount').textContent = 
-                '總金額：NT$ ' + row.children[3].textContent;
-            
-            const isReserved = row.children[4].textContent === '已預約';
-            const statusSpan = document.getElementById('modalOrderStatus');
-            statusSpan.textContent = isReserved ? '已預約' : '已取消';
-            statusSpan.className = 'status-badge ' + 
-                (isReserved ? 'status-reserved' : 'status-canceled');
-            
-            const starRating = row.children[5].textContent;
-            document.getElementById('modalStarRating').textContent = 
-                starRating ? `評價星等：${starRating}` : '';
-            
-            // 使用 AJAX 獲取訂單詳情（如預約日期和時段）
+            const orderId = row.children[0].textContent;
+
             fetch(`/adm/getOrderDetail/${orderId}`)
                 .then(response => response.json())
                 .then(data => {
-                    const bookingDetails = document.getElementById('modalBookingDetails');
-                    bookingDetails.innerHTML = '';
+                    // 更新訂單編號
+                    document.getElementById('modalOrderId').textContent = 
+                        orderId;
                     
+                    // 更新會員資訊
+                    document.getElementById('modalMemberName').textContent = 
+                    	'姓名：' + data.member.name;
+                    document.getElementById('modalMemberEmail').textContent = 
+                    	'Email：' + data.member.email;
+                    document.getElementById('modalMemberPhone').textContent = 
+                    	'電話：' + data.member.phone;
+                    
+                    // 更新場館資訊
+                    document.getElementById('modalVenueName').textContent = 
+                        data.stadium.stdmName;
+                    
+                    // 更新預約詳情
                     if (data.courtOrderDetail && data.courtOrderDetail.length > 0) {
-                        data.courtOrderDetail.forEach(detail => {
-                            const detailDiv = document.createElement('div');
-                            detailDiv.innerHTML = `
-                                <p class="mb-1">預約日期：${new Date(detail.ordDate).toLocaleDateString('zh-TW')}</p>
-                                <p class="mb-1">預約時段：${detail.ordTime}</p>
-                            `;
-                            bookingDetails.appendChild(detailDiv);
-                        });
+                        const detail = data.courtOrderDetail[0];
+                        document.getElementById('modalBookingDate').textContent = 
+                            '預約日期：' + formatDate(detail.ordDate);
+                        document.getElementById('modalBookingTime').textContent = 
+                            '預約時段：' + convertTimeSlot(detail.ordTime);
                     }
+                    
+                    document.getElementById('modalTotalAmount').textContent = 
+                        '總金額：' + data.totamt + ' TWD';
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.getElementById('modalBookingDetails').innerHTML = 
-                        '<p>無法載入預約詳情</p>';
                 });
         });
     });
 });
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function convertTimeSlot(timeString) {
+    let timeSlots = [];
+    const startHour = 6; // 從早上 6 點開始
+    
+    // 遍歷每個字元（跳過開頭和結尾的 'x'）
+    for (let i = 3; i < 11; i++) {
+        if (timeString[i] === '1') {
+            const slotStart = startHour + (i-3)*2;
+            const slotEnd = slotStart + 2;
+            timeSlots.push(
+                `${String(slotStart).padStart(2, '0')}:00-${String(slotEnd).padStart(2, '0')}:00`
+            );
+        }
+    }
+    
+    return timeSlots.join(', ') || '無預約時段';
+}
 </script>
 
 </body>
