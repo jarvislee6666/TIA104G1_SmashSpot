@@ -54,7 +54,7 @@ public class CourtOrderController {
 	public Map<String, Object> verifyPayment(@RequestBody Map<String, String> formData) {
 	    Map<String, Object> result = new HashMap<>();
 	    
-	    List<String> errors = new ArrayList<>(); // 用來收集錯誤訊息
+	    Map<String, String> fieldErrors = new HashMap<>(); // 用來收集錯誤訊息
 
 	    // 前端送來的 JSON 裡，key 就是 "cardNumber", "cardExpiry", "cardCvv", "cardHolder"
 	    String cardNumber = formData.get("cardNumber");
@@ -64,25 +64,25 @@ public class CourtOrderController {
 
 	    // 驗證卡號
 	    if (!isValidCardNumber(cardNumber)) {
-	        errors.add("信用卡號格式錯誤！");
+	    	fieldErrors.put("cardNumber","信用卡號格式錯誤！");
 	    }
 	    // 驗證有效期限
 	    if (!isValidExpiry(cardExpiry)) {
-	        errors.add("信用卡有效期限錯誤！");
+	    	fieldErrors.put("cardExpiry","信用卡有效期限錯誤！");
 	    }
 	    // 驗證 CVV
 	    if (!isValidCvv(cardCvv)) {
-	        errors.add("CVV 格式錯誤！");
+	    	fieldErrors.put("cardCvv","CVV 格式錯誤！");
 	    }
 	    // 驗證持卡人姓名 (如需)
 	    if (cardHolder == null || cardHolder.trim().isEmpty()) {
-	        errors.add("持卡人姓名不可空白！");
+	    	fieldErrors.put("cardHolder","持卡人姓名不可空白！");
 	    }
 
-	    if (!errors.isEmpty()) {
+	    if (!fieldErrors.isEmpty()) {
 	        // 有錯誤 => 回傳所有錯誤訊息
 	        result.put("success", false);
-	        result.put("messages", errors);
+	        result.put("fieldErrors", fieldErrors);
 	    } else {
 	        // 若皆通過
 	        result.put("success", true);
