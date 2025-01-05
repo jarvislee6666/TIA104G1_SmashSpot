@@ -71,10 +71,15 @@ public class OrdersController {
 	}
 	
 	@GetMapping("/client/orders/DPstep2")
-	public String DPstep1(Model model) {
-		// 獲取商品資訊
+	public String DPstep2(Model model) {
 
 	    return "back-end/client/orders/DPstep2";
+	}
+	
+	@GetMapping("/client/orders/DPstep3")
+	public String DPstep3(Model model) {
+
+	    return "back-end/client/orders/DPstep3";
 	}
 	
 	 // 步驟一：驗證優惠券並保存數據到 Session
@@ -100,13 +105,32 @@ public class OrdersController {
     public ResponseEntity<?> saveStep2(@RequestParam String address,
                                      @RequestParam String recipient,
                                      @RequestParam String phone,
+                                     @RequestParam String email,
+                                     @RequestParam(required = false) String notes,
+                                     @RequestParam String delivery,
                                      @ModelAttribute("orderData") Map<String, Object> orderData) {
-        // 將步驟二的數據存入 session
-        orderData.put("address", address);
-        orderData.put("recipient", recipient);
-        orderData.put("phone", phone);
+    	
+    	try {
+            // 檢查是否有步驟一的數據
+            if (!orderData.containsKey("payment") || !orderData.containsKey("productId")) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, 
+                    "message", "請先完成步驟一"));
+            }
+    	
+	        // 將步驟二的數據存入 session
+	        orderData.put("address", address);
+	        orderData.put("recipient", recipient);
+	        orderData.put("phone", phone);
+	        orderData.put("email", email);
+	        orderData.put("notes", notes);
+	        orderData.put("delivery", delivery);
         
-        return ResponseEntity.ok(Map.of("success", true));
+            return ResponseEntity.ok(Map.of("success", true));
+    	} catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body(Map.of("success", false, 
+                                   "message", "系統錯誤：" + e.getMessage()));
+        }
     }
     
     // 步驟三：最終提交訂單
