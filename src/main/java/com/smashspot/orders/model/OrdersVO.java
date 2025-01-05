@@ -31,7 +31,7 @@ public class OrdersVO implements java.io.Serializable {
 
     @Column(name = "after_dis", nullable = false)
     @NotNull(message = "折扣後金額不能為空")
-    @Min(value = 1, message = "折扣後金額不得小於{value}")
+    @Min(value = 0, message = "折扣後金額不得小於{value}")
     private Integer afterdis;
 
     @Column(name = "send_info", nullable = false)
