@@ -55,7 +55,7 @@ public class CourtOrderService {
 
         // 2. 設定訂單資訊
         CourtOrderVO newOrder = new CourtOrderVO();
-        newOrder.setMemid(requestOrder.getMemid());
+        newOrder.setMember(requestOrder.getMember());//沃寯有修改
         newOrder.setStadium(stadium);
         newOrder.setOrdsta(true);
         newOrder.setOrdcrttime(new Timestamp(System.currentTimeMillis()));
@@ -211,9 +211,14 @@ public class CourtOrderService {
         return cnt;
     }
     
+    //沃寯添加    
     public List<CourtOrderVO> getAll() {
 		return courtOrderRepository.findAll();
 	}
-
+    
+    public CourtOrderVO getOneOrder(Integer orderId) {
+        return courtOrderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("找不到訂單"));
+    }
 
 }

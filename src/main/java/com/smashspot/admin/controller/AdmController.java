@@ -17,6 +17,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -27,9 +29,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -252,7 +256,28 @@ public class AdmController {
 	@GetMapping("/listAllCourtOrders")
 	public String listAllCourtOrders(Model model) {
 	    List<CourtOrderVO> orderList = courtOrderService.getAll();
+	    
+	    System.out.println("Total orders found: " + (orderList != null ? orderList.size() : "null"));
+	    if (orderList != null) {
+	        for (CourtOrderVO order : orderList) {
+	            System.out.println("Order ID: " + order.getCourtordid());
+	            System.out.println("Stadium: " + (order.getStadium() != null ? order.getStadium().getStdmName() : "null"));
+	        }
+	    }
+	    
 	    model.addAttribute("orderList", orderList);
 	    return "back-end/adm/listAllCourtOrders";
 	}
+	
+	@GetMapping("/getOrderDetail/{orderId}")
+	@ResponseBody
+	public ResponseEntity<CourtOrderVO> getOrderDetail(@PathVariable Integer orderId) {
+	    try {
+	        CourtOrderVO order = courtOrderService.getOneOrder(orderId);
+	        return ResponseEntity.ok(order);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
+	
 }

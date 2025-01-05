@@ -31,7 +31,7 @@
 								class="fas fa-plus-circle me-2"></i>場館刊登
 							</a> <a class="nav-link" th:href="@{/adm/listAllStdm}"> <i
 								class="fas fa-list me-2"></i>場館刊登列表
-							</a> <a class="nav-link active" href="#"> <i class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> <a class="nav-link active" th:href="@{/adm/listAllCourtOrders}"> <i class="fas fa-history me-2"></i>預約訂單紀錄
 							</a> <a class="nav-link" href="#"> <i
 								class="fas fa-chart-line me-2"></i>場館成效統計
 							</a>
@@ -81,11 +81,16 @@
                                 <tbody>    
 								    <tr th:each="orderList : ${orderList}">
 										<td th:text="${orderList.courtordid}"></td>
-										<td th:text="${orderList.stadium.stdmId}"></td>
-										<td th:text="${orderList.memid}"></td>
+										<td th:text="${orderList.stadium.stdmName}"></td>
+										<td th:text="${orderList.member.account}"></td>
 										<td th:text="${orderList.totamt}"></td>			
 										<td th:text="${orderList.ordsta ? '已預約' : '已取消'}"></td>			
 										<td th:text="${orderList.starrank}"></td>
+										<td>
+                                            <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal" data-bs-target="#orderModal" th:attr="data-order-id=${orderList.courtordid}">>
+                                                查看詳情
+                                            </button>
+                                        </td>
 									</tr>
                                 </tbody>
                             </table>
@@ -119,9 +124,107 @@
             </div>
         </div>
     </div>
+    <!-- 訂單詳情彈窗 -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">訂單詳情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>訂單編號</h6>
+                    <p id="modalOrderId"></p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>會員資訊</h6>
+                    <p id="modalMemberId" class="mb-1"></p>
+                </div>
 
+                <div class="mb-3">
+                    <h6>場館資訊</h6>
+                    <p id="modalVenueName"></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6>預約詳情</h6>
+                    <div id="modalBookingDetails"></div>
+                    <p id="modalTotalAmount"></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6>訂單狀態</h6>
+                    <p class="order-status">
+                        <span id="modalOrderStatus"></span>
+                    </p>
+                    <p id="modalStarRating" class="mb-1"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const orderList = /*[[${orderList}]]*/ [];
     
-
+    document.querySelectorAll('.view-details').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const row = this.closest('tr');
+            
+            // 從表格行獲取資料
+            document.getElementById('modalOrderId').textContent = 
+                'ORD' + orderId.padStart(6, '0');
+            document.getElementById('modalMemberId').textContent = 
+                '會員 ID：' + row.children[2].textContent;
+            document.getElementById('modalVenueName').textContent = 
+                row.children[1].textContent;
+            document.getElementById('modalTotalAmount').textContent = 
+                '總金額：NT$ ' + row.children[3].textContent;
+            
+            const isReserved = row.children[4].textContent === '已預約';
+            const statusSpan = document.getElementById('modalOrderStatus');
+            statusSpan.textContent = isReserved ? '已預約' : '已取消';
+            statusSpan.className = 'status-badge ' + 
+                (isReserved ? 'status-reserved' : 'status-canceled');
+            
+            const starRating = row.children[5].textContent;
+            document.getElementById('modalStarRating').textContent = 
+                starRating ? `評價星等：${starRating}` : '';
+            
+            // 使用 AJAX 獲取訂單詳情（如預約日期和時段）
+            fetch(`/adm/getOrderDetail/${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const bookingDetails = document.getElementById('modalBookingDetails');
+                    bookingDetails.innerHTML = '';
+                    
+                    if (data.courtOrderDetail && data.courtOrderDetail.length > 0) {
+                        data.courtOrderDetail.forEach(detail => {
+                            const detailDiv = document.createElement('div');
+                            detailDiv.innerHTML = `
+                                <p class="mb-1">預約日期：${new Date(detail.ordDate).toLocaleDateString('zh-TW')}</p>
+                                <p class="mb-1">預約時段：${detail.ordTime}</p>
+                            `;
+                            bookingDetails.appendChild(detailDiv);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('modalBookingDetails').innerHTML = 
+                        '<p>無法載入預約詳情</p>';
+                });
+        });
+    });
+});
+</script>
 
 </body>
 </html>

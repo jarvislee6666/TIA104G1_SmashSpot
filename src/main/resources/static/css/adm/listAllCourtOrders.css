@@ -186,3 +186,20 @@
             border-top: 1px solid #e2e8f0;
             padding: 1rem 1.5rem;
         }
+        
+        .status-badge {
+		    padding: 0.25rem 0.5rem;
+		    border-radius: 0.25rem;
+		    font-size: 0.875rem;
+		    display: inline-block;
+		}
+		
+		.status-reserved {
+		    background-color: #28a745;
+		    color: white;
+		}
+		
+		.status-canceled {
+		    background-color: #dc3545;
+		    color: white;
+		}
