@@ -29,7 +29,7 @@ public class CourtOrderVO {
 	@Column(name = "court_ord_id", updatable = false)
 	private Integer courtordid;
 
-	@JsonBackReference
+	@JsonBackReference(value = "stadiumRef")
 	@ManyToOne
 	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id")
 	private StadiumVO stadium;
@@ -54,7 +54,7 @@ public class CourtOrderVO {
 		this.stadium = stadium;
 	}
 
-	@JsonBackReference
+	@JsonBackReference(value = "memberRef")
 	@ManyToOne
 	@JoinColumn(name = "mem_id", referencedColumnName = "mem_id")
 	private MemberVO member;

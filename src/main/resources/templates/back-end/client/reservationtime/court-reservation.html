@@ -714,24 +714,28 @@ body {
 							<label for="cardNumber" class="form-label">卡號</label> <input
 								type="text" class="form-control" id="cardNumber"
 								name="cardNumber" placeholder="請輸入 16 位數字">
+							<div class="text-danger mt-1" id="cardNumberError"></div>
 						</div>
 						<!-- 有效期限 -->
 						<div class="mb-3">
 							<label for="cardExpiry" class="form-label">有效期限</label> <input
 								type="text" class="form-control" id="cardExpiry"
 								name="cardExpiry" placeholder="MM/YY">
+							<div class="text-danger mt-1" id="cardExpiryError"></div>
 						</div>
 						<!-- 安全碼 CVV -->
 						<div class="mb-3">
 							<label for="cardCvv" class="form-label">安全碼 (CVV)</label> <input
 								type="text" class="form-control" id="cardCvv" name="cardCvv"
 								placeholder="3 位數字">
+							<div class="text-danger mt-1" id="cardCvvError"></div>
 						</div>
 						<!-- 持卡人姓名 -->
 						<div class="mb-3">
 							<label for="cardHolder" class="form-label">持卡人姓名</label> <input
 								type="text" class="form-control" id="cardHolder"
 								name="cardHolder" placeholder="與信用卡相同">
+							<div class="text-danger mt-1" id="cardHolderError"></div>
 						</div>
 					</form>
 				</div>
@@ -790,9 +794,18 @@ body {
 	          cardHolder
 	        })
 	    })
-	    .then(response => response.json())
+	    .then(response => 
+	    response.json())
 	    .then(data => {
 	        console.log("payment-check 回應:", data);
+
+	        // -------------------------
+	        // (A) 清空舊的錯誤訊息
+	        // -------------------------
+	        document.getElementById("cardNumberError").innerHTML = "";
+	        document.getElementById("cardExpiryError").innerHTML = "";
+	        document.getElementById("cardCvvError").innerHTML = "";
+	        document.getElementById("cardHolderError").innerHTML = "";
 	        if (data.success) {
 	            // 通過 => call submitBooking()
 	            // 信用卡驗證通過 => 關閉信用卡 Modal
@@ -802,8 +815,28 @@ body {
 	            // ★★★ 關鍵：呼叫「下單流程」函式 ★★★
 	            submitBooking();
 	        } else {
-	            // 錯誤 => data.messages 可能是陣列
-	            alert(data.messages.join("\n"));
+	            // -------------------------
+	            // (C) 有錯誤 => 顯示到各欄位下方
+	            // -------------------------
+	            const errors = data.fieldErrors; 
+	            // 例如: { "cardNumber":"信用卡號格式錯誤！", "cardHolder":"持卡人姓名不可空白！" }
+
+	            // cardNumberError
+	            if (errors.cardNumber) {
+	                document.getElementById("cardNumberError").innerHTML = errors.cardNumber;
+	            }
+	            // cardExpiryError
+	            if (errors.cardExpiry) {
+	                document.getElementById("cardExpiryError").innerHTML = errors.cardExpiry;
+	            }
+	            // cardCvvError
+	            if (errors.cardCvv) {
+	                document.getElementById("cardCvvError").innerHTML = errors.cardCvv;
+	            }
+	            // cardHolderError
+	            if (errors.cardHolder) {
+	                document.getElementById("cardHolderError").innerHTML = errors.cardHolder;
+	            }
 	        }
 	    })
 	    .catch(err => {
@@ -965,7 +998,7 @@ body {
         const stadiumInfo = document.getElementById('stadiumInfo');
 		const stadiumIdFromServer = stadiumInfo.dataset.stdmid;
         return {
-            memid:  memIdFromServer,                 // 範例: 假設會員 ID=1
+        	member:{memid: parseInt(memIdFromServer)},                 
             stadium: { stdmId: parseInt(stadiumIdFromServer) },  
             courtOrderDetail          // 同名屬性，ES6 簡寫
         };

@@ -198,7 +198,7 @@ public class MemberVO implements Serializable {
  
     private Set<CourtOrderVO> CourtOrder;
     
-    @JsonManagedReference
+    @JsonManagedReference(value = "memberRef")
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 	public Set<CourtOrderVO> getCourtOrder() {
 		return CourtOrder;
