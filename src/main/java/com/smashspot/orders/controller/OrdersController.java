@@ -76,12 +76,6 @@ public class OrdersController {
 	    return "back-end/client/orders/DPstep2";
 	}
 	
-	@GetMapping("/client/orders/DPstep3")
-	public String DPstep3(Model model) {
-
-	    return "back-end/client/orders/DPstep3";
-	}
-	
 	 // 步驟一：驗證優惠券並保存數據到 Session
     @PostMapping("/client/orders/saveStep1")
     @ResponseBody
@@ -90,13 +84,26 @@ public class OrdersController {
                                      @RequestParam Integer finalPrice,
                                      @RequestParam Integer productId,
                                      @ModelAttribute("orderData") Map<String, Object> orderData) {
-        // 將步驟一的數據存入 session
+    try {
+    	// 先獲取商品資訊以取得原始價格
+        ProductVO product = proSvc.getOneProduct(productId);
+        if (product == null) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("success", false, "message", "商品不存在"));
+        }
+    	
+    	// 將步驟一的數據存入 session
         orderData.put("payment", payment);
         orderData.put("copid", copid);
         orderData.put("finalPrice", finalPrice);
+        orderData.put("originalPrice", product.getPurprice());
         orderData.put("productId", productId);
         
         return ResponseEntity.ok(Map.of("success", true));
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body(Map.of("success", false, "message", e.getMessage()));
+	    }
     }
     
     // 步驟二：保存收貨資訊到 Session
@@ -134,49 +141,70 @@ public class OrdersController {
     }
     
     // 步驟三：最終提交訂單
-    @PostMapping("/client/orders/submitOrder")
-    @ResponseBody
-    public ResponseEntity<?> submitOrder(@ModelAttribute("orderData") Map<String, Object> orderData, HttpSession session) {
-        try {
+    @GetMapping("/client/orders/DPstep3")
+    public String DPstep3(@ModelAttribute("orderData") Map<String, Object> orderData, HttpSession session, Model model) {
+    	// 從 session 中取出會員資訊
+        MemberVO mem = (MemberVO) session.getAttribute("login");
+        if (mem == null) {
+            return "redirect:/login";
+        }
+    	
+    	try {
             // 從 session 中取出所有數據
             OrdersVO order = new OrdersVO();
             // 設置訂單資訊
-            MemberVO mem = (MemberVO) session.getAttribute("login");
             order.setMemid(mem.getMemid()); // 獲取當前會員ID
             order.setOrdstaid(2); // 2 代表付款完成
+            
+            // 設置商品資訊
+            Integer productId = (Integer) orderData.get("productId");
+            ProductVO product = proSvc.getOneProduct(productId);
+            if (product == null) {
+                return "redirect:/client/orders/DPstep1"; 
+            }
+            order.setProductVO(product);
+            
+            // 設置價格資訊
             order.setBeforedis((Integer) orderData.get("originalPrice"));
             order.setAfterdis((Integer) orderData.get("finalPrice"));
             
-            // 設置收貨資訊
-            String sendInfo = String.format("收件人：%s，電話：%s，地址：%s", 
-                orderData.get("recipient"),
-                orderData.get("phone"),
-                orderData.get("address"));
-            order.setSendinfo(sendInfo);
-            
-            // 設置商品
-            ProductVO product = proSvc.getOneProduct((Integer) orderData.get("productId"));
-            order.setProductVO(product);
-            
-            // 設置優惠券（如果有）
+            // 設置優惠券（如果有使用）
             Integer copid = (Integer) orderData.get("copid");
             if (copid != null) {
                 CouponVO coupon = copSvc.getOneCoupon(copid);
                 order.setCouponVO(coupon);
             }
             
+            // 組合收件資訊
+            String sendInfo = String.format("收件人：%s，電話：+886%s，地址：%s", 
+                orderData.get("recipient"),
+                orderData.get("phone"),
+                orderData.get("address"));
+            order.setSendinfo(sendInfo);
+            
             // 保存訂單
             odrsvc.addOrder(order);
             
-            // 清除 session 中的訂單數據
+            // 更新商品狀態為已結標/直購完成(2)
+            product.setBidstaid(2);
+            proSvc.updateProduct(product);
+            
+            // 將訂單資訊傳遞給視圖
+            model.addAttribute("order", order);
+            model.addAttribute("payment", orderData.get("payment"));
+            model.addAttribute("finalPrice", orderData.get("finalPrice"));
+            model.addAttribute("recipient", orderData.get("recipient"));
+            model.addAttribute("phone", orderData.get("phone"));
+            model.addAttribute("address", orderData.get("address"));
+            
+            // 清除 session 中的訂單資料
             orderData.clear();
             
-            return ResponseEntity.ok(Map.of("success", true, "orderId", order.getOrdid()));
+            return "back-end/client/orders/DPstep3";
             
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                               .body(Map.of("success", false, "message", e.getMessage()));
+        	e.printStackTrace();
+            return "redirect:/client/orders/DPstep1";
         }
     }
-	
 }
