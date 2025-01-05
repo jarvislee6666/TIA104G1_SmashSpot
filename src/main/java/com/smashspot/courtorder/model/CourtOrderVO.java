@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
+import com.smashspot.member.model.MemberVO;
 import com.smashspot.stadium.model.StadiumVO;
 
 @Entity
@@ -53,8 +54,10 @@ public class CourtOrderVO {
 		this.stadium = stadium;
 	}
 
-	@Column(name = "mem_id")
-	private Integer memid;
+	@JsonBackReference
+	@ManyToOne
+	@JoinColumn(name = "mem_id", referencedColumnName = "mem_id")
+	private MemberVO member;
 
 	@Column(name = "rsv_sta")
 	private Boolean ordsta;
@@ -82,12 +85,12 @@ public class CourtOrderVO {
 		this.courtordid = courtordid;
 	}
 
-	public Integer getMemid() {
-		return memid;
+	public MemberVO getMember() {
+		return member;
 	}
 
-	public void setMemid(Integer memid) {
-		this.memid = memid;
+	public void setMember(MemberVO member) {
+		this.member = member;
 	}
 
 	public Boolean getOrdsta() {
