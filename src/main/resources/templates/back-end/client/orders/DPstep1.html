@@ -113,7 +113,6 @@
 					        </div>
 					    </div>
 					</div>
-
                     <!-- Payment Method -->
                     <h5 class="mb-3">選擇付款方式</h5>
                     <div class="row g-3 mb-4">
@@ -121,7 +120,7 @@
                             <div class="payment-card card h-100">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="payment1" checked>
+                                        <input class="form-check-input" type="radio" name="payment" id="payment1" value="COD" checked>
                                         <label class="form-check-label" for="payment1">
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-cash me-2"></i>
@@ -136,7 +135,7 @@
                             <div class="payment-card card h-100">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="payment2">
+                                        <input class="form-check-input" type="radio" name="payment" id="payment2" value="ATM">
                                         <label class="form-check-label" for="payment2">
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-bank me-2"></i>
@@ -154,9 +153,10 @@
                         <div class="card-body">
                             <h5 class="card-title mb-3">使用優惠券</h5>
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="請輸入優惠券代碼">
-                                <button class="btn btn-outline-dark" type="button">套用</button>
+                                <input type="text" id="couponCode" class="form-control" placeholder="請輸入優惠券代碼">
+                                <button class="btn btn-outline-dark" type="button" onclick="applyCoupon()">套用</button>
                             </div>
+                            <div id="couponMessage" class="mt-2"></div>
                         </div>
                     </div>
 
@@ -165,17 +165,20 @@
 					    <div class="card-body">
 					        <div class="d-flex justify-content-between mb-2">
 					            <span>商品總金額</span>
-					            <span th:text="'NT$ ' + ${productVO.purprice}">NT$ 3,000</span>
+					            <span>NT$ <span id="originalPrice" th:text="${productVO.purprice}">3,000</span></span>
 					        </div>
 					        <div class="d-flex justify-content-between mb-2">
 					            <span>優惠折抵</span>
-					            <span class="text-danger">-NT$ 0</span>
+					            <span class="text-danger">-NT$ <span id="discountAmount">0</span></span>
 					        </div>
 					        <hr>
 					        <div class="d-flex justify-content-between fw-bold">
 					            <span>應付總金額</span>
-					            <span th:text="'NT$ ' + ${productVO.purprice}">NT$ 3,000</span>
+					            <span>NT$ <span id="finalPrice" th:text="${productVO.purprice}">3,000</span></span>
 					        </div>
+					        <!-- 維持隱藏欄位用於儲存優惠券ID -->
+                            <input type="hidden" id="appliedCouponId" value="">
+                            <input type="hidden" id="productId" th:value="${productVO.proid}">
 					    </div>
 					</div>
 
@@ -199,7 +202,76 @@
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
+function applyCoupon() {
+    const couponCode = document.getElementById('couponCode').value;
+    const originalPrice = parseInt(document.getElementById('originalPrice').textContent);
+    
+    if (!couponCode) {
+        showMessage('請輸入優惠碼', false);
+        return;
+    }
 
+    // call couponController API 路徑
+    fetch('/api/public/coupon/validate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `code=${encodeURIComponent(couponCode)}&originalPrice=${originalPrice}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valid) {
+            document.getElementById('discountAmount').textContent = data.discount;
+            document.getElementById('finalPrice').textContent = data.discountedPrice;
+            document.getElementById('appliedCouponId').value = data.copid;
+            showMessage(data.message, true);
+        } else {
+            document.getElementById('discountAmount').textContent = '0';
+            document.getElementById('finalPrice').textContent = originalPrice;
+            document.getElementById('appliedCouponId').value = '';
+            showMessage(data.message, false);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('系統錯誤，請稍後再試', false);
+    });
+}
+
+function showMessage(message, isSuccess) {
+    const messageDiv = document.getElementById('couponMessage');
+    messageDiv.className = `alert mt-2 ${isSuccess ? 'alert-success' : 'alert-danger'}`;
+    messageDiv.textContent = message;
+}
+
+//當進入下一步時保存數據
+function saveStep1Data() {
+    const formData = new FormData();
+    formData.append('payment', document.querySelector('input[name="payment"]:checked').value);
+    formData.append('copid', document.getElementById('appliedCouponId').value);
+    formData.append('finalPrice', document.getElementById('finalPrice').textContent);
+    formData.append('productId', document.getElementById('productId').value);
+
+    fetch('/client/orders/saveStep1', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 成功後跳轉到步驟二
+            window.location.href = '/client/orders/DPstep2';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// 修改下一步按鈕的點擊事件
+document.querySelector('.btn-dark').addEventListener('click', function(e) {
+    e.preventDefault();
+    saveStep1Data();
+});
 </script>
 </body>
 </html>
