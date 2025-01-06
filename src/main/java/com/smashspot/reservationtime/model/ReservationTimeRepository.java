@@ -77,4 +77,15 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
    List<ReservationTimeVO> findHolidayByStadiumIdAndDatesGreaterThanEqual(
                    @Param("stdmId") Integer stdmId,
                    @Param("dates") Date dates);
+   
+   //沃寯添加
+   @Query("SELECT r FROM ReservationTimeVO r " +
+	       "WHERE r.stadium.stdmId = :stdmId " +
+	       "AND r.dates BETWEEN :startDate AND :endDate")
+	List<ReservationTimeVO> findByStadiumIdAndDatesBetween(
+	    @Param("stdmId") Integer stdmId,
+	    @Param("startDate") Date startDate,
+	    @Param("endDate") Date endDate
+	);
+   
 }
