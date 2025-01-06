@@ -41,6 +41,7 @@ import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorder.model.CourtOrderService;
 import com.smashspot.courtorder.model.CourtOrderVO;
+import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
 
@@ -271,11 +272,37 @@ public class AdmController {
 	
 	@GetMapping("/getOrderDetail/{orderId}")
 	@ResponseBody
-	public ResponseEntity<CourtOrderVO> getOrderDetail(@PathVariable Integer orderId) {
+	public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Integer orderId) {
 	    try {
+	        // 獲取訂單信息
 	        CourtOrderVO order = courtOrderService.getOneOrder(orderId);
-	        return ResponseEntity.ok(order);
+	        
+	        // 創建返回的資料映射
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("courtordid", order.getCourtordid());
+	        response.put("member", Map.of(
+	            "name", order.getMember().getName(),
+	            "email", order.getMember().getEmail(),
+	            "phone", order.getMember().getPhone()
+	        ));
+	        response.put("stadium", Map.of(
+	            "stdmName", order.getStadium().getStdmName()
+	        ));
+	        
+	        // 處理訂單詳情
+	        if (!order.getCourtOrderDetail().isEmpty()) {
+	            CourtOrderDetailVO detail = order.getCourtOrderDetail().iterator().next();
+	            response.put("detail", Map.of(
+	                "ordDate", detail.getOrdDate(),
+	                "ordTime", detail.getOrdTime()
+	            ));
+	        }
+	        
+	        response.put("totamt", order.getTotamt());
+	        
+	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
+	        e.printStackTrace();  // 添加日誌
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}

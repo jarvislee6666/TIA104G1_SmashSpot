@@ -206,20 +206,19 @@ public class CourtOrderService {
 		return courtOrderRepository.findAll();
 	}
     
+    @Transactional(readOnly = true)
     public CourtOrderVO getOneOrder(Integer orderId) {
-        return courtOrderRepository.findById(orderId)
+        CourtOrderVO order = courtOrderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("找不到訂單"));
+        
+        // 觸發關聯對象加載
+        if (order.getMember() != null) {
+            order.getMember().getName();  // 觸發加載
+            order.getMember().getEmail(); // 觸發加載
+            order.getMember().getPhone(); // 觸發加載
+        }
+        return order;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     /**
      * 只用方法命名規則來撈主檔 (Lazy Load)

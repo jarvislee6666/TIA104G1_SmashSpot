@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -205,6 +206,25 @@ public class OrdersController {
         } catch (Exception e) {
         	e.printStackTrace();
             return "redirect:/client/orders/DPstep1";
+        }
+    }
+    
+    @GetMapping("/adm/getProductImage/{ordId}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getProductImage(@PathVariable Integer ordId) {
+        try {
+            OrdersVO order = odrsvc.getOneOrder(ordId);
+            if (order != null && order.getProductVO() != null) {
+                byte[] image = order.getProductVO().getPropic();
+                if (image != null && image.length > 0) {
+                    return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(image);
+                }
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
