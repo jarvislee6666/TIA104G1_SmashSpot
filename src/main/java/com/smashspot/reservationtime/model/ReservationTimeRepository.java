@@ -34,8 +34,6 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
        Integer startWeek, 
        Integer endWeek
    );
-   
-   
 
    //   stadium 有欄位叫 'court_count'
    //   用 'xxxx' + court_count*7 + 'x' 的方式組出 12 碼
