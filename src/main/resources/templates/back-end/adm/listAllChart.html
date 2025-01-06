@@ -7,40 +7,7 @@
 <title>場館成效統計 - listAllChart.html</title>
 <th:block th:replace="back-end/adm/Header :: headContent" />
 <head th:insert="~{/back-end/adm/included-fragment}"></head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- jQuery (如果需要的話) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-<style>
-.chart-container {
-    position: relative;
-    height: 400px;
-    margin: 20px 0;
-    padding: 15px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-}
-
-.loading.active {
-    display: block;
-}
-</style>
+</head>
 
 <body>
     <div class="loading-overlay">
@@ -51,172 +18,229 @@
     <header th:replace="back-end/adm/Header :: header"></header>
 
     <div class="container-fluid">
+        <!-- 與原有結構保持一致的布局 -->
         <div class="row">
+            <!-- 側邊欄 -->
             <div class="col-md-2 mb-4">
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="nav flex-column nav-pills">
-                            <a class="nav-link" th:href="@{/adm/addStdm}">
-                                <i class="fas fa-plus-circle me-2"></i>場館刊登
-                            </a>
-                            <a class="nav-link" th:href="@{/adm/listAllStdm}">
-                                <i class="fas fa-list me-2"></i>場館刊登列表
-                            </a>
-                            <a class="nav-link" th:href="@{/adm/listAllCourtOrders}">
-                                <i class="fas fa-history me-2"></i>預約訂單紀錄
-                            </a>
-                            <a class="nav-link active" th:href="@{/adm/listChart}">
-                                <i class="fas fa-chart-line me-2"></i>場館成效統計
-                            </a>
-                        </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="nav flex-column nav-pills">
+                        <a class="nav-link" th:href="@{/adm/addStdm}">
+                            <i class="fas fa-plus-circle me-2"></i>場館刊登
+                        </a>
+                        <a class="nav-link" th:href="@{/adm/listAllStdm}">
+                            <i class="fas fa-list me-2"></i>場館刊登列表
+                        </a>
+                        <a class="nav-link" th:href="@{/adm/listAllCourtOrders}">
+                            <i class="fas fa-history me-2"></i>預約訂單紀錄
+                        </a>
+                        <a class="nav-link active" th:href="@{/adm/listAllChart}">
+                            <i class="fas fa-chart-line me-2"></i>場館成效統計
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
 
             <!-- 主要內容區 -->
             <div class="col-md-10">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="card-title">時段使用率統計</h5>
-                            <div class="d-flex align-items-center gap-3">
-                                <select class="form-select" id="stadiumSelect" style="width: 200px;">
-                                    <option value="" selected disabled>選擇場館</option>
-                                    <option th:each="stadium : ${stadiums}" 
-                                            th:value="${stadium.stdmId}" 
+                            <h5 class="card-title" id="chartTitle">場館統計</h5>
+                            <div class="d-flex gap-3">
+                                <select id="stadiumSelect" class="form-select" style="width: 200px;">
+                                    <option value="">選擇場館</option>
+                                    <option th:each="stadium : ${stadiumList}"
+                                            th:value="${stadium.stdmId}"
                                             th:text="${stadium.stdmName}">
                                     </option>
                                 </select>
-                                <input type="month" class="form-control" id="monthPicker" 
-                                       th:value="${#dates.format(#dates.createNow(), 'yyyy-MM')}">
-                            </div>
-                        </div>
-
-                        <!-- 載入指示器 -->
-                        <div class="loading">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">載入中...</span>
+                                <input type="month" id="monthSelect" class="form-control">
+                                <select id="statsTypeSelect" class="form-select" style="width: 150px;">
+                                    <option value="usage">時段使用率統計</option>
+                                    <option value="review">評論統計</option>
+                                </select>
                             </div>
                         </div>
 
                         <!-- 圖表區域 -->
-						<div class="card">
-						    <div class="card-body">
-						        <!-- 載入指示器 -->
-						        <div class="loading">
-						            <div class="spinner-border text-primary" role="status">
-						                <span class="visually-hidden">載入中...</span>
-						            </div>
-						        </div>
-						        
-						        <!-- 圖表容器 -->
-						        <div class="chart-container">
-						            <canvas id="usageChart"></canvas>
-						        </div>
-						    </div>
-						</div>
+                        <div id="usageChartContainer" class="chart-container">
+                            <canvas id="usageChart"></canvas>
+                        </div>
+
+                        <!-- 評論統計區域 -->
+                        <div id="reviewContainer" class="d-none">
+                            <div class="review-stats">
+                                <h3>平均評分：<span id="avgRating">0</span>/5</h3>
+                                <div class="star-rating" id="avgStars"></div>
+                            </div>
+                            <div class="rating-chart">
+                                <canvas id="ratingChart"></canvas>
+                            </div>
+                            <div class="review-list" id="reviewList"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-    let usageChart = null;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const stadiumSelect = document.getElementById('stadiumSelect');
-        const monthPicker = document.getElementById('monthPicker');
-        const loading = document.querySelector('.loading');
-        
-        // 設置當前月份
-        const today = new Date();
-        monthPicker.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+    let currentChart = null;
+    let currentType = 'usage';
 
-        function showLoading() {
-            if (loading) loading.style.display = 'block';
-        }
+    function initializeCharts() {
+        const stadiumId = document.getElementById('stadiumSelect').value;
+        const month = document.getElementById('monthSelect').value;
+        if (!stadiumId || !month) return;
 
-        function hideLoading() {
-            if (loading) loading.style.display = 'none';
-        }
+        fetchData(stadiumId, month, currentType);
+    }
 
-        function destroyChart() {
-            if (usageChart) {
-                usageChart.destroy();
-                usageChart = null;
+    async function fetchData(stadiumId, month, type) {
+        try {
+            const response = await fetch(`/adm/getStadiumStats?stdmId=${stadiumId}&month=${month}&type=${type}`);
+            const data = await response.json();
+
+            if (type === 'usage') {
+                showUsageChart(data.usageStats);
+            } else {
+                showReviewStats(data);
             }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function showUsageChart(data) {
+        const ctx = document.getElementById('usageChart').getContext('2d');
+        if (currentChart) {
+            currentChart.destroy();
         }
 
-        async function updateChart() {
-            const stdmId = stadiumSelect.value;
-            const yearMonth = monthPicker.value;
-            
-            if (!stdmId || !yearMonth) return;
-
-            showLoading();
-            destroyChart();
-
-            try {
-                const response = await fetch(`/adm/getStadiumStats?stdmId=${stdmId}&yearMonth=${yearMonth}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const data = await response.json();
-                const ctx = document.getElementById('usageChart').getContext('2d');
-
-                usageChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(data.timeSlotStats),
-                        datasets: [{
-                            label: '使用次數',
-                            data: Object.values(data.timeSlotStats),
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1,
-                                    precision: 0
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            },
-                            title: {
-                                display: true,
-                                text: '場館各時段使用次數統計'
-                            }
+        currentChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(data),
+                datasets: [{
+                    label: '預約次數',
+                    data: Object.values(data),
+                    backgroundColor: 'rgba(79, 89, 157, 0.6)',
+                    borderColor: 'rgba(79, 89, 157, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
                         }
                     }
-                });
-            } catch (error) {
-                console.error('更新圖表時發生錯誤:', error);
-            } finally {
-                hideLoading();
+                }
             }
+        });
+
+        document.getElementById('usageChartContainer').classList.remove('d-none');
+        document.getElementById('reviewContainer').classList.add('d-none');
+    }
+
+    function showReviewStats(data) {
+        document.getElementById('usageChartContainer').classList.add('d-none');
+        document.getElementById('reviewContainer').classList.remove('d-none');
+
+        // 顯示平均評分
+        document.getElementById('avgRating').textContent = data.averageRating.toFixed(1);
+        document.getElementById('avgStars').textContent = '★'.repeat(Math.round(data.averageRating));
+
+        // 評分分布圖表
+        const ctx = document.getElementById('ratingChart').getContext('2d');
+        if (currentChart) {
+            currentChart.destroy();
         }
 
-        // 事件監聽器
-        stadiumSelect.addEventListener('change', updateChart);
-        monthPicker.addEventListener('change', updateChart);
+        const ratings = [1, 2, 3, 4, 5];
+        currentChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ratings.map(r => `${r}星`),
+                datasets: [{
+                    label: '評價數量',
+                    data: ratings.map(r => data.ratingDistribution[r] || 0),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(255, 205, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(54, 162, 235, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
 
-        // 自動觸發首次更新
-        if (stadiumSelect.value) {
-            updateChart();
-        }
-    });
-</script>
+        // 顯示評論列表
+        const reviewsHtml = data.reviews.map(review => `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="star-rating">${'★'.repeat(review.rating)}</div>
+                        <small class="text-muted">${new Date(review.date).toLocaleDateString()}</small>
+                    </div>
+                    <p class="mt-2 mb-0">${review.message}</p>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('reviewList').innerHTML = reviewsHtml;
+    }
+
+    // 事件監聽
+    document.getElementById('statsTypeSelect').addEventListener('change', function(e) {
+            const type = e.target.value;
+            currentType = type;
+            document.getElementById('chartTitle').textContent = 
+                type === 'usage' ? '時段使用率統計' : '評論統計';
+            
+            if (type === 'usage') {
+                document.getElementById('usageChartContainer').classList.remove('d-none');
+                document.getElementById('reviewContainer').classList.add('d-none');
+            } else {
+                document.getElementById('usageChartContainer').classList.add('d-none');
+                document.getElementById('reviewContainer').classList.remove('d-none');
+            }
+            
+            initializeCharts();
+        });
+
+    // 設置預設月份為當前月份
+    document.getElementById('monthSelect').value = new Date().toISOString().slice(0, 7);
+    </script>
 
 </body>
 </html>

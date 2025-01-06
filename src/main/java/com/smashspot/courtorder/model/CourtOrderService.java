@@ -3,7 +3,10 @@ package com.smashspot.courtorder.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,6 +221,51 @@ public class CourtOrderService {
             order.getMember().getPhone(); // 觸發加載
         }
         return order;
+    }
+    
+    //沃寯添加
+    public Map<String, Object> calculateReviewStats(Integer stdmId) {
+        Map<String, Object> stats = new HashMap<>();
+        
+        // 獲取指定場館的所有評價
+        List<CourtOrderVO> orders = courtOrderRepository.findByStadiumId(stdmId);
+        
+        // 計算評價分布
+        Map<Integer, Integer> ratingCounts = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            ratingCounts.put(i, 0);
+        }
+        
+        List<Map<String, Object>> reviews = new ArrayList<>();
+        double totalRating = 0;
+        int reviewCount = 0;
+        
+        for (CourtOrderVO order : orders) {
+            if (order.getStarrank() != null) {
+                int rating = order.getStarrank();
+                ratingCounts.put(rating, ratingCounts.get(rating) + 1);
+                totalRating += rating;
+                reviewCount++;
+                
+                // 收集評論詳情
+                if (order.getMessage() != null && !order.getMessage().trim().isEmpty()) {
+                    Map<String, Object> review = new HashMap<>();
+                    review.put("rating", rating);
+                    review.put("message", order.getMessage());
+                    reviews.add(review);
+                }
+            }
+        }
+        
+        // 計算平均評分
+        double avgRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+        
+        stats.put("ratingDistribution", ratingCounts);
+        stats.put("averageRating", Math.round(avgRating * 10) / 10.0);
+        stats.put("reviewCount", reviewCount);
+        stats.put("reviews", reviews);
+        
+        return stats;
     }
     
     /**

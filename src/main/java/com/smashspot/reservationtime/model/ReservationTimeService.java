@@ -2,6 +2,7 @@ package com.smashspot.reservationtime.model;
 
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,5 +64,51 @@ public class ReservationTimeService {
         repository.insertTodayReservationDynamicIfNotExists(futureDate);
     }
 
+//沃寯添加====================================================================================================
+    public Map<String, Integer> calculateTimeSlotStats(List<ReservationTimeVO> reservations) {
+        Map<String, Integer> slotStats = new LinkedHashMap<>();
+        String[] slots = {
+            "00:00-02:00", "02:00-04:00", "04:00-06:00", "06:00-08:00", 
+            "08:00-10:00", "10:00-12:00", "12:00-14:00", "14:00-16:00",
+            "16:00-18:00", "18:00-20:00", "20:00-22:00", "22:00-24:00"
+        };
+        
+        // 初始化每個時段的計數為0
+        for (String slot : slots) {
+            slotStats.put(slot, 0);
+        }
+        
+        // 計算每個時段的預約數
+        for (ReservationTimeVO rsv : reservations) {
+            String booked = rsv.getBooked(); // 例如 "xxxx330000x"
+            for (int i = 0; i < booked.length() - 1; i++) { // 最後一個x不計算
+                char c = booked.charAt(i);
+                if (Character.isDigit(c)) {
+                    int count = Character.getNumericValue(c);
+                    String slot = slots[i];
+                    slotStats.put(slot, slotStats.get(slot) + count);
+                }
+                // x代表該時段沒有預約，不需要特別處理，因為已經初始化為0
+            }
+        }
+        
+        return slotStats;
+    }
+
+    private int countBookings(String slot) {
+        int count = 0;
+        for (char c : slot.toCharArray()) {
+            if (c >= '0' && c <= '9') {
+                count += (c - '0');
+            }
+        }
+        return count;
+    }
+    
+    public List<ReservationTimeVO> findByStadiumIdAndDatesBetween(
+    	    Integer stdmId, Date startDate, Date endDate) {
+    	    return repository.findByStadiumIdAndDatesBetween(stdmId, startDate, endDate);
+    	}
+//=============================================================================================================    
 
 }
