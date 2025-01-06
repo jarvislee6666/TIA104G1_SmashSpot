@@ -72,16 +72,6 @@ public class CourtOrderService {
             newOrder.setCourtOrderDetail(details);
         }
 
-//        if (details != null && !details.isEmpty()) {
-//            // 把每一筆 detail 都跟 order 綁定
-//            for (CourtOrderDetailVO detail : details) {
-//                // 綁定關聯
-//                detail.setCourtOrder(newOrder);
-//            }
-//            // 設到 order
-//            newOrder.setCourtOrderDetail(details);
-//        }
-
         // 4) 計算總金額 (依你規則，這裡示範: 場館價格 * 總時段數)
         int totalTimeSlots = 0;
         if (details != null) {
@@ -230,5 +220,18 @@ public class CourtOrderService {
         return order;
     }
     
+    /**
+     * 只用方法命名規則來撈主檔 (Lazy Load)
+     */
+    public List<CourtOrderVO> findByMemberId(Integer memid) {
+        return courtOrderRepository.findByMember_Memid(memid);
+    }
+
+    /**
+     * 用 JOIN FETCH 一次撈主檔 + 明細
+     */
+    public List<CourtOrderVO> findOrdersWithDetailsByMemberId(Integer memid) {
+        return courtOrderRepository.findOrdersWithDetailsByMemberid(memid);
+    }
 
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,7 +94,6 @@ public class CourtOrderController {
 	    return result;
 	}
 
-	// 簡單示範
 	private boolean isValidCardNumber(String cardNo) {
 	    return cardNo != null && cardNo.matches("\\d{16}");
 	}
@@ -102,6 +103,17 @@ public class CourtOrderController {
 	private boolean isValidCvv(String cvv) {
 	    return cvv != null && cvv.matches("\\d{3}");
 	}
+	
+    // 取得該會員的所有訂單 (含明細)
+    @GetMapping("/my-orders/{memid}")
+    public List<CourtOrderVO> getMyOrders(@PathVariable("memid") Integer memid) {
+        // 呼叫 Service 拿資料
+        List<CourtOrderVO> list = courtOrderSvc.findOrdersWithDetailsByMemberId(memid);
+        // 直接回傳 CourtOrderVO，其中有 Set<CourtOrderDetailVO>
+        return list;
+    }
+	
+	
 
 
 
