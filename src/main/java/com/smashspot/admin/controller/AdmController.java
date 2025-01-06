@@ -3,6 +3,7 @@ package com.smashspot.admin.controller;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -274,10 +275,8 @@ public class AdmController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Integer orderId) {
 	    try {
-	        // 獲取訂單信息
 	        CourtOrderVO order = courtOrderService.getOneOrder(orderId);
 	        
-	        // 創建返回的資料映射
 	        Map<String, Object> response = new HashMap<>();
 	        response.put("courtordid", order.getCourtordid());
 	        response.put("member", Map.of(
@@ -289,20 +288,29 @@ public class AdmController {
 	            "stdmName", order.getStadium().getStdmName()
 	        ));
 	        
-	        // 處理訂單詳情
-	        if (!order.getCourtOrderDetail().isEmpty()) {
-	            CourtOrderDetailVO detail = order.getCourtOrderDetail().iterator().next();
-	            response.put("detail", Map.of(
-	                "ordDate", detail.getOrdDate(),
-	                "ordTime", detail.getOrdTime()
-	            ));
+	        // 處理所有訂單詳情
+	        List<Map<String, Object>> details = new ArrayList<>();
+	        for (CourtOrderDetailVO detail : order.getCourtOrderDetail()) {
+	            Map<String, Object> detailMap = new HashMap<>();
+	            detailMap.put("ordDate", detail.getOrdDate());
+	            detailMap.put("ordTime", detail.getOrdTime());
+	            details.add(detailMap);
 	        }
+	        response.put("details", details);
 	        
 	        response.put("totamt", order.getTotamt());
+
+	        response.put("ordsta", order.getOrdsta());
+	        
+	        response.put("canreason", order.getCanreason());
+	        
+	        response.put("starrank", order.getStarrank());
+	        
+	        response.put("message", order.getMessage());
 	        
 	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
-	        e.printStackTrace();  // 添加日誌
+	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
