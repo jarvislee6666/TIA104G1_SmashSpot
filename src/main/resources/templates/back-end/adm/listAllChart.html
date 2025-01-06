@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>場館成效統計 - listAllChart.html</title>
+<th:block th:replace="back-end/adm/Header :: headContent" />
+<head th:insert="~{/back-end/adm/included-fragment}"></head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- jQuery (如果需要的話) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<style>
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin: 20px 0;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+.loading.active {
+    display: block;
+}
+</style>
+
+<body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header th:replace="back-end/adm/Header :: header"></header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 mb-4">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="nav flex-column nav-pills">
+                            <a class="nav-link" th:href="@{/adm/addStdm}">
+                                <i class="fas fa-plus-circle me-2"></i>場館刊登
+                            </a>
+                            <a class="nav-link" th:href="@{/adm/listAllStdm}">
+                                <i class="fas fa-list me-2"></i>場館刊登列表
+                            </a>
+                            <a class="nav-link" th:href="@{/adm/listAllCourtOrders}">
+                                <i class="fas fa-history me-2"></i>預約訂單紀錄
+                            </a>
+                            <a class="nav-link active" th:href="@{/adm/listChart}">
+                                <i class="fas fa-chart-line me-2"></i>場館成效統計
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主要內容區 -->
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title">時段使用率統計</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <select class="form-select" id="stadiumSelect" style="width: 200px;">
+                                    <option value="" selected disabled>選擇場館</option>
+                                    <option th:each="stadium : ${stadiums}" 
+                                            th:value="${stadium.stdmId}" 
+                                            th:text="${stadium.stdmName}">
+                                    </option>
+                                </select>
+                                <input type="month" class="form-control" id="monthPicker" 
+                                       th:value="${#dates.format(#dates.createNow(), 'yyyy-MM')}">
+                            </div>
+                        </div>
+
+                        <!-- 載入指示器 -->
+                        <div class="loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">載入中...</span>
+                            </div>
+                        </div>
+
+                        <!-- 圖表區域 -->
+						<div class="card">
+						    <div class="card-body">
+						        <!-- 載入指示器 -->
+						        <div class="loading">
+						            <div class="spinner-border text-primary" role="status">
+						                <span class="visually-hidden">載入中...</span>
+						            </div>
+						        </div>
+						        
+						        <!-- 圖表容器 -->
+						        <div class="chart-container">
+						            <canvas id="usageChart"></canvas>
+						        </div>
+						    </div>
+						</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let usageChart = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const stadiumSelect = document.getElementById('stadiumSelect');
+        const monthPicker = document.getElementById('monthPicker');
+        const loading = document.querySelector('.loading');
+        
+        // 設置當前月份
+        const today = new Date();
+        monthPicker.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+        function showLoading() {
+            if (loading) loading.style.display = 'block';
+        }
+
+        function hideLoading() {
+            if (loading) loading.style.display = 'none';
+        }
+
+        function destroyChart() {
+            if (usageChart) {
+                usageChart.destroy();
+                usageChart = null;
+            }
+        }
+
+        async function updateChart() {
+            const stdmId = stadiumSelect.value;
+            const yearMonth = monthPicker.value;
+            
+            if (!stdmId || !yearMonth) return;
+
+            showLoading();
+            destroyChart();
+
+            try {
+                const response = await fetch(`/adm/getStadiumStats?stdmId=${stdmId}&yearMonth=${yearMonth}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                const ctx = document.getElementById('usageChart').getContext('2d');
+
+                usageChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.timeSlotStats),
+                        datasets: [{
+                            label: '使用次數',
+                            data: Object.values(data.timeSlotStats),
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    precision: 0
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            title: {
+                                display: true,
+                                text: '場館各時段使用次數統計'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('更新圖表時發生錯誤:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 事件監聽器
+        stadiumSelect.addEventListener('change', updateChart);
+        monthPicker.addEventListener('change', updateChart);
+
+        // 自動觸發首次更新
+        if (stadiumSelect.value) {
+            updateChart();
+        }
+    });
+</script>
+
+</body>
+</html>
