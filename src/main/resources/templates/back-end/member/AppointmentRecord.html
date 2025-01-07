@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AppointmentRecord</title>
+<!-- Bootstrap, Icons, Quill CSS -->
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+	rel="stylesheet" />
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+	rel="stylesheet" />
+
+<style>
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+main {
+	margin-top: 9rem;
+	flex: 1 0 auto;
+}
+
+.nav-container {
+	display: flex;
+	border-bottom: 1px solid #e6e6e6;
+	padding: 0.1rem 0;
+	background: #fff;
+}
+
+.navbar-brand img {
+	height: 6rem;
+	width: 6rem;
+}
+
+.nav-list {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.nav-item {
+	padding: 0 20px;
+}
+
+.nav-link {
+	color: #333;
+	text-decoration: none;
+	font-size: 16px;
+}
+
+.nav-link:hover {
+	color: #0066cc;
+}
+
+.product-img {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+	border: 1px solid #dee2e6;
+}
+
+th {
+	background-color: #f8f9fa;
+	padding: 12px;
+	border-bottom: 2px solid #dee2e6;
+}
+
+td {
+	padding: 12px;
+	vertical-align: middle;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.main-title {
+	font-size: 20px;
+	color: #333;
+	margin-bottom: 16px;
+}
+
+.category-container {
+	background: white;
+	border-radius: 8px;
+	padding: 16px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	margin-bottom: 16px;
+}
+
+.sub-title {
+	font-size: 16px;
+	color: #666;
+	margin-bottom: 12px;
+}
+
+category-list {
+	background: white;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.category-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	color: #333;
+	text-decoration: none;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.category-item:last-child {
+	border-bottom: none;
+}
+
+.category-item.active {
+	background-color: #0d6efd;
+	color: white;
+}
+
+.badge-number {
+	background: #0d6efd;
+	color: white;
+	padding: 2px 8px;
+	border-radius: 12px;
+	font-size: 14px;
+}
+
+.active .badge-number {
+	background: white;
+	color: #0d6efd;
+}
+
+.category-title {
+	font-size: 16px;
+	color: #666;
+	margin: 0 0 8px 4px;
+}
+
+.action-button {
+	width: 100%;
+	padding: 8px;
+	margin-bottom: 8px;
+	border: 1px solid #0d6efd;
+	border-radius: 4px;
+	background: white;
+	color: #0d6efd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	text-decoration: none;
+}
+
+.action-button:hover {
+	background-color: #f8f9fa;
+	color: #0d6efd;
+	text-decoration: none;
+}
+
+footer {
+	background-color: #7d7d7d;
+	padding: 0.7rem 0;
+	flex-shrink: 0;
+}
+
+.footer-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.footer-logo {
+	height: 6rem;
+	width: 6rem;
+	object-fit: contain;
+}
+
+.footer-text {
+	color: #e0e0e0;
+	font-size: 14px;
+	text-align: center;
+}
+
+.footer-contact {
+	display: flex;
+	flex-direction: column;
+	margin-left: 20px;
+}
+
+.social-icons {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.social-icons-row {
+	display: flex;
+	gap: 3rem;
+	margin-bottom: 10px;
+}
+
+.social-icons a {
+	color: #333;
+	font-size: 24px;
+	text-decoration: none;
+	transition: color 0.3s;
+}
+
+.social-icons a:hover {
+	color: #e0e0e0;
+}
+
+@media ( max-width : 768px) {
+	.footer-container {
+		flex-direction: column;
+		text-align: center;
+	}
+	.footer-contact {
+		margin-left: 0;
+		margin-top: 15px;
+	}
+	.social-icons {
+		margin-top: 15px;
+	}
+}
+
+@media ( max-width : 992px) {
+	.nav-container {
+		padding: 10px 15px;
+	}
+	.navbar {
+		position: relative;
+	}
+	.nav-list {
+		flex-direction: column;
+		align-items: flex-start;
+		display: none; /* Hidden by default */
+		width: 100%;
+		background-color: white;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		z-index: 1000;
+	}
+	.navbar-toggler {
+		position: absolute;
+		top: 50%;
+		right: 15px;
+		transform: translateY(-50%);
+		display: block;
+		border: none;
+		background: none;
+		z-index: 1001;
+	}
+	.nav-item {
+		width: 100%;
+		padding: 10px 15px;
+		border-bottom: 1px solid #e6e6e6;
+	}
+	.nav-list.show {
+		display: flex;
+	}
+	.nav-link {
+		display: block;
+		width: 100%;
+	}
+}
+
+/* Mobile-specific adjustments */
+@media ( max-width : 576px) {
+	.navbar-brand img {
+		width: 50px;
+		height: 50px;
+	}
+}
+
+/* ======================= 預約記錄 ================================= */
+.star {
+	cursor: pointer;
+	color: #ddd;
+	font-size: 2rem;
+	transition: color 0.2s;
+}
+
+.star.active {
+	color: #ffc107; /* Bootstrap's warning color for stars */
+}
+
+.ql-editor {
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+}
+</style>
+</head>
+
+<body class="bg-light">
+	<header>
+		<nav class="navbar nav-container position-fixed w-100 z-3 top-0">
+			<div class="container position-relative">
+				<a class="navbar-brand" href="#"> <img src="./logo/logo.svg"
+					alt="Bootstrap" />
+				</a>
+
+				<!-- Mobile Toggle Button -->
+				<button class="navbar-toggler d-lg-none" type="button"
+					aria-label="Toggle navigation">
+					<span class="bi bi-list" style="font-size: 24px"></span>
+				</button>
+
+				<div class="justify-content-end">
+					<ul class="nav-list">
+						<li class="nav-item"><a href="#" class="nav-link">競標專區</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">場地預約</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">球友論壇</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">客服中心</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">業主專區</a></li>
+						<li class="nav-item"><a href="#" class="nav-link"><i
+								class="bi bi-person"></i> Account</a></li>
+						<li class="nav-item"><a href="#" class="nav-link">登出</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<main>
+		<div class="container position-relative mb-3">
+			<div class="row">
+				<!-- Sidebar -->
+				<div class="col-md-3 d-flex justify-content-center">
+					<div style="width: 80%">
+						<h5 class="mb-3" style="font-size: 24px">會員專區</h5>
+
+						<a href="./BasicInformation.html" class="action-button"> <i
+							class="bi bi-info-circle"></i>基本資料
+						</a> <a href=".#" class="action-button"> <i
+							class="bi bi-calendar2-event"></i>我的活動
+						</a> <a href="#" class="action-button"> <i class="bi bi-cash-coin"></i>參加中競標
+						</a> <a href="./WinningBids.html" class="action-button"> <i
+							class="bi bi-bag-check"></i>得標清單
+						</a> <a href="./appointmentRecord" class="action-button"> <i
+							class="bi bi-journal-check"></i>場地預約紀錄
+						</a>
+					</div>
+				</div>
+
+				<!-- Main Content -->
+				<div class="col-md-9">
+					<h2 class="mb-3">預約紀錄</h2>
+
+					<div class="table-responsive">
+						<table class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>場地名稱</th>
+									<th>預約時段數量</th>
+									<th>預約金額</th>
+									<th>預約狀態</th>
+									<th>狀態操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="order, idx : ${orders}"
+									th:attr="data-ordid=${order.courtordid}">
+									<!-- 第一欄: 這裡若要顯示第幾筆 -->
+									<td th:text="${idx.count}+1">1</td>
+
+									<!-- 第二欄: 場地名稱 -->
+									<td th:text="${order.stadium.stdmName}"></td>
+
+									<!-- 第三欄: 預約時段數量(計算好的) -->
+									<td class="reserved-count"></td>
+
+									<!-- 第四欄: 預約金額 -->
+									<td th:text="${order.totamt} + ' TWD'"></td>
+
+									<!-- 第五欄: 預約狀態 -->
+									<td>已預約</td>
+
+									<!-- 第六欄: 狀態操作(明細、取消按鈕) -->
+									<td>
+										<button type="button" class="btn  btn-primary btn-sm detail-btn"
+											data-ordid="">明細</button>
+										<button type="button" class="btn btn-danger btn-sm cancel-btn">
+											取消預約</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<!-- detailModal: 顯示詳細資料 -->
+					<div class="modal fade" id="detailModal" tabindex="-1">
+						<div class="modal-dialog modal-dialog-centered modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title">預約詳細資訊</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+								</div>
+								<div class="modal-body">
+									<!-- 這裡放置要顯示的欄位 -->
+									<div class="mb-2">
+										<strong>訂單編號：</strong><span id="detailOrderId"></span>
+									</div>
+									<div class="mb-2">
+										<strong>預約詳情：</strong>
+										<div>
+											<span id="detailDateTime"></span>
+										</div>
+										<div>
+											總金額：<span id="detailTotalAmt"></span> TWD
+										</div>
+									</div>
+									<div class="mb-2">
+										<strong>訂單狀態：</strong><span id="detailStatus"></span>
+									</div>
+									<div class="mb-2">
+										<strong>評價資訊：</strong>
+										<div>
+											星等：<span id="detailStar"></span>
+										</div>
+										<div>
+											留言：
+											<p id="detailMessage" style="white-space: pre-wrap;"></p>
+										</div>
+									</div>
+
+								</div>
+								<!-- /modal-body -->
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">關閉</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End detailModal -->
+
+
+					<!--  給予評價彈窗 -->
+					<div id="reviewModal" class="modal fade" tabindex="-1">
+						<div class="modal-dialog modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title">給予評價</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+								</div>
+								<div class="modal-body">
+									<p>滿意本次的預約嗎? 請給予場館評價並留下意見回饋...</p>
+
+									<div class="mb-3 d-flex align-items-center">
+										<label class="me-2">評價場館</label>
+										<div id="star-rating" class="d-flex">
+											<span class="star" data-rating="1">★</span> <span
+												class="star" data-rating="2">★</span> <span class="star"
+												data-rating="3">★</span> <span class="star" data-rating="4">★</span>
+											<span class="star" data-rating="5">★</span>
+										</div>
+									</div>
+
+									<div class="mb-3">
+										<label>留言評論</label>
+										<textarea id="review-comment" class="form-control"></textarea>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">取消</button>
+									<button type="button" class="btn btn-primary">送出評價</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 取消預約彈窗 -->
+					<div class="modal fade" id="cancelModal" tabindex="-1"
+						aria-labelledby="cancelModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="cancelModalLabel">取消預約</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+								</div>
+								<div class="modal-body">
+									<p>頻繁取消預約將影響您後續進行其他預約的權益，請於下方說明取消該筆預約的原因，預約費用會於三個工作天內退回原帳戶...</p>
+									<div class="mb-3">
+										<label for="cancel-reason" class="form-label"> 取消原因 </label>
+										<div id="cancel-reason"></div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">再想想</button>
+									<button type="button" class="btn btn-danger">確定取消</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- /彈窗結束 -->
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer>
+		<div class="footer-container">
+			<div class="d-flex align-items-center">
+				<img src="./logo/logo.svg" alt="網站logo" class="footer-logo" />
+				<div class="footer-contact">
+					<p class="footer-text">連絡電話: (02) 1234-5678</p>
+					<p>
+						<a href="#" class="text-decoration-none footer-text">客服專區</a>
+					</p>
+				</div>
+			</div>
+			<div class="social-icons">
+				<div class="social-icons-row d-flex justify-content-evenly">
+					<a href="#" class="bi bi-facebook"></a> <a href="#"
+						class="bi bi-instagram"></a> <a href="#" class="bi bi-youtube"></a>
+				</div>
+				<p class="footer-text">追蹤我們的社群平台以取得最新資訊</p>
+			</div>
+		</div>
+	</footer>
+
+	<!-- JS 區 -->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+	<script>
+      // header RWD navbar
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.querySelector(".navbar-toggler");
+        const navList = document.querySelector(".nav-list");
+        toggleBtn.addEventListener("click", function () {
+          navList.classList.toggle("show");
+        });
+      });
+
+      // 給予評價/取消預約 按鈕點擊事件
+      document.querySelectorAll(".review-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const reviewModal = new bootstrap.Modal(
+            document.getElementById("reviewModal")
+          );
+          reviewModal.show();
+        });
+      });
+      document.querySelectorAll(".cancel-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const cancelModal = new bootstrap.Modal(
+            document.getElementById("cancelModal")
+          );
+          cancelModal.show();
+        });
+      });
+
+      // 星星評分
+      document.addEventListener("DOMContentLoaded", function () {
+        const starRatingContainer = document.getElementById("star-rating");
+        if(starRatingContainer){
+          const stars = Array.from(starRatingContainer.querySelectorAll(".star"));
+          let currentRating = 0;
+          function clearStars() {
+            stars.forEach((star) => star.classList.remove("active"));
+          }
+          function setStars(rating) {
+            clearStars();
+            stars.slice(0, rating).forEach((star) => star.classList.add("active"));
+            currentRating = rating;
+          }
+          stars.forEach((star) => {
+            star.addEventListener("click", function () {
+              const rating = parseInt(this.getAttribute("data-rating"));
+              setStars(rating);
+            });
+          });
+        }
+      });
+
+      // Quill 初始化 (留言評論 / 取消原因)
+      document.querySelectorAll("#review-comment, #cancel-reason").forEach((textarea) => {
+        new Quill(textarea, {
+          modules: {
+            toolbar: [
+              [{ header: [1, 2, false] }],
+              ["bold", "italic", "underline"],
+              ["link", "blockquote", "code-block", "image"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              [{ script: "sub" }, { script: "super" }],
+              [{ align: [] }],
+            ],
+          },
+          placeholder: "請在此輸入...",
+          theme: "snow",
+        });
+        // 設置 .ql-editor 樣式
+        textarea.querySelector(".ql-editor")?.classList.add(
+          "font-family-inherit","font-size-inherit","text-color-inherit"
+        );
+      });
+
+      // ============= (AJAX) 解析時段明細 + 明細Modal邏輯 ==============
+      $(document).ready(function() {
+        // 時段對照表
+        const TIME_RANGES = [
+          "X(不開放)","X(不開放)","X(不開放)","X(不開放)",
+          "08:00~10:00","10:00~12:00","12:00~14:00",
+          "14:00~16:00","16:00~18:00","18:00~20:00",
+          "20:00~22:00","X(不開放)"
+        ];
+
+        const memId = 2; // 假設目前登入會員 ID
+        $.ajax({
+          url: `http://localhost:8080/court-order/my-orders/${memId}`, 
+          type: "GET",
+          dataType: "json",
+          success: function(response) {
+            console.log("後端回傳(含明細 ord_time):", response);
+            // response = [ { courtordid, totamt, stadium, member, starrank, message, courtOrderDetail[...] }, ...]
+
+            response.forEach(function(order) {
+              // 找到對應 <tr>
+              const rowSelector = `tr[data-ordid='${order.courtordid}']`;
+              let $row = $(rowSelector);
+              
+              let totalReservedSlots = 0;
+              (order.courtOrderDetail || []).forEach(function(dtl) {
+                let ordTimeStr = dtl.ordTime;
+                for (let i = 0; i < ordTimeStr.length; i++) {
+                  if (ordTimeStr.charAt(i) === '1') {
+                    totalReservedSlots++;
+                  }
+                }
+              });
+
+              // 更新到 class="reserved-count"
+              $row.find(".reserved-count").text(totalReservedSlots);
+
+              // 1) 填入 預約時段 (綜合)
+              let details = order.courtOrderDetail || [];
+              let finalTimeStr = "";
+              details.forEach(function(dtl, idx) {
+                let ordTimeStr = dtl.ordTime;
+                let reservedTimeArr = [];
+                for (let i = 0; i < ordTimeStr.length; i++) {
+                  if (ordTimeStr.charAt(i) === '1') {
+                    reservedTimeArr.push(TIME_RANGES[i]);
+                  }
+                }
+                let reservedTimeText = reservedTimeArr.join("、");
+                finalTimeStr += `${dtl.ordDate} ${reservedTimeText}`;
+                if(idx < details.length - 1){
+                  finalTimeStr += " / ";
+                }
+              });
+              $row.find(".json-reserveTime").text(finalTimeStr);
+
+              // 2) 設定「明細按鈕」的資料 (order)
+              $row.find(".detail-btn").data("order", order);
+            });
+
+            // 綁定 detail-btn 點擊事件: 開 detailModal
+            $(".detail-btn").on("click", function(){
+              const order = $(this).data("order");
+              if(!order){
+                alert("無法取得訂單詳細資料");
+                return;
+              }
+              // 在這裡把 order 的資訊顯示到 Modal
+              openDetailModal(order);
+            });
+          },
+          error: function(xhr, status, error) {
+            console.error("查詢預約紀錄失敗:", error);
+          }
+        });
+
+        // 打開 detailModal，並填入資料
+        function openDetailModal(order){
+          // order: { courtordid, totamt, stadium, member, starrank, message, courtOrderDetail[...] }
+          // 例如: 會員姓名: order.member.name / order.member.email / ...
+          // 場館名稱: order.stadium.stdmName
+          // 狀態: ?? (可依 order 狀態)
+          // 解析 ord_time => same logic or show finalTimeStr
+
+          // Demo: 假設 MemberVO 有 name/email/phone
+          let memberName = (order.member && order.member.name) || "未知";
+          let memberEmail= (order.member && order.member.email) || "unknown@example.com";
+          let memberPhone= (order.member && order.member.phone) || "N/A";
+
+          // 場館名稱
+          let stadiumName= (order.stadium && order.stadium.stdmName) || "未知場館";
+
+          // 解析多筆 detail => 可能有多個日期+時段
+          let dateTimeStr= "";
+          (order.courtOrderDetail||[]).forEach(function(dtl, idx){
+            let ordTimeStr = dtl.ordTime;
+            let reservedTimeArr = [];
+            for(let i=0; i<ordTimeStr.length; i++){
+              if(ordTimeStr.charAt(i)==='1'){
+                reservedTimeArr.push(TIME_RANGES[i]);
+              }
+            }
+            let reservedTimeText = reservedTimeArr.join("、");
+            dateTimeStr += `${dtl.ordDate} ${reservedTimeText}`;
+            if(idx < order.courtOrderDetail.length-1){
+              dateTimeStr += "<br/>";
+            }
+          });
+          
+
+          // 評價星等 (0~5)
+          let starRank= order.starrank||0;
+          let starHtml= "";
+          for(let i=0; i<starRank; i++){
+            starHtml+= "★";
+          }
+          for(let i=starRank; i<5; i++){
+            starHtml+= "☆";
+          }
+
+          // 將資料填入 Modal
+          $("#detailOrderId").text(order.courtordid);
+          $("#detailMemberName").text(memberName);
+          $("#detailMemberEmail").text(memberEmail);
+          $("#detailMemberPhone").text(memberPhone);
+          $("#detailStadiumName").text(stadiumName);
+          $("#detailDateTime").html(dateTimeStr);
+          $("#detailTotalAmt").text(order.totamt||0);
+          $("#detailStatus").text(order.ordsta ? "已預約" : "已取消"); // or order.ordsta
+          $("#detailStar").text(starHtml);
+          $("#detailMessage").text(order.message || "");
+
+          // 彈出 modal
+          let detailModal = new bootstrap.Modal(document.getElementById("detailModal"));
+          detailModal.show();
+        }
+      });
+      // ============ (AJAX) END =============
+    </script>
+</body>
+</html>
