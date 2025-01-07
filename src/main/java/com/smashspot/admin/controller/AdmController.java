@@ -343,6 +343,19 @@ public class AdmController {
 	    @RequestParam String month,
 	    @RequestParam String type) {
 	    
+		if ("review".equals(type)) {
+		    Map<String, Object> stats = courtOrderService.calculateReviewStats(stdmId);
+		    
+		    // 修改 reviews 資料結構，加入會員帳號
+		    List<Map<String, Object>> reviews = (List<Map<String, Object>>) stats.get("reviews");
+		    reviews.forEach(review -> {
+		        CourtOrderVO order = courtOrderService.getOneOrder((Integer) review.get("orderId"));
+		        review.put("memberAccount", order.getMember().getAccount());
+		    });
+		    
+		    return stats;
+		}
+		
 	    if ("usage".equals(type)) {
 	        // 使用率統計仍需要時間區間
 	        YearMonth ym = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
@@ -358,4 +371,6 @@ public class AdmController {
 	        return courtOrderService.calculateReviewStats(stdmId);
 	    }
 	}
+	
+	
 }

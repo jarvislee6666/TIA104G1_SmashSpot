@@ -248,10 +248,12 @@ public class CourtOrderService {
                 reviewCount++;
                 
                 // 收集評論詳情
-                if (order.getMessage() != null && !order.getMessage().trim().isEmpty()) {
+                if (order.getStarrank() != null && order.getMessage() != null) {
                     Map<String, Object> review = new HashMap<>();
-                    review.put("rating", rating);
+                    review.put("orderId", order.getCourtordid());
+                    review.put("rating", order.getStarrank());
                     review.put("message", order.getMessage());
+                    review.put("memberAccount", order.getMember().getAccount());
                     reviews.add(review);
                 }
             }
