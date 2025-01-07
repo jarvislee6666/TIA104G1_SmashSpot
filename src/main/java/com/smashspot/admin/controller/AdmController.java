@@ -3,12 +3,16 @@ package com.smashspot.admin.controller;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +49,10 @@ import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.reservationtime.model.ReservationTimeService;
+import com.smashspot.reservationtime.model.ReservationTimeVO;
+import com.smashspot.stadium.model.StadiumVO;
+import com.smashspot.stadium.model.StdmService;
 
 
 
@@ -60,6 +68,12 @@ public class AdmController {
 	
 	@Autowired
     private CourtOrderService courtOrderService;
+	
+	@Autowired
+    private StdmService stadiumService;
+	
+	@Autowired
+    private ReservationTimeService reservationTimeService;
 	
 	@GetMapping("/listAllAdm")
 		public String listAllAdm(
@@ -313,6 +327,35 @@ public class AdmController {
 	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
-	}
+	}	
 	
+	@GetMapping("/listAllChart")
+	public String showStadiumStats(Model model) {
+	    List<StadiumVO> stadiumList = stadiumService.getAll();
+	    model.addAttribute("stadiumList", stadiumList);
+	    return "back-end/adm/listAllChart";
+	}
+
+	@GetMapping("/getStadiumStats")
+	@ResponseBody
+	public Map<String, Object> getStadiumStats(
+	    @RequestParam Integer stdmId,
+	    @RequestParam String month,
+	    @RequestParam String type) {
+	    
+	    if ("usage".equals(type)) {
+	        // 使用率統計仍需要時間區間
+	        YearMonth ym = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
+	        Date startDate = Date.valueOf(ym.atDay(1).toString());
+	        Date endDate = Date.valueOf(ym.atEndOfMonth().toString());
+	        
+	        List<ReservationTimeVO> reservations = reservationTimeService
+	            .findByStadiumIdAndDatesBetween(stdmId, startDate, endDate);
+	        return Map.of("usageStats", 
+	            reservationTimeService.calculateTimeSlotStats(reservations));
+	    } else {
+	        // 評論統計不需要時間區間
+	        return courtOrderService.calculateReviewStats(stdmId);
+	    }
+	}
 }

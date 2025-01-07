@@ -1,5 +1,6 @@
 package com.smashspot.courtorder.model;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,10 +28,9 @@ public interface CourtOrderRepository extends JpaRepository<CourtOrderVO, Intege
     	     + "JOIN FETCH co.courtOrderDetail "
     	     + "WHERE co.member.memid = :memid")
     List<CourtOrderVO> findOrdersWithDetailsByMemberid(@Param("memid") Integer memid);
-    
-    
-    
-    
-    
-    
+
+    //沃寯添加
+    @Query("SELECT co FROM CourtOrderVO co WHERE co.stadium.stdmId = :stdmId")
+    List<CourtOrderVO> findByStadiumId(@Param("stdmId") Integer stdmId);
+
 }
