@@ -970,7 +970,7 @@ body {
         
         // 6.3 將每個 date 的時段合併成 ordTime
         for (const [date, timeSlots] of Object.entries(groupedByDate)) {
-            // 例如: 預設陣列長度 12, 其中 index=0,1,2,10 先填 'x'
+            // 例如: 預設陣列長度 12, 其中 index=0,1,2,3,10 先填 'x'
             // 實際依你的後端 leftover 邏輯而定
             let ordTimeArray = ['x','x','x','x','0','0','0','0','0','0','0', 'x'];
             // 索引位置對應:

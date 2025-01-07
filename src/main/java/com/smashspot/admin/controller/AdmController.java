@@ -3,11 +3,16 @@ package com.smashspot.admin.controller;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +46,13 @@ import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorder.model.CourtOrderService;
 import com.smashspot.courtorder.model.CourtOrderVO;
+import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.reservationtime.model.ReservationTimeService;
+import com.smashspot.reservationtime.model.ReservationTimeVO;
+import com.smashspot.stadium.model.StadiumVO;
+import com.smashspot.stadium.model.StdmService;
 
 
 
@@ -58,6 +68,12 @@ public class AdmController {
 	
 	@Autowired
     private CourtOrderService courtOrderService;
+	
+	@Autowired
+    private StdmService stadiumService;
+	
+	@Autowired
+    private ReservationTimeService reservationTimeService;
 	
 	@GetMapping("/listAllAdm")
 		public String listAllAdm(
@@ -271,13 +287,90 @@ public class AdmController {
 	
 	@GetMapping("/getOrderDetail/{orderId}")
 	@ResponseBody
-	public ResponseEntity<CourtOrderVO> getOrderDetail(@PathVariable Integer orderId) {
+	public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Integer orderId) {
 	    try {
 	        CourtOrderVO order = courtOrderService.getOneOrder(orderId);
-	        return ResponseEntity.ok(order);
+	        
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("courtordid", order.getCourtordid());
+	        response.put("member", Map.of(
+	            "name", order.getMember().getName(),
+	            "email", order.getMember().getEmail(),
+	            "phone", order.getMember().getPhone()
+	        ));
+	        response.put("stadium", Map.of(
+	            "stdmName", order.getStadium().getStdmName()
+	        ));
+	        
+	        // 處理所有訂單詳情
+	        List<Map<String, Object>> details = new ArrayList<>();
+	        for (CourtOrderDetailVO detail : order.getCourtOrderDetail()) {
+	            Map<String, Object> detailMap = new HashMap<>();
+	            detailMap.put("ordDate", detail.getOrdDate());
+	            detailMap.put("ordTime", detail.getOrdTime());
+	            details.add(detailMap);
+	        }
+	        response.put("details", details);
+	        
+	        response.put("totamt", order.getTotamt());
+
+	        response.put("ordsta", order.getOrdsta());
+	        
+	        response.put("canreason", order.getCanreason());
+	        
+	        response.put("starrank", order.getStarrank());
+	        
+	        response.put("message", order.getMessage());
+	        
+	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
+	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
+	}	
+	
+	@GetMapping("/listAllChart")
+	public String showStadiumStats(Model model) {
+	    List<StadiumVO> stadiumList = stadiumService.getAll();
+	    model.addAttribute("stadiumList", stadiumList);
+	    return "back-end/adm/listAllChart";
 	}
+
+	@GetMapping("/getStadiumStats")
+	@ResponseBody
+	public Map<String, Object> getStadiumStats(
+	    @RequestParam Integer stdmId,
+	    @RequestParam String month,
+	    @RequestParam String type) {
+	    
+		if ("review".equals(type)) {
+		    Map<String, Object> stats = courtOrderService.calculateReviewStats(stdmId);
+		    
+		    // 修改 reviews 資料結構，加入會員帳號
+		    List<Map<String, Object>> reviews = (List<Map<String, Object>>) stats.get("reviews");
+		    reviews.forEach(review -> {
+		        CourtOrderVO order = courtOrderService.getOneOrder((Integer) review.get("orderId"));
+		        review.put("memberAccount", order.getMember().getAccount());
+		    });
+		    
+		    return stats;
+		}
+		
+	    if ("usage".equals(type)) {
+	        // 使用率統計仍需要時間區間
+	        YearMonth ym = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
+	        Date startDate = Date.valueOf(ym.atDay(1).toString());
+	        Date endDate = Date.valueOf(ym.atEndOfMonth().toString());
+	        
+	        List<ReservationTimeVO> reservations = reservationTimeService
+	            .findByStadiumIdAndDatesBetween(stdmId, startDate, endDate);
+	        return Map.of("usageStats", 
+	            reservationTimeService.calculateTimeSlotStats(reservations));
+	    } else {
+	        // 評論統計不需要時間區間
+	        return courtOrderService.calculateReviewStats(stdmId);
+	    }
+	}
+	
 	
 }

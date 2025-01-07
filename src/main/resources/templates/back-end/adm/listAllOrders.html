@@ -6,21 +6,21 @@
 <head th:insert="~{/back-end/adm/included-fragment}"></head>
 
 <style>
-        .search-section {
-            background-color: var(--surface);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .table-responsive {
-            background-color: var(--surface);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-    </style>
+	.search-section {
+	    background-color: var(--surface);
+	    border-radius: 0.5rem;
+	    padding: 1.5rem;
+	    margin-bottom: 1.5rem;
+	    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+	}
+	
+	.table-responsive {
+	    background-color: var(--surface);
+	    border-radius: 0.5rem;
+	    padding: 1rem;
+	    margin-top: 1rem;
+	}
+</style>
 
 </head>
 
@@ -39,7 +39,7 @@
                                 <i class="fas fa-shopping-cart me-2"></i>競標商品追蹤
                             </a>
                             <a class="nav-link active" th:href="@{listAllOrders}">
-                                <i class="fas fa-history me-2"></i>訂單紀錄追蹤
+                                <i class="fas fa-history me-2"></i>訂單進度追蹤
                             </a>
 						</div>
 					</div>
@@ -129,12 +129,21 @@
 	                                 ordersVO.ordstaid == 4 ? '訂單完成' :
 	                                 ordersVO.ordstaid == 5 ? '訂單取消' : ''}"></td>
                       <td>
-                        <button class="btn btn-sm btn-outline-primary me-2">
-                          查看
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                          取消
-                        </button>
+                        <button class="btn btn-sm btn-outline-primary me-2 view-order" 
+					            th:data-order-id="${ordersVO.ordid}"
+					            th:data-product-name="${ordersVO.productVO.proname}"
+					            th:data-order-time="${ordersVO.proordtime}"
+					            th:data-order-amount="${ordersVO.afterdis}"
+					            th:data-order-status="${ordersVO.ordstaid}"
+					            th:data-send-info="${ordersVO.sendinfo}"
+					            th:data-image-url="@{'/adm/getProductImage/' + ${ordersVO.ordid}}">
+					     查看
+					   </button>
+                        <button class="btn btn-sm btn-outline-danger cancel-order" 
+						        th:data-order-id="${ordersVO.ordid}"
+						        th:disabled="${ordersVO.ordstaid == 5}">
+						    取消
+						</button>
                       </td>
                     </tr>
                     </th:block>
@@ -145,9 +154,9 @@
                   class="d-flex justify-content-between align-items-center mt-4"
                 >
                   <div>
-                    <span class="text-muted"
-                      >共 <span id="totalCount">7</span> 筆資料</span
-                    >
+                     <span class="text-muted">共 
+                     	<span id="totalCount" th:text="${#lists.size(ordersListData)}"></span> 
+                     筆資料</span>
                   </div>
                   <nav>
                     <ul class="pagination mb-0">
@@ -202,9 +211,9 @@
                   <div
                     class="d-flex justify-content-between border-bottom pb-2"
                   >
-                    <span class="fw-bold">訂單編號：123456</span>
+                    <span class="fw-bold">訂單編號：<span id="modalOrderId"></span></span>
                     <span class="text-muted"
-                      >得標時間：2024-11-03 14:14:27</span
+                      >付款時間：<span id="modalOrderTime"></span></span
                     >
                   </div>
                 </div>
@@ -212,25 +221,23 @@
 
               <div class="row mb-4">
                 <div class="col-md-4">
-                  <img
-                    src="https://via.placeholder.com/300"
-                    alt="Product"
-                    class="img-fluid border rounded"
-                  />
+                  <img src="" alt="Product" class="img-fluid border rounded" 
+                  	   id="modalProductImage" style="max-width: 300px; max-height: 300px; 
+                  	   object-fit: contain;"/>
                 </div>
                 <div class="col-md-8">
                   <h6 class="fw-bold mb-3">商品資訊</h6>
                   <div class="d-flex justify-content-between mb-2">
                     <span>商品名稱：</span>
-                    <span>WorldGym牌高爾夫球桿</span>
+                    <span id="modalProductName"></span>
                   </div>
                   <div class="d-flex justify-content-between mb-2">
                     <span>結帳金額：</span>
-                    <span class="text-primary fw-bold">NT. 22000</span>
+                    <span class="text-primary fw-bold">NT. <span id="modalOrderAmount"></span></span>
                   </div>
                   <div class="d-flex justify-content-between mb-2">
                     <span>訂單狀態：</span>
-                    <span class="badge bg-success">已出貨</span>
+                    <span class="badge" id="modalOrderStatus"></span>
                   </div>
                 </div>
               </div>
@@ -239,19 +246,9 @@
                 <div class="col-12">
                   <div class="bg-light p-3 rounded">
                     <h6 class="fw-bold mb-3">收件資訊</h6>
-                    <div class="mb-2">
-                      <span class="me-2">收件人：</span>
-                      <span>游青就</span>
-                    </div>
-                    <div class="mb-2">
-                      <span class="me-2">電話：</span>
-                      <span>0912345678</span>
-                    </div>
-                    <div class="mb-2">
-                      <span class="me-2">寄送地址：</span>
-                      <span>郵遞區號</span>
-                      <span>台北市中山區南京東路三段219號4F</span>
-                    </div>
+                    <div id="modalDeliveryInfo">
+                  	<!-- 收件資訊將由JavaScript動態插入 -->
+               		</div>
                   </div>
                 </div>
               </div>
@@ -261,8 +258,7 @@
             <button
               type="button"
               class="btn btn-outline-primary"
-              data-bs-dismiss="modal"
-            >
+              data-bs-dismiss="modal">
               返回訂單進度追蹤
             </button>
           </div>
@@ -270,36 +266,177 @@
       </div>
     </div>
     
+    <!-- 添加取消確認的 Modal -->
+	<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="cancelConfirmModalLabel">確認取消訂單</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                確定要取消此筆訂單嗎？此操作無法復原。
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">返回</button>
+	                <button type="button" class="btn btn-danger" id="confirmCancel">確認取消</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+    
 	<script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
 	
 		document.addEventListener("DOMContentLoaded", () => {
-	        document
-	          .getElementById("searchForm")
-	          .addEventListener("submit", (e) => {
-	            e.preventDefault();
-	            showLoading();
-	            setTimeout(() => {
-	              hideLoading();
-	            }, 500);
-	          });
+		  // 獲取所有查看按鈕
+		  const viewButtons = document.querySelectorAll("button.view-order");
+		  
+		  // 為每個查看按鈕添加點擊事件
+		  viewButtons.forEach(button => {
+		    button.addEventListener("click", () => {
+		      // 獲取按鈕上的數據
+		      const orderId = button.getAttribute("data-order-id");
+		      const productName = button.getAttribute("data-product-name");
+		      const orderTime = button.getAttribute("data-order-time");
+		      const orderAmount = button.getAttribute("data-order-amount");
+		      const orderStatus = button.getAttribute("data-order-status");
+		      const sendInfo = button.getAttribute("data-send-info");
+		      const imageUrl = button.getAttribute("data-image-url");
+		      
+		      // 設置商品圖片
+		      const productImage = document.getElementById("modalProductImage");
+		      if (imageUrl) {
+		        productImage.src = imageUrl;
+		      } else {
+		        productImage.src = "/api/placeholder/300/300";
+		      }
 	
-	        const viewButtons = document.querySelectorAll(
-	          "button.btn-outline-primary"
-	        );
+		      // 更新Modal中的數據
+		      document.getElementById("modalOrderId").textContent = orderId;
+		      document.getElementById("modalOrderTime").textContent = orderTime;
+		      document.getElementById("modalProductName").textContent = productName;
+		      document.getElementById("modalOrderAmount").textContent = orderAmount;
 	
-	        // 訂單明細跳窗
-	        viewButtons.forEach((button) => {
-	          button.addEventListener("click", () => {
-	            const orderDetailModal = new bootstrap.Modal(
-	              document.getElementById("orderDetailModal")
-	            );
-	            orderDetailModal.show();
-	          });
-	        });
-	      });
+		      // 設置訂單狀態的顏色和文字
+		      const statusBadge = document.getElementById("modalOrderStatus");
+		      let statusText = "";
+		      let statusClass = "";
+		      
+		      switch(parseInt(orderStatus)) {
+		        case 1:
+		          statusText = "尚未付款";
+		          statusClass = "bg-warning";
+		          break;
+		        case 2:
+		          statusText = "付款完成";
+		          statusClass = "bg-info";
+		          break;
+		        case 3:
+		          statusText = "已出貨";
+		          statusClass = "bg-success";
+		          break;
+		        case 4:
+		          statusText = "訂單完成";
+		          statusClass = "bg-primary";
+		          break;
+		        case 5:
+		          statusText = "訂單取消";
+		          statusClass = "bg-danger";
+		          break;
+		      }
+		      
+		      statusBadge.textContent = statusText;
+		      statusBadge.className = `badge ${statusClass}`;
 	
+		      // 處理收件資訊
+		      const deliveryInfoDiv = document.getElementById("modalDeliveryInfo");
+		      // 解析sendInfo字符串（格式：收件人：xxx，電話：+886xxx，地址：xxx）
+		      const infoParts = sendInfo.split("，");
+		      let recipient = "";
+		      let phone = "";
+		      let address = "";
+		      
+		      infoParts.forEach(part => {
+		        if (part.startsWith("收件人：")) {
+		          recipient = part.replace("收件人：", "");
+		        } else if (part.startsWith("電話：")) {
+	        	  phone = part.replace("電話：", "");
+	              // 格式化電話號碼
+	              if (!phone.startsWith('+')) {
+	               phone = '+886 ' + phone;
+	              } else {
+	               // 如果已經有+886，確保有空格
+	               phone = phone.replace('+886', '+886 ');
+	              }
+	            } else if (part.startsWith("地址：")) {
+	              address = part.replace("地址：", "");
+		        }
+		      });
+	
+		      // 更新收件資訊HTML
+		      deliveryInfoDiv.innerHTML = `
+		        <div class="mb-2">
+		          <span class="me-2">收件人：</span>
+		          <span>${recipient}</span>
+		        </div>
+		        <div class="mb-2">
+		          <span class="me-2">電話：</span>
+		          <span>${phone}</span>
+		        </div>
+		        <div class="mb-2">
+		          <span class="me-2">寄送地址：</span>
+		          <span>${address}</span>
+		        </div>
+		      `;
+	
+		      // 顯示Modal
+		      const orderDetailModal = new bootstrap.Modal(document.getElementById("orderDetailModal"));
+		      orderDetailModal.show();
+		    });
+		  });
+		});
+		
+		//訂單取消
+		document.addEventListener("DOMContentLoaded", () => {
+		    const cancelButtons = document.querySelectorAll("button.cancel-order");
+		    const cancelConfirmModal = new bootstrap.Modal(document.getElementById("cancelConfirmModal"));
+		    let selectedOrderId = null;
+
+		    cancelButtons.forEach(button => {
+		        button.addEventListener("click", () => {
+		            selectedOrderId = button.getAttribute("data-order-id");
+		            cancelConfirmModal.show();
+		        });
+		    });
+
+		    document.getElementById("confirmCancel").addEventListener("click", async () => {
+		        if (!selectedOrderId) return;
+
+		        try {
+		            const response = await fetch(`/adm/cancelOrder/${selectedOrderId}`, {
+		                method: 'POST',
+		                headers: {
+		                    'Content-Type': 'application/json'
+		                }
+		            });
+
+		            const data = await response.json();
+
+		            if (data.success) {
+		                // 重新載入頁面以更新訂單狀態
+		                location.reload();
+		            } else {
+		                alert(data.message || '取消訂單失敗，請稍後再試');
+		            }
+		        } catch (error) {
+		            alert('發生錯誤，請稍後再試');
+		        } finally {
+		            cancelConfirmModal.hide();
+		        }
+		    });
+		});
     </script>
 </body>
 </html>

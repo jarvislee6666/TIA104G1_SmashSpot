@@ -32,7 +32,7 @@
 							</a> <a class="nav-link active" th:href="@{/adm/listAllStdm}"> <i
 								class="fas fa-list me-2"></i>場館刊登列表
 							</a> <a class="nav-link" th:href="@{/adm/listAllCourtOrders}"> <i class="fas fa-history me-2"></i>預約訂單紀錄
-							</a> <a class="nav-link" href="#"> <i
+							</a> <a class="nav-link" th:href="@{/adm/listAllChart}"> <i
 								class="fas fa-chart-line me-2"></i>場館成效統計
 							</a>
 						</div>
@@ -213,6 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const holidayDateInput = document.getElementById('holidayDateInput');
   const addHolidayBtn = document.getElementById('addHolidayBtn');
   const saveHolidayBtn = document.getElementById('saveHolidayBtn');
+  
+  // 設置日期選擇器的最小日期為今天
+  const today = new Date().toISOString().split('T')[0];
+  holidayDateInput.setAttribute('min', today);
 
   // 點擊「新增」: 將日期加入 holidayDates
   addHolidayBtn.addEventListener('click', e => {

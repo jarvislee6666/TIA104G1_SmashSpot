@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,6 +51,21 @@ public class OrdersController {
 		List<OrdersVO> list = odrsvc.getAll();
     	model.addAttribute("ordersListData",list);
 		return "back-end/adm/listAllOrders";
+	}
+	
+	@GetMapping("/member/buyingList")
+	public String listMemBuyingList(Model model, HttpSession session) {
+	    // 從 session 獲取當前登入會員
+	    MemberVO loginMember = (MemberVO) session.getAttribute("login");
+	    if (loginMember == null) {
+	        return "redirect:/login";
+	    }
+	    
+	    // 獲取該會員的所有訂單
+	    List<OrdersVO> list = odrsvc.findByMem(loginMember.getMemid());
+	    model.addAttribute("ordersListData", list);
+	    
+	    return "back-end/member/buyingList";
 	}
 	
 	@GetMapping("/client/orders/DPstep1/{proid}")
@@ -205,6 +221,73 @@ public class OrdersController {
         } catch (Exception e) {
         	e.printStackTrace();
             return "redirect:/client/orders/DPstep1";
+        }
+    }
+    
+    @GetMapping("/adm/getProductImage/{ordId}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getProductImage(@PathVariable Integer ordId) {
+        try {
+            OrdersVO order = odrsvc.getOneOrder(ordId);
+            if (order != null && order.getProductVO() != null) {
+                byte[] image = order.getProductVO().getPropic();
+                if (image != null && image.length > 0) {
+                    return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(image);
+                }
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @PostMapping("/adm/cancelOrder/{ordId}")
+    @ResponseBody
+    public ResponseEntity<?> cancelOrder(@PathVariable Integer ordId) {
+        try {
+            OrdersVO order = odrsvc.getOneOrder(ordId);
+            if (order == null) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "訂單不存在"));
+            }
+            
+            // 更新訂單狀態為取消(5)
+            order.setOrdstaid(5);
+            odrsvc.updateOrder(order);
+            
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/member/confirmReceipt/{ordId}")
+    @ResponseBody
+    public ResponseEntity<?> confirmReceipt(@PathVariable Integer ordId, HttpSession session) {
+        try {
+            MemberVO loginMember = (MemberVO) session.getAttribute("login");
+            if (loginMember == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "請先登入"));
+            }
+            
+            OrdersVO order = odrsvc.getOneOrder(ordId);
+            if (order == null || !order.getMemid().equals(loginMember.getMemid())) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "訂單不存在或無權限"));
+            }
+            
+            // 更新訂單狀態為完成(4)
+            order.setOrdstaid(4);
+            odrsvc.updateOrder(order);
+            
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 }
