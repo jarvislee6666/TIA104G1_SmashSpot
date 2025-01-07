@@ -27,4 +27,10 @@ public interface CourtOrderRepository extends JpaRepository<CourtOrderVO, Intege
     	     + "JOIN FETCH co.courtOrderDetail "
     	     + "WHERE co.member.memid = :memid")
     List<CourtOrderVO> findOrdersWithDetailsByMemberid(@Param("memid") Integer memid);
+    
+    
+    
+    
+    
+    
 }
