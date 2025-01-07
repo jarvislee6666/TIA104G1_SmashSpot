@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
+    <th:block th:fragment="headContent">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Header</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/icon/setting.png}">
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,6 +13,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
       rel="stylesheet"
     />
+  	</th:block>
   </head>
   <body class="bg-light">
     	  <header th:fragment="header">
@@ -21,6 +23,7 @@
 					<div class="navbar-content">
 						<a class="navbar-brand" href="">管理員後台</a>
 						<div class="nav-buttons">
+							<a class="nav-link" th:href="@{/}"><i class="bi bi-door-open-fill"></i>&nbsp;返回前台</a>
 							<a class="nav-link" th:href="@{listAllAdm}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllAdm')} ? 'active' : ''">
 							<i class="fas fa-users me-2"></i>員工帳號管理</a>					
@@ -32,9 +35,9 @@
 							   					 #httpServletRequest.getRequestURI().contains('listAllOrders')} ? 'active' : ''">
 							<i class="fas fa-store me-2"></i>商城管理</a> 
 							<a class="nav-link" th:href="@{listAllStdm}"
-							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllStdm')} ? 'active' : ''">
+							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllStdm')or
+							   					 #httpServletRequest.getRequestURI().contains('addStdm')} ? 'active' : ''">
 							<i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
-							<a class="nav-link" href="#"><i class="fas fa-comments me-2"></i>論壇管理</a> 
 							<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
 							<a class="nav-link" th:href="@{listAllMember}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllMember')} ? 'active' : ''">

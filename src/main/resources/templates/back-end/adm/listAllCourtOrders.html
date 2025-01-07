@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>全部場館列表 - listAllCourtOrders.html</title>
+<th:block th:replace="back-end/adm/Header :: headContent" />
+<head th:insert="~{/back-end/adm/included-fragment}"></head>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+</style>
+<body>
+
+	<div class="loading-overlay">
+		<div class="loading-spinner"></div>
+	</div>
+
+	<!-- Navbar -->
+	<header th:replace="back-end/adm/Header :: header"></header>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 mb-4">
+				<div class="card">
+					<div class="card-body p-0">
+						<div class="nav flex-column nav-pills">
+							<a class="nav-link" th:href="@{/adm/addStdm}"> <i
+								class="fas fa-plus-circle me-2"></i>場館刊登
+							</a> <a class="nav-link" th:href="@{/adm/listAllStdm}"> <i
+								class="fas fa-list me-2"></i>場館刊登列表
+							</a> <a class="nav-link active" th:href="@{/adm/listAllCourtOrders}"> <i class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> <a class="nav-link" th:href="@{/adm/listAllChart}"> <i
+								class="fas fa-chart-line me-2"></i>場館成效統計
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 主要內容區 -->
+			<div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title">預約訂單紀錄</h5>
+                        </div>
+                        
+                        <div class="search-section mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="場地名稱">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control" placeholder="預約日期">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="預約人ID">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">搜尋</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>場地ID</th>
+                                        <th>預約人ID</th>
+                                        <th>預約金額</th>
+                                        <th>預約狀態</th>
+                                        <th>球場評價</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>    
+								    <tr th:each="orderList : ${orderList}">
+										<td th:text="${orderList.courtordid}"></td>
+										<td th:text="${orderList.stadium.stdmName}"></td>
+										<td th:text="${orderList.member.account}"></td>
+										<td th:text="${orderList.totamt}"></td>			
+										<td th:text="${orderList.ordsta ? '已預約' : '已取消'}"></td>			
+										<td th:text="${orderList.starrank != null ? orderList.starrank : '未評價'}"></td>
+										<td>
+                                            <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal" data-bs-target="#orderModal" th:attr="data-order-id=${orderList.courtordid}">>
+                                                查看詳情
+                                            </button>
+                                        </td>
+									</tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                
+                                <div class="col-md-4 d-flex justify-content-center">
+                                    <nav>
+                                        <ul class="pagination mb-0">
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="#" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <div class="col-md-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 訂單詳情彈窗 -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">訂單詳情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>訂單編號</h6>
+                    <p id="modalOrderId"></p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>會員資訊</h6>
+                    <p id="modalMemberName" class="mb-1"></p>
+                    <p id="modalMemberEmail" class="mb-1"></p>
+                    <p id="modalMemberPhone" class="mb-1"></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6>場館資訊</h6>
+                    <p id="modalVenueName"></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6>預約詳情</h6>
+                    <div id="modalBookingDetails"></div>
+                    <p id="modalTotalAmount"></p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>訂單狀態</h6>
+                    <p id="modalOrderStatus"></p>
+                    <div id="modalCancellationReason" style="display: none;">
+                        <div class="alert alert-warning">
+                            <h6 class="mb-2">取消原因：</h6>
+                            <p id="modalCancelReason" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="modalRatingSection" class="mb-3" style="display: none;">
+                    <h6>評價資訊</h6>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="me-2">球場評價：</span>
+                        <div id="modalStarRating"></div>
+                    </div>
+                    <div id="modalMessageSection" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6 class="mb-2">留言內容：</h6>
+                            <p id="modalMessage" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('button[data-bs-toggle="modal"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const orderId = row.children[0].textContent;
+
+            fetch(`/adm/getOrderDetail/${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 訂單編號
+                    document.getElementById('modalOrderId').textContent = 
+                        orderId;
+                    
+                    // 會員資訊
+                    document.getElementById('modalMemberName').textContent = 
+                        '姓名：' + data.member.name;
+                    document.getElementById('modalMemberEmail').textContent = 
+                        'Email：' + data.member.email;
+                    document.getElementById('modalMemberPhone').textContent = 
+                        '電話：' + data.member.phone;
+                    
+                    // 場館資訊
+                    document.getElementById('modalVenueName').textContent = 
+                        data.stadium.stdmName;
+                    
+                    
+                    
+                    // 預約詳情
+                    const bookingDetails = document.getElementById('modalBookingDetails');
+                    bookingDetails.innerHTML = ''; // 清空原有內容
+                    
+                    if (data.details && data.details.length > 0) {
+                        data.details.forEach(detail => {
+                            const detailElement = document.createElement('div');
+                            detailElement.className = 'mb-2';
+                            detailElement.innerHTML = `
+                                <p class="mb-1">預約日期：${formatDate(detail.ordDate)}</p>
+                                <p class="mb-1">預約時段：${convertTimeSlot(detail.ordTime)}</p>
+                            `;
+                            bookingDetails.appendChild(detailElement);
+                        });
+                    }
+                    
+                    document.getElementById('modalTotalAmount').textContent = 
+                        '總金額：' + data.totamt + ' TWD';
+                    
+                 // 訂單狀態
+                    const statusSpan = document.getElementById('modalOrderStatus');
+                    statusSpan.textContent = data.ordsta ? '已預約' : '已取消';
+                    statusSpan.className = 'status-badge ' + 
+                        (data.ordsta ? 'status-reserved' : 'status-canceled');
+                
+                const cancellationReason = document.getElementById('modalCancellationReason');
+                    const cancelReason = document.getElementById('modalCancelReason');
+                    if (!data.ordsta && data.canreason) {
+                        cancelReason.textContent = data.canreason;
+                        cancellationReason.style.display = 'block';
+                    } else {
+                        cancellationReason.style.display = 'none';
+                    }
+                    
+                    const ratingSection = document.getElementById('modalRatingSection');
+                    const starRating = document.getElementById('modalStarRating');
+                    const messageSection = document.getElementById('modalMessageSection');
+                    const message = document.getElementById('modalMessage');
+
+                    if (data.starrank) {
+                        starRating.innerHTML = '★'.repeat(data.starrank) + '☆'.repeat(5 - data.starrank);
+                        ratingSection.style.display = 'block';
+                    } else {
+                        ratingSection.style.display = 'none';
+                    }
+
+                    if (data.message) {
+                        message.textContent = data.message;
+                        messageSection.style.display = 'block';
+                    } else {
+                        messageSection.style.display = 'none';
+                    }
+                })
+                
+                
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+});
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function convertTimeSlot(timeString) {
+    if (!timeString) return '';
+    
+    // 定義時段對應表
+    const timeMap = {
+        4: '08:00-10:00',
+        5: '10:00-12:00',
+        6: '12:00-14:00',
+        7: '14:00-16:00',
+        8: '16:00-18:00',
+        9: '18:00-20:00',
+        10: '20:00-22:00'
+    };
+    
+    let timeSlots = [];
+    
+    // 遍歷字串的第4到第11個字元（跳過xxx和最後的x）
+    for (let i = 4; i < 11; i++) {
+        if (timeString[i] === '1') {
+            timeSlots.push(timeMap[i]);
+        }
+    }
+    
+    return timeSlots.join('、') || '無預約時段';
+}
+</script>
+
+</body>
+</html>

@@ -22,6 +22,8 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.product.model.ProductVO;
 
 @Entity
@@ -194,6 +196,17 @@ public class MemberVO implements Serializable {
         product.setMemberVO(null);
     }
  
+    private Set<CourtOrderVO> CourtOrder;
+    
+    @JsonManagedReference(value = "memberRef")
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+	public Set<CourtOrderVO> getCourtOrder() {
+		return CourtOrder;
+	}
+
+	public void setCourtOrder(Set<CourtOrderVO> courtOrder) {
+		CourtOrder = courtOrder;
+	}
 
 
 	

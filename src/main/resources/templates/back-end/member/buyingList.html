@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>購買清單</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+	
+	.table img {
+    object-fit: cover;
+    }
+	
+	.modal-content {
+      border-radius: 0.5rem;
+	 }
+	  
+	.modal-header {
+	  border-radius: 0.5rem 0.5rem 0 0;
+	 }
+	  
+	.table img {
+	  object-fit: cover;
+    }
+	  
+	.badge {
+	  font-weight: 500;
+	  padding: 0.5em 0.8em;
+	}
+	  
+	.btn-sm {
+	  font-size: 0.875rem;
+	  padding: 0.4rem 0.8rem;
+	}
+	  
+	.table > :not(caption) > * > * {
+	  padding: 1rem;
+	}
+	  
+	.modal-backdrop.show {
+	  opacity: 0.7;
+	}
+	
+
+</style>
+
+</head>
+<body class="bg-light">
+
+<div th:replace="back-end/client/Header :: header"></div>
+
+    <main class="mb-3">
+      <div class="container position-relative mb-3">
+        <div class="row">
+          <!-- Sidebar -->
+			<div class="col-md-3">
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">會員專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/member/basic-info}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-person-circle"></i>
+			          <span>基本資料</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-calendar-event"></i>
+			          <span>我的活動</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-hammer"></i>
+			          <span>參加中競標</span>
+			        </a>
+			        
+			        <a th:href="@{/member/buyingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-bag-check"></i>
+			          <span>購買清單</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi-calendar-check"></i>
+			          <span>場地預約紀錄</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <!-- Search -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="mb-3" style="font-size: 24px">購買清單</h5>
+                <div class="d-flex gap-2">
+				  <input type="search" 
+				         class="form-control" 
+				         placeholder="搜尋商品..." 
+				         style="max-width: 250px" 
+				         id="productSearch"/>
+				  <select class="form-select" 
+				          style="max-width: 150px" 
+				          id="statusFilter">
+				    <option value="">全部商品</option>
+				    <option value="0" disabled>-依訂單狀態-</option>
+				    <option value="1">尚未付款</option>
+				    <option value="2">付款完成</option>
+				    <option value="3">已出貨</option>
+				    <option value="4">訂單完成</option>
+				    <option value="5">訂單取消</option>
+				  </select>
+				</div>
+              </div>
+            </div>
+            <!-- Table Content -->
+            <div class="table-responsive">
+			  <table class="table table-hover align-middle bg-white shadow-sm rounded">
+			    <thead class="bg-light">
+			      <tr>
+			        <th style="width: 5%"></th>
+			        <th style="width: 15%">商品圖片</th>
+			        <th style="width: 40%">訂單資訊</th>
+			        <th style="width: 15%">訂單狀態</th>
+			        <th style="width: 15%">訂單明細</th>
+			        <th style="width: 10%">訂單操作</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+				  <tr th:each="ordersVO : ${ordersListData}">
+				    <td></td>
+				    <td>
+				      <!-- 商品圖片 -->
+				      <div style="width: 100px; height: 100px;" class="rounded-3 overflow-hidden bg-light">
+				        <img th:src="@{'/product/image/' + ${ordersVO.productVO.proid}}"
+				             th:alt="${ordersVO.productVO.proname}"
+				             class="w-100 h-100 object-fit-cover">
+				      </div>
+				    </td>
+				    <td>
+				      <!-- 訂單資訊 -->
+				      <div class="d-flex flex-column gap-2">
+				        <div class="fw-medium" th:text="${ordersVO.productVO.proname}"></div>
+				        <div class="small text-secondary">
+				          訂單編號：<span th:text="${ordersVO.ordid}"></span>
+				        </div>
+				        <div class="small text-secondary">
+				          付款時間：<span th:text="${#dates.format(ordersVO.proordtime, 'yyyy-MM-dd HH:mm')}"></span>
+				        </div>
+				        <div class="fw-medium text-primary">
+				          NT$ <span th:text="${#numbers.formatDecimal(ordersVO.afterdis, 1, 'COMMA', 0, 'POINT')}"></span>
+				        </div>
+				      </div>
+				    </td>
+				    <td>
+				      <!-- 訂單狀態 -->
+				      <div class="d-flex flex-column align-items-start gap-2">
+				        <span th:switch="${ordersVO.ordstaid}" class="mb-2">
+				          <span th:case="1" class="badge bg-warning">尚未付款</span>
+				          <span th:case="2" class="badge bg-info">付款完成</span>
+				          <span th:case="3" class="badge bg-primary">已出貨</span>
+				          <span th:case="4" class="badge bg-success">訂單完成</span>
+				          <span th:case="5" class="badge bg-danger">訂單取消</span>
+				        </span>
+				      </div>
+				    </td>
+				      <!-- 訂單明細 -->
+				      <td>
+						  <div class="d-flex flex-column align-items-start gap-2">
+						    <button type="button" 
+						            class="btn btn-sm btn-outline-secondary view-order"
+						            data-bs-toggle="modal"
+						            th:data-order-id="${ordersVO.ordid}"
+						            th:data-product-name="${ordersVO.productVO.proname}"
+						            th:data-order-time="${#dates.format(ordersVO.proordtime, 'yyyy-MM-dd HH:mm')}"
+						            th:data-order-amount="${ordersVO.afterdis}"
+						            th:data-before-discount="${ordersVO.beforedis}"
+						            th:data-order-status="${ordersVO.ordstaid}"
+						            th:data-send-info="${ordersVO.sendinfo}"
+						            th:data-image-url="@{'/product/image/' + ${ordersVO.productVO.proid}}">
+						      <i class="bi bi-info-circle me-1"></i>查看明細
+						    </button>
+						  </div>
+						</td>
+				    <td>
+				      <!-- 訂單操作 -->
+				      <div th:if="${ordersVO.ordstaid == 3}">
+				        <button type="button" 
+				                class="btn btn-sm btn-success"
+				                th:onclick="'confirmReceipt(' + ${ordersVO.ordid} + ')'">
+				          <i class="bi bi-check2-circle me-1"></i>確認收貨
+				        </button>
+				      </div>
+				      <div th:if="${ordersVO.ordstaid == 1}">
+				        <a th:href="@{/client/payment/{ordid}(ordid=${ordersVO.ordid})}" 
+				           class="btn btn-sm btn-primary">
+				          <i class="bi bi-credit-card me-1"></i>前去付款
+				        </a>
+				      </div>
+				    </td>
+				  </tr>
+				</tbody>
+			  </table>
+			</div>
+            <nav class="mt-2">
+              <ul class="pagination justify-content-center">
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+	<!-- 訂單明細 Modal -->
+	<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
+	  <div class="modal-dialog modal-lg modal-dialog-centered">
+	    <div class="modal-content border-0 shadow">
+	      <div class="modal-header border-bottom-0 bg-light">
+	        <h5 class="modal-title fw-bold">訂單明細</h5>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+	      </div>
+	      <div class="modal-body p-4">
+	        <div class="container-fluid">
+	          <!-- 訂單基本資訊 -->
+	          <div class="row mb-4">
+	            <div class="col-12">
+	              <div class="d-flex justify-content-between border-bottom pb-2">
+	                <span class="fw-bold">訂單編號：<span id="modalOrderId"></span></span>
+	                <span class="text-muted">付款時間：<span id="modalOrderTime"></span></span>
+	              </div>
+	            </div>
+	          </div>
+	
+	          <!-- 商品圖片和資訊 -->
+	          <div class="row mb-4">
+	            <div class="col-md-4">
+	              <img src="" alt="Product" class="img-fluid rounded" 
+	                   id="modalProductImage" style="width: 100%; aspect-ratio: 1/1; object-fit: cover;">
+	            </div>
+	            <div class="col-md-8">
+	              <h6 class="fw-bold mb-3">商品資訊</h6>
+	              <div class="d-flex justify-content-between mb-2">
+	                <span>商品名稱：</span>
+	                <span id="modalProductName"></span>
+	              </div>
+	              <div class="d-flex justify-content-between mb-2">
+	                <span>商品原價：</span>
+	                <span>NT$ <span id="modalBeforeDiscount"></span></span>
+	              </div>
+	              <div class="d-flex justify-content-between mb-2">
+	                <span>折扣金額：</span>
+	                <span class="text-danger">- NT$ <span id="modalDiscount"></span></span>
+	              </div>
+	              <div class="d-flex justify-content-between mb-2">
+	                <span>結帳金額：</span>
+	                <span class="text-primary fw-bold">NT$ <span id="modalOrderAmount"></span></span>
+	              </div>
+	              <div class="d-flex justify-content-between mb-2">
+	                <span>訂單狀態：</span>
+	                <span class="badge" id="modalOrderStatus"></span>
+	              </div>
+	            </div>
+	          </div>
+	
+	          <!-- 收件資訊 -->
+	          <div class="row">
+	            <div class="col-12">
+	              <div class="bg-light p-3 rounded">
+	                <h6 class="fw-bold mb-3">收件資訊</h6>
+	                <div id="modalDeliveryInfo" class="d-flex flex-column gap-2">
+	                  <!-- 收件資訊將由JavaScript動態插入 -->
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+<div th:replace="back-end/client/Footer :: footer"></div>
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+function confirmReceipt(ordId) {
+    if (confirm('確認已收到商品？')) {
+        fetch(`/member/confirmReceipt/${ordId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('確認收貨成功！');
+                location.reload();
+            } else {
+                alert(data.message || '操作失敗，請稍後再試');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('操作失敗，請稍後再試');
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+	  // 獲取所有查看按鈕
+	  const viewButtons = document.querySelectorAll("button.view-order");
+	  
+	  // 為每個查看按鈕添加點擊事件
+	  viewButtons.forEach(button => {
+	    button.addEventListener("click", () => {
+	      // 獲取按鈕上的數據
+	      const orderId = button.getAttribute("data-order-id");
+	      const productName = button.getAttribute("data-product-name");
+	      const orderTime = button.getAttribute("data-order-time");
+	      const orderAmount = button.getAttribute("data-order-amount");
+	      const beforeDiscount = button.getAttribute("data-before-discount");
+	      const orderStatus = button.getAttribute("data-order-status");
+	      const sendInfo = button.getAttribute("data-send-info");
+	      const imageUrl = button.getAttribute("data-image-url");
+	      
+	      // 設置商品圖片
+	      const productImage = document.getElementById("modalProductImage");
+	      if (imageUrl) {
+	        productImage.src = imageUrl;
+	      }
+
+	      // 更新Modal中的數據
+	      document.getElementById("modalOrderId").textContent = orderId;
+	      document.getElementById("modalOrderTime").textContent = orderTime;
+	      document.getElementById("modalProductName").textContent = productName;
+	      
+	      // 處理價格資訊
+	      document.getElementById("modalBeforeDiscount").textContent = 
+	        Number(beforeDiscount).toLocaleString();
+	      
+	      // 計算折扣金額
+	      const discount = Number(beforeDiscount) - Number(orderAmount);
+	      document.getElementById("modalDiscount").textContent = 
+	        discount.toLocaleString();
+	        
+	      document.getElementById("modalOrderAmount").textContent = 
+	        Number(orderAmount).toLocaleString();
+
+	      // 設置訂單狀態的顏色和文字
+	      const statusBadge = document.getElementById("modalOrderStatus");
+	      let statusText = "";
+	      let statusClass = "";
+	      
+	      switch(parseInt(orderStatus)) {
+	        case 1:
+	          statusText = "尚未付款";
+	          statusClass = "bg-warning";
+	          break;
+	        case 2:
+	          statusText = "付款完成";
+	          statusClass = "bg-info";
+	          break;
+	        case 3:
+	          statusText = "已出貨";
+	          statusClass = "bg-primary";
+	          break;
+	        case 4:
+	          statusText = "訂單完成";
+	          statusClass = "bg-success";
+	          break;
+	        case 5:
+	          statusText = "訂單取消";
+	          statusClass = "bg-danger";
+	          break;
+	      }
+	      
+	      statusBadge.textContent = statusText;
+	      statusBadge.className = `badge ${statusClass}`;
+
+	      // 處理收件資訊
+	      const deliveryInfoDiv = document.getElementById("modalDeliveryInfo");
+	      // 解析sendInfo字符串
+	      const infoParts = sendInfo.split("，");
+	      let recipient = "";
+	      let phone = "";
+	      let address = "";
+	      
+	      infoParts.forEach(part => {
+	        if (part.startsWith("收件人：")) {
+	          recipient = part.replace("收件人：", "");
+	        } else if (part.startsWith("電話：")) {
+	          phone = part.replace("電話：", "");
+	          // 格式化電話號碼
+	          if (!phone.startsWith('+')) {
+	            phone = '+886 ' + phone;
+	          } else {
+	            phone = phone.replace('+886', '+886 ');
+	          }
+	        } else if (part.startsWith("地址：")) {
+	          address = part.replace("地址：", "");
+	        }
+	      });
+
+	      // 更新收件資訊HTML
+	      deliveryInfoDiv.innerHTML = `
+	        <div class="mb-2 d-flex">
+	          <span class="text-secondary" style="width: 80px;">收件人</span>
+	          <span>${recipient}</span>
+	        </div>
+	        <div class="mb-2 d-flex">
+	          <span class="text-secondary" style="width: 80px;">電話</span>
+	          <span>${phone}</span>
+	        </div>
+	        <div class="mb-2 d-flex">
+	          <span class="text-secondary" style="width: 80px;">寄送地址</span>
+	          <span>${address}</span>
+	        </div>
+	      `;
+
+	      // 顯示Modal
+	      const orderDetailModal = new bootstrap.Modal(document.getElementById("orderDetailModal"));
+	      orderDetailModal.show();
+	    });
+	  });
+	});
+</script>
+</body>
+</html>

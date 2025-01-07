@@ -15,53 +15,6 @@ body {
 	min-height: 100vh;
 }
 
-/* 導航欄樣式 */
-.navbar {
-	padding: 0.75rem 1.5rem;
-	background-color: var(--surface);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-content {
-	display: flex;
-	align-items: center;
-	width: 100%;
-	gap: 2rem;
-}
-
-.navbar .navbar-brand {
-	font-size: 1.5rem;
-	font-weight: 600;
-	padding: 0;
-	margin: 0;
-	white-space: nowrap;
-}
-
-.nav-buttons {
-	display: flex;
-	gap: 1rem;
-	flex-grow: 1;
-	justify-content: flex-end;
-}
-
-.nav-buttons .nav-link {
-	color: var(--text);
-	padding: 0.5rem 1rem;
-	border-radius: 0.375rem;
-	transition: all 0.2s;
-	white-space: nowrap;
-	font-size: 0.9rem;
-}
-
-.nav-buttons .nav-link:hover {
-	background-color: var(--background);
-	color: var(--primary);
-}
-
-.nav-buttons .nav-link.active {
-	background-color: var(--primary);
-	color: white;
-}
 
 /* 新增預約狀態樣式 */
 .status-booked {

@@ -3,11 +3,16 @@ package com.smashspot.admin.controller;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +22,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -27,16 +34,25 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
+import com.smashspot.courtorder.model.CourtOrderService;
+import com.smashspot.courtorder.model.CourtOrderVO;
+import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.reservationtime.model.ReservationTimeService;
+import com.smashspot.reservationtime.model.ReservationTimeVO;
+import com.smashspot.stadium.model.StadiumVO;
+import com.smashspot.stadium.model.StdmService;
 
 
 
@@ -49,6 +65,15 @@ public class AdmController {
 	
 	@Autowired
     private MemberService memberSvc;
+	
+	@Autowired
+    private CourtOrderService courtOrderService;
+	
+	@Autowired
+    private StdmService stadiumService;
+	
+	@Autowired
+    private ReservationTimeService reservationTimeService;
 	
 	@GetMapping("/listAllAdm")
 		public String listAllAdm(
@@ -242,5 +267,95 @@ public class AdmController {
 	   BindingResult newResult = new BeanPropertyBindingResult(memberVO, "memberVO");
 	   errorsToKeep.forEach(newResult::addError);
 	   return newResult;
+	}
+	
+	@GetMapping("/listAllCourtOrders")
+	public String listAllCourtOrders(Model model) {
+	    List<CourtOrderVO> orderList = courtOrderService.getAll();
+	    
+	    System.out.println("Total orders found: " + (orderList != null ? orderList.size() : "null"));
+	    if (orderList != null) {
+	        for (CourtOrderVO order : orderList) {
+	            System.out.println("Order ID: " + order.getCourtordid());
+	            System.out.println("Stadium: " + (order.getStadium() != null ? order.getStadium().getStdmName() : "null"));
+	        }
+	    }
+	    
+	    model.addAttribute("orderList", orderList);
+	    return "back-end/adm/listAllCourtOrders";
+	}
+	
+	@GetMapping("/getOrderDetail/{orderId}")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Integer orderId) {
+	    try {
+	        CourtOrderVO order = courtOrderService.getOneOrder(orderId);
+	        
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("courtordid", order.getCourtordid());
+	        response.put("member", Map.of(
+	            "name", order.getMember().getName(),
+	            "email", order.getMember().getEmail(),
+	            "phone", order.getMember().getPhone()
+	        ));
+	        response.put("stadium", Map.of(
+	            "stdmName", order.getStadium().getStdmName()
+	        ));
+	        
+	        // 處理所有訂單詳情
+	        List<Map<String, Object>> details = new ArrayList<>();
+	        for (CourtOrderDetailVO detail : order.getCourtOrderDetail()) {
+	            Map<String, Object> detailMap = new HashMap<>();
+	            detailMap.put("ordDate", detail.getOrdDate());
+	            detailMap.put("ordTime", detail.getOrdTime());
+	            details.add(detailMap);
+	        }
+	        response.put("details", details);
+	        
+	        response.put("totamt", order.getTotamt());
+
+	        response.put("ordsta", order.getOrdsta());
+	        
+	        response.put("canreason", order.getCanreason());
+	        
+	        response.put("starrank", order.getStarrank());
+	        
+	        response.put("message", order.getMessage());
+	        
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}	
+	
+	@GetMapping("/listAllChart")
+	public String showStadiumStats(Model model) {
+	    List<StadiumVO> stadiumList = stadiumService.getAll();
+	    model.addAttribute("stadiumList", stadiumList);
+	    return "back-end/adm/listAllChart";
+	}
+
+	@GetMapping("/getStadiumStats")
+	@ResponseBody
+	public Map<String, Object> getStadiumStats(
+	    @RequestParam Integer stdmId,
+	    @RequestParam String month,
+	    @RequestParam String type) {
+	    
+	    if ("usage".equals(type)) {
+	        // 使用率統計仍需要時間區間
+	        YearMonth ym = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
+	        Date startDate = Date.valueOf(ym.atDay(1).toString());
+	        Date endDate = Date.valueOf(ym.atEndOfMonth().toString());
+	        
+	        List<ReservationTimeVO> reservations = reservationTimeService
+	            .findByStadiumIdAndDatesBetween(stdmId, startDate, endDate);
+	        return Map.of("usageStats", 
+	            reservationTimeService.calculateTimeSlotStats(reservations));
+	    } else {
+	        // 評論統計不需要時間區間
+	        return courtOrderService.calculateReviewStats(stdmId);
+	    }
 	}
 }

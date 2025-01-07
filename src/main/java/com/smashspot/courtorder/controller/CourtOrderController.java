@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +57,7 @@ public class CourtOrderController {
 	public Map<String, Object> verifyPayment(@RequestBody Map<String, String> formData) {
 	    Map<String, Object> result = new HashMap<>();
 	    
-	    List<String> errors = new ArrayList<>(); // 用來收集錯誤訊息
+	    Map<String, String> fieldErrors = new HashMap<>(); // 用來收集錯誤訊息
 
 	    // 前端送來的 JSON 裡，key 就是 "cardNumber", "cardExpiry", "cardCvv", "cardHolder"
 	    String cardNumber = formData.get("cardNumber");
@@ -64,25 +67,25 @@ public class CourtOrderController {
 
 	    // 驗證卡號
 	    if (!isValidCardNumber(cardNumber)) {
-	        errors.add("信用卡號格式錯誤！");
+	    	fieldErrors.put("cardNumber","信用卡號格式錯誤！");
 	    }
 	    // 驗證有效期限
 	    if (!isValidExpiry(cardExpiry)) {
-	        errors.add("信用卡有效期限錯誤！");
+	    	fieldErrors.put("cardExpiry","信用卡有效期限錯誤！");
 	    }
 	    // 驗證 CVV
 	    if (!isValidCvv(cardCvv)) {
-	        errors.add("CVV 格式錯誤！");
+	    	fieldErrors.put("cardCvv","CVV 格式錯誤！");
 	    }
 	    // 驗證持卡人姓名 (如需)
 	    if (cardHolder == null || cardHolder.trim().isEmpty()) {
-	        errors.add("持卡人姓名不可空白！");
+	    	fieldErrors.put("cardHolder","持卡人姓名不可空白！");
 	    }
 
-	    if (!errors.isEmpty()) {
+	    if (!fieldErrors.isEmpty()) {
 	        // 有錯誤 => 回傳所有錯誤訊息
 	        result.put("success", false);
-	        result.put("messages", errors);
+	        result.put("fieldErrors", fieldErrors);
 	    } else {
 	        // 若皆通過
 	        result.put("success", true);
@@ -92,7 +95,6 @@ public class CourtOrderController {
 	    return result;
 	}
 
-	// 簡單示範
 	private boolean isValidCardNumber(String cardNo) {
 	    return cardNo != null && cardNo.matches("\\d{16}");
 	}
@@ -102,7 +104,14 @@ public class CourtOrderController {
 	private boolean isValidCvv(String cvv) {
 	    return cvv != null && cvv.matches("\\d{3}");
 	}
-
-
+	
+    // 取得該會員的所有訂單 (含明細)
+    @GetMapping("/my-orders/{memid}")
+    public List<CourtOrderVO> getMyOrders(@PathVariable("memid") Integer memid) {
+        // 呼叫 Service 拿資料
+        List<CourtOrderVO> list = courtOrderSvc.findOrdersWithDetailsByMemberId(memid);
+        // 直接回傳 CourtOrderVO，其中有 Set<CourtOrderDetailVO>
+        return list;
+    }
 
 }

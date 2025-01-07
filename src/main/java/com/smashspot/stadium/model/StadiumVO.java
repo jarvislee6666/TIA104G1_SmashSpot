@@ -77,7 +77,7 @@ public class StadiumVO implements java.io.Serializable {
 
 	private Set<CourtOrderVO> CourtOrder;
 
-	@JsonManagedReference
+	@JsonManagedReference(value = "stadiumRef")
 	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)
 	public Set<CourtOrderVO> getCourtOrder() {
 		return CourtOrder;

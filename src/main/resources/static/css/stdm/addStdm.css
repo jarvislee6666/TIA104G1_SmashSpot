@@ -10,7 +10,7 @@
             --border: #e2e8f0;
         }
 
-        .body {
+        body {
             background-color: var(--background);
             min-height: 100vh;
         }

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>付款畫面--填寫運送資料</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 4.5rem;
+	  flex: 1 0 auto;
+	}
+	
+    body {
+      background-color: #f8f9fa;
+    }
+    .step-container {
+      position: relative;
+      padding: 2rem 0;
+    }
+    .step-line {
+	  position: absolute;
+	  top: 50%;
+	  left: 20%;
+	  right: 20%;
+	  height: 2px;
+	  background-color: #dee2e6;
+	  z-index: 1;
+    }
+    .step-circle {
+      width: 3rem;
+      height: 3rem;
+      background-color: #fff;
+      border: 2px solid #dee2e6;
+      z-index: 2;
+      position: relative;
+      transition: all 0.3s;
+    }
+    .step-circle.active {
+      border-color: #212529;
+      background-color: #212529;
+      color: #fff;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #212529;
+      box-shadow: 0 0 0 0.25rem rgba(33, 37, 41, 0.25);
+    }
+
+</style>
+
+</head>
+<body class="bg-light">
+
+	<div th:replace="back-end/client/Header :: header"></div>
+
+    <main>
+      <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- Progress Steps -->
+                    <div class="step-container mb-4">
+                        <div class="step-line"></div>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="step-circle active rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2">
+                                    <i class="bi bi-check-lg"></i>
+                                </div>
+                                <div>確認購買清單</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="step-circle active rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2">
+                                    2
+                                </div>
+                                <div>填寫運送資料</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2">
+                                    3
+                                </div>
+                                <div>完成訂單</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Form Content -->
+                    <div class="bg-white rounded-3 shadow-sm p-4">
+                        <form id="shippingForm" class="needs-validation" novalidate>
+                            <!-- Contact Information -->
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">聯絡資料</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               name="name" 
+                                               pattern="^[\u4e00-\u9fa5a-zA-Z\s]+$"
+                                               required>
+                                        <div class="invalid-feedback">
+                                            請輸入姓名 (僅限中文或英文字母)
+                                        </div>
+                                        <div class="nameError text-danger mt-1" style="display: none;"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">電子郵件</label>
+                                        <input type="email" class="form-control" name="email" required>
+                                        <div class="invalid-feedback">
+                                            請輸入有效的電子郵件
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">手機號碼</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+886</span>
+                                            <input type="tel" class="form-control" name="phone" pattern="^9\d{8}$" required>
+                                            <div class="invalid-feedback">
+                                                請輸入有效的手機號碼
+                                            </div>
+                                        </div>
+                                        <div class="phoneError text-danger mt-1" style="display: none;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">運送地址</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+								      <label class="form-label">縣市</label>
+								      <select class="form-select" name="city" id="city" required>
+								          <option value="">請選擇縣市</option>
+								          <option value="taipei">臺北市</option>
+								          <option value="newtaipei">新北市</option>
+								          <option value="taoyuan">桃園市</option>
+								          <option value="taichung">臺中市</option>
+								          <option value="tainan">臺南市</option>
+								          <option value="kaohsiung">高雄市</option>
+								          <option value="keelungcity">基隆市</option>
+								          <option value="hsinchucity">新竹市</option>
+								          <option value="chiayicity">嘉義市</option>
+								          <option value="hsinchucounty">新竹縣</option>
+								          <option value="miaolicounty">苗栗縣</option>
+								          <option value="changhuacounty">彰化縣</option>
+								          <option value="nantoucounty">南投縣</option>
+								          <option value="yunlincounty">雲林縣</option>
+								          <option value="chiayicounty">嘉義縣</option>
+								          <option value="pingtungcounty">屏東縣</option>
+								          <option value="yilancounty">宜蘭縣</option>
+								          <option value="hualiencounty">花蓮縣</option>
+								          <option value="taitungcounty">臺東縣</option>
+								          <option value="kinmencounty">金門縣</option>
+								          <option value="penghucounty">澎湖縣</option>
+								          <option value="lienchiangcounty">連江縣</option>
+								      </select>
+								  </div>
+								  <div class="col-md-4">
+								      <label class="form-label">鄉鎮市區</label>
+								      <select class="form-select" name="district" id="district" required>
+								          <option value="">請選擇鄉鎮市區</option>
+								      </select>
+								  </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">郵遞區號</label>
+                                        <input type="text" class="form-control" name="zipcode" required>
+                                        <div class="invalid-feedback">
+                                            請輸入郵遞區號
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">詳細地址</label>
+                                        <input type="text" class="form-control" name="address" required>
+                                        <div class="invalid-feedback">
+                                            請輸入詳細地址
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Options -->
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">配送選項</h5>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="delivery" id="home" value="home" checked>
+                                            <label class="form-check-label" for="home">
+                                                宅配到府 - NT$ 100
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="delivery" id="store" value="store">
+                                            <label class="form-check-label" for="store">
+                                                超商取貨 - NT$ 60
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Notes -->
+                            <div class="mb-4">
+                                <label class="form-label">備註說明（選填）</label>
+                                <textarea class="form-control" name="notes" rows="3" 
+                                          placeholder="如有特殊配送需求請告知"></textarea>
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/client/DPstep1}" class="btn btn-outline-dark">
+                                    <i class="bi bi-arrow-left me-2"></i>返回上一步
+                                </a>
+                                <button type="submit" class="btn btn-dark">
+                                    下一步<i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+	<div th:replace="back-end/client/Footer :: footer"></div>
+	
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+
+// 縣市區域連動選單
+const districts = {
+    taipei: ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
+    newtaipei: ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '樹林區', '鶯歌區', '三峽區', '淡水區', '汐止區', '瑞芳區', '土城區', '蘆洲區', '五股區', '泰山區', '林口區', '深坑區', '石碇區', '坪林區', '三芝區', '石門區', '八里區', '平溪區', '雙溪區', '貢寮區', '金山區', '萬里區', '烏來區'],
+    taoyuan: ['桃園區', '中壢區', '平鎮區', '八德區', '楊梅區', '蘆竹區', '大溪區', '龜山區', '大園區', '觀音區', '新屋區', '龍潭區', '復興區'],
+    taichung: ['中區', '東區', '南區', '西區', '北區', '北屯區', '西屯區', '南屯區', '太平區', '大里區', '霧峰區', '烏日區', '豐原區', '后里區', '石岡區', '東勢區', '和平區', '新社區', '潭子區', '大雅區', '神岡區', '大肚區', '沙鹿區', '龍井區', '梧棲區', '清水區', '大甲區', '外埔區', '大安區'],
+    tainan: ['中西區', '東區', '南區', '北區', '安平區', '安南區', '永康區', '歸仁區', '新化區', '左鎮區', '玉井區', '楠西區', '南化區', '仁德區', '關廟區', '龍崎區', '官田區', '麻豆區', '佳里區', '西港區', '七股區', '將軍區', '學甲區', '北門區', '新營區', '後壁區', '白河區', '東山區', '六甲區', '下營區', '柳營區', '鹽水區', '善化區', '大內區', '山上區', '新市區', '安定區'],
+    kaohsiung: ['鹽埕區', '鼓山區', '左營區', '楠梓區', '三民區', '新興區', '前金區', '苓雅區', '前鎮區', '旗津區', '小港區', '鳳山區', '林園區', '大寮區', '大樹區', '大社區', '仁武區', '鳥松區', '岡山區', '橋頭區', '燕巢區', '田寮區', '阿蓮區', '路竹區', '湖內區', '茄萣區', '永安區', '彌陀區', '梓官區', '旗山區', '美濃區', '六龜區', '甲仙區', '杉林區', '內門區', '茂林區', '桃源區', '那瑪夏區'],
+    keelungcity: ['仁愛區', '信義區', '中正區', '中山區', '安樂區', '暖暖區', '七堵區'],
+    hsinchucity: ['東區', '北區', '香山區'],
+    chiayicity: ['東區', '西區'],
+    hsinchucounty: ['竹北市', '竹東鎮', '新埔鎮', '關西鎮', '湖口鄉', '新豐鄉', '峨眉鄉', '寶山鄉', '北埔鄉', '芎林鄉', '橫山鄉', '尖石鄉', '五峰鄉'],
+    miaolicounty: ['苗栗市', '頭份市', '竹南鎮', '後龍鎮', '通霄鎮', '苑裡鎮', '卓蘭鎮', '造橋鄉', '西湖鄉', '頭屋鄉', '公館鄉', '銅鑼鄉', '三義鄉', '大湖鄉', '獅潭鄉', '三灣鄉', '南庄鄉', '泰安鄉'],
+    changhuacounty: ['彰化市', '員林市', '和美鎮', '鹿港鎮', '溪湖鎮', '二林鎮', '田中鎮', '北斗鎮', '花壇鄉', '芬園鄉', '大村鄉', '永靖鄉', '伸港鄉', '線西鄉', '福興鄉', '秀水鄉', '埔心鄉', '埔鹽鄉', '大城鄉', '芳苑鄉', '竹塘鄉', '社頭鄉', '二水鄉', '田尾鄉', '埤頭鄉', '溪州鄉'],
+    nantoucounty: ['南投市', '埔里鎮', '草屯鎮', '竹山鎮', '集集鎮', '名間鄉', '鹿谷鄉', '中寮鄉', '魚池鄉', '國姓鄉', '水里鄉', '信義鄉', '仁愛鄉'],
+    yunlincounty: ['斗六市', '斗南鎮', '虎尾鎮', '西螺鎮', '土庫鎮', '北港鎮', '古坑鄉', '大埤鄉', '莿桐鄉', '林內鄉', '二崙鄉', '崙背鄉', '麥寮鄉', '東勢鄉', '褒忠鄉', '台西鄉', '元長鄉', '四湖鄉', '口湖鄉', '水林鄉'],
+    chiayicounty: ['太保市', '朴子市', '布袋鎮', '大林鎮', '民雄鄉', '溪口鄉', '新港鄉', '六腳鄉', '東石鄉', '義竹鄉', '鹿草鄉', '水上鄉', '中埔鄉', '竹崎鄉', '梅山鄉', '番路鄉', '大埔鄉', '阿里山鄉'],
+    pingtungcounty: ['屏東市', '潮州鎮', '東港鎮', '恆春鎮', '萬丹鄉', '長治鄉', '麟洛鄉', '九如鄉', '里港鄉', '鹽埔鄉', '高樹鄉', '萬巒鄉', '內埔鄉', '竹田鄉', '新埤鄉', '枋寮鄉', '新園鄉', '崁頂鄉', '林邊鄉', '南州鄉', '佳冬鄉', '琉球鄉', '車城鄉', '滿州鄉', '枋山鄉', '三地門鄉', '霧臺鄉', '瑪家鄉', '泰武鄉', '來義鄉', '春日鄉', '獅子鄉', '牡丹鄉'],
+    yilancounty: ['宜蘭市', '頭城鎮', '羅東鎮', '蘇澳鎮', '礁溪鄉', '壯圍鄉', '員山鄉', '冬山鄉', '五結鄉', '三星鄉', '大同鄉', '南澳鄉'],
+    hualiencounty: ['花蓮市', '鳳林鎮', '玉里鎮', '新城鄉', '吉安鄉', '壽豐鄉', '光復鄉', '豐濱鄉', '瑞穗鄉', '富里鄉', '秀林鄉', '萬榮鄉', '卓溪鄉'],
+    taitungcounty: ['臺東市', '成功鎮', '關山鎮', '卑南鄉', '鹿野鄉', '池上鄉', '東河鄉', '長濱鄉', '太麻里鄉', '大武鄉', '綠島鄉', '海端鄉', '延平鄉', '金峰鄉', '達仁鄉', '蘭嶼鄉'],
+    kinmencounty: ['金城鎮', '金湖鎮', '金沙鎮', '金寧鄉', '烈嶼鄉', '烏坵鄉'],
+    penghucounty: ['馬公市', '湖西鄉', '白沙鄉', '西嶼鄉', '望安鄉', '七美鄉'],
+    lienchiangcounty: ['南竿鄉', '北竿鄉', '莒光鄉', '東引鄉']
+};
+
+const citySelect = document.querySelector('select[name="city"]');
+const districtSelect = document.querySelector('select[name="district"]');
+
+document.getElementById('city').addEventListener('change', function() {
+    const cityValue = this.value;
+    const districtSelect = document.getElementById('district');
+    
+    // 清空區域選項
+    districtSelect.innerHTML = '<option value="">請選擇鄉鎮市區</option>';
+    
+    // 如果選擇了縣市，新增對應區域選項
+    if(cityValue && districts[cityValue]) {
+        districts[cityValue].forEach(function(district) {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtSelect.appendChild(option);
+        });
+    }
+});
+
+//Form validation and submission
+document.getElementById('shippingForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    if (!this.checkValidity()) {
+        event.stopPropagation();
+        this.classList.add('was-validated');
+        return;
+    }
+    
+    // 準備表單數據
+    const formData = new FormData();
+    const address = `${document.querySelector('[name="zipcode"]').value} ${document.querySelector('[name="city"] option:checked').text} ${document.querySelector('[name="district"]').value} ${document.querySelector('[name="address"]').value}`;
+    formData.append('address', address);
+    formData.append('recipient', document.querySelector('[name="name"]').value);
+    formData.append('phone', document.querySelector('[name="phone"]').value);
+    formData.append('email', document.querySelector('[name="email"]').value);
+    formData.append('notes', document.querySelector('[name="notes"]').value);
+    formData.append('delivery', document.querySelector('[name="delivery"]:checked').value);
+    
+    // 發送到後端
+    fetch('/client/orders/saveStep2', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/client/orders/DPstep3';
+        } else {
+            alert('提交失敗，請稍後再試');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('系統錯誤，請稍後再試');
+    });
+});
+
+//姓名驗證函數
+function validateName(name) {
+    // 檢查是否只包含中文、英文和空格
+    const pattern = /^[\u4e00-\u9fa5a-zA-Z\s]+$/;
+    return pattern.test(name);
+}
+
+// 添加姓名欄位的即時驗證
+document.querySelector('input[name="name"]').addEventListener('input', function(e) {
+    const nameError = document.querySelector('.nameError');
+    const name = e.target.value.trim();
+    
+    if (name === '') {
+        nameError.style.display = 'none';
+        return;
+    }
+    
+    if (!validateName(name)) {
+        nameError.textContent = '姓名只能包含中文或英文字母';
+        nameError.style.display = 'block';
+        e.target.setCustomValidity('姓名格式不正確');
+    } else {
+        nameError.style.display = 'none';
+        e.target.setCustomValidity('');
+    }
+});
+
+//手機號碼驗證函數
+function validatePhone(phone) {
+    // 檢查是否符合: 開頭為9，後面接8個數字
+    const pattern = /^9\d{8}$/;
+    return pattern.test(phone);
+}
+
+// 添加手機號碼欄位的即時驗證
+document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+    const phoneError = document.querySelector('.phoneError');
+    const phone = e.target.value.trim();
+    
+    if (phone === '') {
+        phoneError.style.display = 'none';
+        return;
+    }
+    
+    // 檢查是否只包含數字
+    if (!/^\d*$/.test(phone)) {
+        phoneError.textContent = '手機號碼只能包含數字';
+        phoneError.style.display = 'block';
+        e.target.setCustomValidity('手機號碼格式不正確');
+        return;
+    }
+    
+    // 檢查長度
+    if (phone.length !== 9) {
+        phoneError.textContent = '手機號碼必須為9位數';
+        phoneError.style.display = 'block';
+        e.target.setCustomValidity('手機號碼格式不正確');
+        return;
+    }
+    
+    // 檢查是否以9開頭
+    if (phone[0] !== '9') {
+        phoneError.textContent = '手機號碼必須以9開頭';
+        phoneError.style.display = 'block';
+        e.target.setCustomValidity('手機號碼格式不正確');
+        return;
+    }
+    
+    // 如果通過所有驗證
+    if (validatePhone(phone)) {
+        phoneError.style.display = 'none';
+        e.target.setCustomValidity('');
+    }
+});
+</script>
+</body>
+</html>

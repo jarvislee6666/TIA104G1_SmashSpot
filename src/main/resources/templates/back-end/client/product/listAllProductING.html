@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
 <title>競標商品瀏覽</title>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-  rel="stylesheet"
-/>
+<th:block th:replace="back-end/client/Header :: headContent" />
 <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
@@ -348,11 +340,6 @@
                       placeholder="搜尋商品..."
                       style="max-width: 250px"
                     />
-<!--                     <select class="form-select" style="max-width: 150px"> -->
-<!--                       <option value="排序" disabled selected>依時間排序</option> -->
-<!--                       <option value="最新上架">最新上架</option> -->
-<!--                       <option value="即將結標">即將結標</option> -->
-<!--                     </select> -->
 					<select class="form-select" style="max-width: 150px" 
 				            onchange="window.location.href=this.value">
 				        <option value="排序" disabled>依時間排序</option>

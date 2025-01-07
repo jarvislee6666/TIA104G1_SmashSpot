@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
 <title>單一商品瀏覽</title>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-  rel="stylesheet"
-/>
+<th:block th:replace="back-end/client/Header :: headContent" />
 <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
@@ -133,7 +125,6 @@
 
             <div class="row g-4">
                 <!-- 左側商品圖片 -->
-                <!-- 左側商品圖片 -->
 				<div class="col-md-6">
 				    <div class="card border-0 bg-light rounded-3">
 				        <div class="ratio ratio-4x3 ratio-md-1x1">
@@ -206,14 +197,21 @@
 
                     <!-- 操作按鈕 -->
                     <div class="action-buttons d-grid gap-2 d-md-flex mb-4">
-                        <button type="button" class="btn btn-primary flex-fill btn_action"
-                                data-bs-toggle="modal" data-bs-target="#biddingModal">
-                            <i class="bi bi-hammer me-2"></i>出價競標
-                        </button>
-                        <button type="button" class="btn btn-danger flex-fill btn_action"
-                                data-bs-toggle="modal" data-bs-target="#checkoutModal">
-                            <i class="bi bi-cart-fill me-2"></i>直接購買
-                        </button>
+                    	<!-- 如果不是商品擁有者 -->
+                    	<div th:unless="${isOwner}" class="d-grid gap-2 d-md-flex w-100">
+                        	<a  class="btn btn-primary flex-fill btn_action">
+							    <i class="bi bi-hammer me-2"></i>出價競標
+							</a>
+							<a th:href="@{'/client/orders/DPstep1/' + ${productVO.proid}}" class="btn btn-danger flex-fill btn_action">
+							    <i class="bi bi-cart-fill me-2"></i>直接購買
+							</a>
+						</div>
+							<!-- 如果是商品擁有者 -->
+						 <div th:if="${isOwner}" class="w-100">
+						     <button class="btn btn-secondary w-100 disabled" disabled>
+						         <i class="bi bi-exclamation-circle me-2"></i>不可購買自己刊登的商品
+						     </button>
+						 </div>
                     </div>
 
                     <!-- 商品資訊標籤頁 -->
@@ -338,301 +336,6 @@
                   出價
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 結帳Modal -->
-      <div class="modal fade" id="checkoutModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">結帳</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div class="modal-body p-0">
-              <!-- Progress Steps -->
-              <div class="p-4 border-bottom">
-                <div class="d-flex justify-content-between position-relative">
-                  <div class="text-center">
-                    <div
-                      class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto"
-                      style="width: 40px; height: 40px"
-                    >
-                      1
-                    </div>
-                    <div class="mt-2">Check Order</div>
-                    <div>確認購買清單</div>
-                  </div>
-                  <div class="text-center">
-                    <div
-                      class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto"
-                      style="width: 40px; height: 40px"
-                    >
-                      2
-                    </div>
-                    <div class="mt-2">Confirm The Add</div>
-                    <div>確認運送資料</div>
-                  </div>
-                  <div class="text-center">
-                    <div
-                      class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto"
-                      style="width: 40px; height: 40px"
-                    >
-                      3
-                    </div>
-                    <div class="mt-2">OK!</div>
-                    <div>訂單完成</div>
-                  </div>
-                  <!-- Progress line -->
-                  <div
-                    class="position-absolute"
-                    style="
-                      top: 20px;
-                      left: 70px;
-                      right: 70px;
-                      height: 2px;
-                      background-color: #dee2e6;
-                      z-index: -1;
-                    "
-                  ></div>
-                </div>
-              </div>
-
-              <!-- Step 1 Content -->
-              <div id="checkoutStep1" class="p-4">
-                <div class="row mb-4">
-                  <div class="col-6">
-                    <h6>商品</h6>
-                    <div class="border rounded p-3">
-                      <div class="d-flex">
-                        <img
-                          src="/api/placeholder/100/100"
-                          class="img-fluid me-3"
-                          style="width: 100px"
-                        />
-                        <div>
-                          <div>羽球拍</div>
-                          <div class="text-muted">數量：1</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <h6>選擇付款方式</h6>
-                    <div class="border rounded p-3">
-                      <div class="form-check mb-2">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="payment"
-                          id="payment1"
-                        />
-                        <label class="form-check-label" for="payment1"
-                          >貨到付款</label
-                        >
-                      </div>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="payment"
-                          id="payment2"
-                        />
-                        <label class="form-check-label" for="payment2"
-                          >ATM轉帳</label
-                        >
-                      </div>
-                    </div>
-                    <div class="border rounded p-3 mt-3">
-                      <h6>使用優惠券</h6>
-                      <div class="input-group">
-                        <input
-                          type="text"
-                          id="couponInput"
-                          class="form-control"
-                          placeholder="輸入優惠券代碼"
-                        />
-                        <button
-                          class="btn btn-outline-primary"
-                          type="button"
-                          onclick="validateCoupon()"
-                        >
-                          驗證
-                        </button>
-                      </div>
-                    </div>
-                    <div class="mt-3">
-                      <div class="d-flex justify-content-between">
-                        <span>商品總金額</span>
-                        <span>NT$ 3,000</span>
-                      </div>
-                      <div class="d-flex justify-content-between text-danger">
-                        <span>折扣金額</span>
-                        <span>-</span>
-                      </div>
-                      <div class="d-flex justify-content-between fw-bold">
-                        <span>總付款金額</span>
-                        <span class="text-danger">NT$ 3,000</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    取消交易
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onclick="showCheckoutStep2()"
-                  >
-                    下一步
-                  </button>
-                </div>
-              </div>
-
-              <!-- Step 2 Content -->
-              <div id="checkoutStep2" style="display: none" class="p-4">
-                <h6>收件資訊</h6>
-                <div class="border rounded p-4">
-                  <div class="mb-3">
-                    <label class="form-label">收件人姓名</label>
-                    <input type="text" class="form-control" />
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">收件人電話</label>
-                    <div class="row">
-                      <div class="col-2">
-                        <input type="text" class="form-control" value="+886" />
-                      </div>
-                      <div class="col-10">
-                        <input type="text" class="form-control" />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">電子郵件</label>
-                    <input type="email" class="form-control" />
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">收件地址</label>
-                    <div class="row">
-                      <div class="col-4">
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="縣市"
-                        />
-                      </div>
-                      <div class="col-8">
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="地址"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between mt-3">
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    onclick="showCheckoutStep1()"
-                  >
-                    返回
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onclick="showCheckoutStep3()"
-                  >
-                    下一步
-                  </button>
-                </div>
-              </div>
-
-              <!-- Step 3 Content -->
-              <div
-                id="checkoutStep3"
-                style="display: none"
-                class="p-4 text-center"
-              >
-                <div class="mb-4">
-                  <div
-                    class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center"
-                    style="width: 80px; height: 80px"
-                  >
-                    <i class="bi bi-check-lg" style="font-size: 40px"></i>
-                  </div>
-                </div>
-                <h5 class="mb-3">訂單已完成！</h5>
-                <p class="text-muted mb-4">您的訂單編號為: #00001</p>
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  data-bs-dismiss="modal"
-                >
-                  返回訂單查詢
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Validation Modals -->
-      <div class="modal fade" id="successModal" tabindex="-1">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-body text-center p-4">
-              <div
-                class="rounded-circle bg-success bg-opacity-25 d-inline-flex align-items-center justify-content-center mb-3"
-                style="width: 60px; height: 60px"
-              >
-                <i class="bi bi-check-lg text-success fs-4"></i>
-              </div>
-              <p class="mb-3">驗證成功！已套用優惠券！</p>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                確認
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal fade" id="errorModal" tabindex="-1">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-body text-center p-4">
-              <div
-                class="rounded-circle bg-danger bg-opacity-25 d-inline-flex align-items-center justify-content-center mb-3"
-                style="width: 60px; height: 60px"
-              >
-                <i class="bi bi-dash-lg text-danger fs-4"></i>
-              </div>
-              <p class="mb-3">驗證失敗！請確認折扣碼是否正確！</p>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                返回
-              </button>
             </div>
           </div>
         </div>

@@ -3,12 +3,17 @@ package com.smashspot.courtorder.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailRepository;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.reservationtime.model.ReservationTimeRepository;
@@ -53,7 +58,7 @@ public class CourtOrderService {
 
         // 2. 設定訂單資訊
         CourtOrderVO newOrder = new CourtOrderVO();
-        newOrder.setMemid(requestOrder.getMemid());
+        newOrder.setMember(requestOrder.getMember());//沃寯有修改
         newOrder.setStadium(stadium);
         newOrder.setOrdsta(true);
         newOrder.setOrdcrttime(new Timestamp(System.currentTimeMillis()));
@@ -69,16 +74,6 @@ public class CourtOrderService {
             // 設到 order
             newOrder.setCourtOrderDetail(details);
         }
-
-//        if (details != null && !details.isEmpty()) {
-//            // 把每一筆 detail 都跟 order 綁定
-//            for (CourtOrderDetailVO detail : details) {
-//                // 綁定關聯
-//                detail.setCourtOrder(newOrder);
-//            }
-//            // 設到 order
-//            newOrder.setCourtOrderDetail(details);
-//        }
 
         // 4) 計算總金額 (依你規則，這裡示範: 場館價格 * 總時段數)
         int totalTimeSlots = 0;
@@ -209,6 +204,82 @@ public class CourtOrderService {
         return cnt;
     }
     
+    //沃寯添加    
+    public List<CourtOrderVO> getAll() {
+		return courtOrderRepository.findAll();
+	}
+    
+    @Transactional(readOnly = true)
+    public CourtOrderVO getOneOrder(Integer orderId) {
+        CourtOrderVO order = courtOrderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("找不到訂單"));
+        
+        // 觸發關聯對象加載
+        if (order.getMember() != null) {
+            order.getMember().getName();  // 觸發加載
+            order.getMember().getEmail(); // 觸發加載
+            order.getMember().getPhone(); // 觸發加載
+        }
+        return order;
+    }
+    
+    //沃寯添加
+    public Map<String, Object> calculateReviewStats(Integer stdmId) {
+        Map<String, Object> stats = new HashMap<>();
+        
+        // 獲取指定場館的所有評價
+        List<CourtOrderVO> orders = courtOrderRepository.findByStadiumId(stdmId);
+        
+        // 計算評價分布
+        Map<Integer, Integer> ratingCounts = new HashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            ratingCounts.put(i, 0);
+        }
+        
+        List<Map<String, Object>> reviews = new ArrayList<>();
+        double totalRating = 0;
+        int reviewCount = 0;
+        
+        for (CourtOrderVO order : orders) {
+            if (order.getStarrank() != null) {
+                int rating = order.getStarrank();
+                ratingCounts.put(rating, ratingCounts.get(rating) + 1);
+                totalRating += rating;
+                reviewCount++;
+                
+                // 收集評論詳情
+                if (order.getMessage() != null && !order.getMessage().trim().isEmpty()) {
+                    Map<String, Object> review = new HashMap<>();
+                    review.put("rating", rating);
+                    review.put("message", order.getMessage());
+                    reviews.add(review);
+                }
+            }
+        }
+        
+        // 計算平均評分
+        double avgRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+        
+        stats.put("ratingDistribution", ratingCounts);
+        stats.put("averageRating", Math.round(avgRating * 10) / 10.0);
+        stats.put("reviewCount", reviewCount);
+        stats.put("reviews", reviews);
+        
+        return stats;
+    }
+    
+    /**
+     * 只用方法命名規則來撈主檔 (Lazy Load)
+     */
+    public List<CourtOrderVO> findByMemberId(Integer memid) {
+        return courtOrderRepository.findByMember_Memid(memid);
+    }
 
+    /**
+     * 用 JOIN FETCH 一次撈主檔 + 明細
+     */
+    public List<CourtOrderVO> findOrdersWithDetailsByMemberId(Integer memid) {
+        return courtOrderRepository.findOrdersWithDetailsByMemberid(memid);
+    }
 
 }
