@@ -24,13 +24,13 @@ public interface CourtOrderRepository extends JpaRepository<CourtOrderVO, Intege
      * 若需要一次將主檔 + 明細 (OneToMany) 全部撈回來，
      * 可以使用 JOIN FETCH 避免 LazyInitializationException
      */
-    @Query("SELECT co FROM CourtOrderVO co "
-         + "JOIN FETCH co.courtOrderDetail detail "
-         + "WHERE co.member.memid = :memid "
-         + "ORDER BY co.ordcrttime DESC")
+    @Query("SELECT DISTINCT co FROM CourtOrderVO co "
+    	     + "JOIN FETCH co.courtOrderDetail "
+    	     + "WHERE co.member.memid = :memid")
     List<CourtOrderVO> findOrdersWithDetailsByMemberid(@Param("memid") Integer memid);
-    
+
     //沃寯添加
     @Query("SELECT co FROM CourtOrderVO co WHERE co.stadium.stdmId = :stdmId")
     List<CourtOrderVO> findByStadiumId(@Param("stdmId") Integer stdmId);
+
 }
