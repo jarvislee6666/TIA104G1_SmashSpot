@@ -8,64 +8,6 @@
 <th:block th:replace="back-end/adm/Header :: headContent" />
 <head th:insert="~{/back-end/adm/included-fragment}"></head>
 </head>
-<style>
-    /* 更新圖表容器的樣式 */
-    .chart-container {
-        position: relative;
-        height: 600px;  /* 增加高度 */
-        width: 100%;
-        padding: 20px;
-    }
-
-    /* 評論統計樣式 */
-    .rating-distribution {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .rating-bar {
-        display: flex;
-        align-items: center;
-        margin: 10px 0;
-        height: 30px;
-    }
-
-    .rating-stars {
-        min-width: 120px;
-        color: #ffd700;
-    }
-
-    .rating-progress {
-        flex-grow: 1;
-        margin: 0 10px;
-        background-color: #f0f0f0;
-        height: 20px;
-        position: relative;
-        border-radius: 4px;
-    }
-
-    .rating-count {
-        min-width: 50px;
-        text-align: right;
-    }
-
-    .progress-fill {
-        height: 100%;
-        border-radius: 4px;
-    }
-
-    .progress-fill-5 { background-color: #4CAF50; }
-    .progress-fill-4 { background-color: #8BC34A; }
-    .progress-fill-3 { background-color: #FFC107; }
-    .progress-fill-2 { background-color: #FF9800; }
-    .progress-fill-1 { background-color: #f44336; }
-
-    .review-list {
-        margin-top: 20px;
-    }
-</style>
 
 
 <body>
