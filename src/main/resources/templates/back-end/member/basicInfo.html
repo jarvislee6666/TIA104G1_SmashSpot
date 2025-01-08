@@ -23,121 +23,145 @@
 
     <main>
         <div class="container position-relative mb-3">
-            <div class="row">
-                <!-- Sidebar -->
-                <div class="col-md-3 d-flex justify-content-center">
-                    <div style="width: 80%">
-                        <h5 class="mb-3" style="font-size: 24px">會員專區</h5>
-                        <a th:href="@{/member/basic-info}" class="action-button">
-                            <i class="bi bi-info-circle"></i>基本資料
-                        </a>
-                        <a th:href="@{/member/my-activities}" class="action-button">
-                            <i class="bi bi-calendar2-event"></i>我的活動
-                        </a>
-                        <a th:href="@{/member/ongoing-bids}" class="action-button">
-                            <i class="bi bi-cash-coin"></i>參加中競標
-                        </a>
-                        <a th:href="@{/member/buyingList}" class="action-button">
-                            <i class="bi bi-bag-check"></i>購買清單
-                        </a>
-                        <a th:href="@{/member/appointment-records}" class="action-button">
-                            <i class="bi bi-journal-check"></i>場地預約紀錄
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Main Content -->
-                <div class="col-md-9">
-                    <div class="row mb-4">
-                        <div class="col-12 d-flex justify-content-center">
-                            <div class="register-container position-relative" style="width: 56%">
-                                <!-- 頭貼上傳區塊 -->
-                                <div class="photo position-absolute top-0 mt-2 me-2">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="rounded-circle overflow-hidden mb-2"
-                                            style="width: 120px; height: 120px; border: 2px solid #ddd;">
-                                            <img th:src="@{/images/default-avatar.png}" alt="會員頭像" class="w-100 h-100 object-fit-cover" />
-                                        </div>
-                                        <form id="avatarForm" th:action="@{/member/upload-avatar}" method="post" enctype="multipart/form-data">
-                                            <div class="d-flex justify-content-center">
-                                                <label class="btn btn-sm btn-outline-secondary">
-                                                    <input type="file" name="avatar" accept="image/*" style="display: none"
-                                                        onchange="document.getElementById('avatarForm').submit();" />
-                                                    上傳頭像
-                                                </label>
-                                            </div>
-                                        </form>
-                                    </div>
+    <div class="row">
+        <!-- Sidebar (左側選單區塊) -->
+        <div class="col-md-3 d-flex justify-content-center">
+            <div style="width: 80%">
+                <!-- 標題 -->
+                <h5 class="mb-3" style="font-size: 24px">會員專區</h5>
+                <!-- 會員專區功能選單 -->
+                <a th:href="@{/member/basic-info}" class="action-button">
+                    <i class="bi bi-info-circle"></i>基本資料
+                </a>
+                <a th:href="@{/member/my-activities}" class="action-button">
+                    <i class="bi bi-calendar2-event"></i>我的活動
+                </a>
+                <a th:href="@{/member/ongoing-bids}" class="action-button">
+                    <i class="bi bi-cash-coin"></i>參加中競標
+                </a>
+                <a th:href="@{/member/winning-bids}" class="action-button">
+                    <i class="bi bi-bag-check"></i>得標清單
+                </a>
+                <a th:href="@{/member/appointment-records}" class="action-button">
+                    <i class="bi bi-journal-check"></i>場地預約紀錄
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content (主要內容區塊) -->
+        <div class="col-md-9">
+            <div class="row mb-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <!-- 表單容器 -->
+                    <div class="register-container position-relative" style="width: 56%">
+                        
+                        <!-- 頭像上傳區 -->
+                        <div class="photo position-absolute top-0 mt-2 me-2">
+                            <div class="d-flex flex-column align-items-center">
+                                <!-- 顯示會員頭像 -->
+                                <div class="rounded-circle overflow-hidden mb-2"
+                                    style="width: 120px; height: 120px; border: 2px solid #ddd;">
+                                    <img th:src="${memberImage != null} ? ${memberImage} : @{/images/default-avatar.png}" 
+                                         alt="會員頭像" class="w-100 h-100 object-fit-cover" />
+
                                 </div>
-
-                                <h2 class="register-title mb-3">基本資料</h2>
-                                <!-- 錯誤訊息顯示 -->
-                                <div th:if="${message}" class="alert" th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}" role="alert">
-                                    <p th:text="${message}"></p>
-                                </div>
-
-                                <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">
-                                    <div class="mb-3">
-                                        <label for="id" class="form-label">使用者帳號</label>
-                                        <input type="text" class="form-control" id="id" th:value="*{account}" disabled />
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">姓名</label>
-                                        <input type="text" class="form-control" id="name" th:field="*{name}" required />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" th:field="*{email}" required />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">手機</label>
-                                        <input type="tel" class="form-control" id="phone" th:field="*{phone}" 
-                                               pattern="[0-9]{10}" required />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="birthday" class="form-label">生日</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="birthday" th:field="*{bday}" required />
-                                            <span class="input-group-text">
-                                                <i class="bi bi-calendar"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="address" class="form-label">地址</label>
-                                        <input type="text" class="form-control" id="address" th:field="*{addr}" required />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('addr')}" th:errors="*{addr}"></div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">密碼重設</label>
-                                        <input type="password" class="form-control" id="password" th:field="*{password}" />
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                                    </div>
-
-                                    <div class="mb-4">
-									    <label for="confirmPassword" class="form-label">確認密碼</label>
-									    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
-									</div>
-
-                                    <div class="d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary w-25">儲存</button>
+                                <!-- 頭像上傳表單 -->
+                                <form id="avatarForm" th:action="@{/member/upload-avatar}" method="post" enctype="multipart/form-data">
+                                    <div class="d-flex justify-content-center">
+                                        <label class="btn btn-sm btn-outline-secondary">
+                                            <!-- 隱藏的檔案上傳按鈕 -->
+                                            <input type="file" name="avatar" accept="image/*" style="display: none"
+                                                onchange="document.getElementById('avatarForm').submit();" />
+                                            上傳頭像
+                                        </label>
                                     </div>
                                 </form>
                             </div>
                         </div>
+
+                        <!-- 標題 -->
+                        <h2 class="register-title mb-3">基本資料</h2>
+                        
+                        <!-- 錯誤或成功訊息提示 -->
+                        <div th:if="${message}" 
+                             class="alert" 
+                             th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}" 
+                             role="alert">
+                            <p th:text="${message}"></p>
+                        </div>
+
+                        <!-- 基本資料更新表單 -->
+                        <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">
+                            <!-- 使用者帳號 (只讀欄位) -->
+                            <div class="mb-3">
+                                <label for="id" class="form-label">使用者帳號</label>
+                                <input type="text" class="form-control" id="id" th:value="*{account}" disabled />
+                            </div>
+
+                            <!-- 姓名欄位 -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">姓名</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required />
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Email 欄位 -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required />
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- 手機欄位 -->
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">手機</label>
+                                <input type="tel" class="form-control" id="phone" th:field="*{phone}" 
+                                       pattern="[0-9]{10}" required />
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                            </div>
+
+                            <!-- 生日欄位 -->
+                            <div class="mb-3">
+                                <label for="birthday" class="form-label">生日</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="birthday" th:field="*{bday}" required />
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- 地址欄位 -->
+                            <div class="mb-3">
+                                <label for="address" class="form-label">地址</label>
+                                <input type="text" class="form-control" id="address" th:field="*{addr}" required />
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('addr')}" th:errors="*{addr}"></div>
+                            </div>
+
+                            <!-- 密碼重設欄位 -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label">密碼重設</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" />
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <!-- 確認密碼欄位 -->
+                            <div class="mb-4">
+                                <label for="confirmPassword" class="form-label">確認密碼</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
+                            </div>
+
+                            <!-- 表單提交按鈕 -->
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary w-25">儲存</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
     </main>
 
     <!-- Footer -->
@@ -178,5 +202,31 @@
         });
       });
     </script>
+    <!-- 在 basicInfo.html 底部的 script 區塊添加 -->
+<script>
+$(document).ready(function() {
+    // 表單提交前驗證
+    $('form').on('submit', function(e) {
+        const password = $('#password').val();
+        const confirmPassword = $('#confirmPassword').val();
+        
+        if (password !== confirmPassword && password !== '') {
+            e.preventDefault();
+            alert('密碼與確認密碼不符');
+            return false;
+        }
+        
+        // 可以添加其他驗證邏輯...
+    });
+
+    // 如果有成功訊息，3秒後自動消失
+    const alertMessage = $('.alert');
+    if (alertMessage.length > 0) {
+        setTimeout(function() {
+            alertMessage.fadeOut('slow');
+        }, 3000);
+    }
+});
+</script>
 </body>
 </html>
