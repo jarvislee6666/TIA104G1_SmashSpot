@@ -2,7 +2,6 @@
 //
 //import java.util.List;
 //
-//import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.messaging.handler.annotation.MessageMapping;
 //import org.springframework.messaging.handler.annotation.Payload;
@@ -20,21 +19,22 @@
 //	private final UserService service;
 //	
 //	 @MessageMapping("/user.addUser")
-//		@SendTo("/user/topic")
+//		@SendTo("/user/public")
 //		public User addUser(@Payload User user) {
 //			service.saveUser(user);
 //			return user;
 //		}
 //
 //		@MessageMapping("/user.disconnectUser")
-//		@SendTo("/user/topic")
+//		@SendTo("/user/public")
 //		public User disconnect(@Payload User user) {
 //			service.disconnect(user);
 //			return user;
 //		}
 //		
 //		@GetMapping("/users")
-//		public ResponseEntity<List<User>> findConnectdUsers(){
+//		public ResponseEntity<List<String>> findConnectdUsers(){
 //			return ResponseEntity.ok(service.findConnectUsers());
 //		}
+//
 //}

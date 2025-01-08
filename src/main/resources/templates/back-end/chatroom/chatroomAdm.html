@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="css/chatroomAdm.css">
+<title>後台客服聊天室</title>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	rel="stylesheet">
+<!-- Existing styles remain the same -->
+
+</head>
+
+<body>
+	<nav class="navbar navbar-light mb-4">
+		<!-- Existing navbar remains the same -->
+		<div class="container-fluid">
+			<div class="navbar-content">
+				<a class="navbar-brand" href="#">管理員後台</a>
+				<div class="nav-buttons">
+					<!-- Existing nav buttons -->
+					<a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>客服中心
+					</a>
+				</div>
+				<div class="d-flex align-items-center border-start ps-4">
+					<div class="nav-item me-3">
+						<span class="nav-link"> <i class="fas fa-user me-1"></i> <span
+							id="adminName">管理員</span>
+						</span>
+					</div>
+					<button class="btn btn-outline-secondary btn-sm" id="logoutBtn">
+						<i class="fas fa-sign-out-alt me-1"></i> 登出
+					</button>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row mb-5">
+			<div class="col-md-2 mb-4">
+				<div class="card">
+					<div class="card-body p-0">
+						<div class="nav flex-column nav-pills">
+							<a class="nav-link active" href="#"> <i
+								class="fas fa-list me-2"></i>個別聊天室
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-10">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex align-items-center">
+							<a href="./後台訊息列表.html"> <i class="bi bi-arrow-90deg-left"></i>
+							</a> <span>&nbsp; &nbsp;</span>
+							<h5 class="card-title" id="userFullName">游薺虢(用戶名)</h5>
+						</div>
+						<hr />
+						<div class="chat-messages" id="chatMessages">
+							<!-- Chat messages will be dynamically added here -->
+						</div>
+
+						<div class="chat-input w-100">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="請輸入訊息..."
+									id="messageInput" />
+								<button class="btn btn-primary" type="button" id="sendButton">
+									發送</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- WebSocket and SockJS libraries -->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+	<script>
+    // WebSocket Chat Functionality
+    let stompClient = null;
+    let nickname = null;
+    let fullname = null;
+    let selectedUserId = null;
+
+    // Function to connect to WebSocket
+    function connect() {
+      // In a real scenario, you'd have a login process
+      nickname = 'admin'; // Static admin nickname for this example
+      fullname = '管理員';
+
+      const socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+
+      stompClient.connect({}, onConnected, onError);
+    }
+
+    // On successful connection
+    function onConnected() {
+      // Subscribe to messages for the admin 
+      stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
+      stompClient.subscribe('/user/public', onMessageReceived);
+
+      // Register the admin user 註冊管理員到伺服器，並標記為 "ONLINE"
+      stompClient.send("/app/user.addUser",
+        {},
+        JSON.stringify({ nickName: nickname, fullName: fullname, status: 'ONLINE' })
+      );
+
+      // 從 URL 獲取對話參數
+      const urlParams = new URLSearchParams(window.location.search);
+      const senderId = urlParams.get('senderId');
+      const recipientId = urlParams.get('recipientId');
+
+      // 如果有發送者和接收者 ID，則載入聊天記錄
+      if (senderId && recipientId) {
+        fetchChatHistory(senderId, recipientId);
+      }
+
+      // Fetch and display user list or last conversations
+      fetchAndDisplayUserList();
+    }
+
+    // Fetch list of users/conversations
+    async function fetchAndDisplayUserList() {
+      try {
+        const response = await fetch('/users'); // 向 `/conversations` API 發送請求
+        const conversations = await response.json(); // 解析伺服器返回的對話列表
+
+        // This would typically populate a sidebar or list of conversations
+        console.log('Connected users:', users);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    }
+
+    // Handle incoming messages
+    function onMessageReceived(payload) {
+      const message = JSON.parse(payload.body);
+
+      // Display message in chat area
+      displayMessage(message.senderId, message.content, 'received');
+    }
+
+    // Display a message in the chat area
+    function displayMessage(senderId, content, type = 'sent') {
+      const chatMessages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', type);
+      messageDiv.textContent = content;
+      chatMessages.appendChild(messageDiv);
+
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Send a message
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const messageContent = input.value.trim();
+
+      if (messageContent && stompClient) {
+        const chatMessage = {
+          senderId: nickname,
+          recipientId: selectedUserId, // You'd set this when selecting a user
+          content: messageContent,
+          timestamp: new Date()
+        };
+
+        // Send message via WebSocket
+        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+
+        // Display sent message
+        displayMessage(nickname, messageContent);
+
+        // Clear input
+        input.value = '';
+      }
+    }
+
+    // Handle WebSocket connection error
+    function onError(error) {
+      console.error('Could not connect to WebSocket server:', error);
+      alert('無法連接到聊天服務器');
+    }
+
+    // Logout function
+    function handleLogout() {
+      if (stompClient) {
+        stompClient.send("/app/user.disconnectUser",
+          {},
+          JSON.stringify({ nickName: nickname, fullName: fullname, status: 'OFFLINE' })
+        );
+      }
+      window.location.reload();
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Connect to WebSocket
+      connect();
+
+      // Send button click event
+      document.getElementById('sendButton').addEventListener('click', sendMessage);
+
+      // Enter key to send message
+      document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+
+      // Logout button
+      document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    });
+
+    // 在 connect() 函數成功後調用
+    async function fetchChatHistory(senderId, recipientId) {
+      try {
+        const response = await fetch(`/messages/${senderId}/${recipientId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const messages = await response.json();
+
+        // 清空現有訊息容器
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+
+        // 遍歷並顯示歷史訊息
+        messages.forEach(message => {
+          // 判斷訊息類型（發送/接收）
+          const messageType = message.senderId === senderId ? 'sent' : 'received';
+
+          // 建立訊息元素
+          const messageDiv = document.createElement('div');
+          messageDiv.classList.add('message', messageType);
+
+          // 訊息時間戳記
+          const timestamp = new Date(message.timestamp);
+          const timeString = formatTime(timestamp);
+
+          // 建立訊息內容容器
+          const contentDiv = document.createElement('div');
+          contentDiv.classList.add('message-content');
+
+          // 訊息文字
+          const textSpan = document.createElement('span');
+          textSpan.classList.add('message-text');
+          textSpan.textContent = message.content;
+
+          // 時間標籤
+          const timeSpan = document.createElement('span');
+          timeSpan.classList.add('message-time');
+          timeSpan.textContent = timeString;
+
+          // 組裝訊息元素
+          contentDiv.appendChild(textSpan);
+          contentDiv.appendChild(timeSpan);
+          messageDiv.appendChild(contentDiv);
+
+          // 加入到聊天容器
+          chatMessages.appendChild(messageDiv);
+        });
+
+        // 滾動到最新訊息
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+        // 顯示錯誤訊息給用戶
+        displayErrorMessage('無法載入聊天記錄，請稍後再試');
+      }
+    }
+
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+
+      // If today, show time 
+      if (date.toDateString() === now.toDateString()) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); //HH:mm
+      }
+
+      // If within last 7 days, show day
+      const diffTime = Math.abs(now - date); //計算毫秒差
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      if (diffDays < 7) {
+        const days = ['日', '一', '二', '三', '四', '五', '六'];
+        return `週${days[date.getDay()]}`;
+      }
+
+      // Otherwise, show date
+      return date.toLocaleDateString();
+    }
+  </script>
+</body>
+
+</html>

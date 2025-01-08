@@ -2,8 +2,8 @@ package com.smashspot.websocketchat.chat;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +16,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document
+@Entity
 public class ChatMessage {
+
 	@Id
 	private String id;
 	private String chatId;
@@ -25,5 +26,5 @@ public class ChatMessage {
 	private String recipientId;
 	private String content;
 	private Date timestamp;
-	
+
 }
