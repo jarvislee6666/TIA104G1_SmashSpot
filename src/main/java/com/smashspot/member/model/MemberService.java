@@ -3,6 +3,7 @@ package com.smashspot.member.model;
 
 // 引入必要的Java和Spring框架相關類別
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.constraints.Email;
@@ -118,4 +119,30 @@ public class MemberService {
         // 驗證失敗返回null
         return null;
     }
+    
+    //沃寯添加
+    public List<MemberVO> getAll(Map<String, String[]> map) {
+        String name = null;
+        String status = null;  // 保持為 String 類型
+        
+        if (map != null && !map.isEmpty()) {
+            if (map.containsKey("name")) {
+                name = map.get("name")[0];
+                if (name.trim().isEmpty()) {
+                    name = null;
+                }
+            }
+            
+            if (map.containsKey("status")) {
+                status = map.get("status")[0];  // 直接使用字串值
+                if (status.trim().isEmpty()) {
+                    status = null;
+                }
+            }
+        }
+        
+        List<MemberVO> result = repository.findByConditions(name, status);
+        return result;
+    }
+    
 }
