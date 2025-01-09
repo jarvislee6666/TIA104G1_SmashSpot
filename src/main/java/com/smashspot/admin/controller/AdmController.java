@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -244,19 +245,22 @@ public class AdmController {
     }
 
 	@PostMapping("updateMem")
-	public String update(@Valid MemberVO memberVO, BindingResult result, ModelMap model) {
-	   result = removeFieldErrors(memberVO, result, "crttime", "password", "chgtime");
-	   
-	   if (result.hasErrors()) {
-	       return "back-end/adm/updateMember";
-	   }
-	   
-	   MemberVO original = memberSvc.getOneMember(memberVO.getMemid());
-	   original.setStatus(memberVO.getStatus());
-	   original.setChgtime(new Timestamp(System.currentTimeMillis())); // 設定當前時間
-	   
-	   memberSvc.updateMember(original);
-	   return "redirect:/adm/listAllMember";
+	@ResponseBody
+	public ResponseEntity<?> updateMemberStatus(@RequestBody Map<String, Object> body) {
+	    try {
+	        Integer memid = Integer.parseInt(body.get("memid").toString());
+	        Boolean status = (Boolean) body.get("status");
+	        
+	        MemberVO memberVO = memberSvc.getOneMember(memid);
+	        memberVO.setStatus(status);
+	        memberVO.setChgtime(new Timestamp(System.currentTimeMillis()));
+	        
+	        memberSvc.updateMember(memberVO);
+	        
+	        return ResponseEntity.ok().build();
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
 	}
 
 	private BindingResult removeFieldErrors(MemberVO memberVO, BindingResult result, String... fieldNames) {
