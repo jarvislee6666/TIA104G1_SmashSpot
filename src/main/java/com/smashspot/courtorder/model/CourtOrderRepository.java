@@ -30,71 +30,20 @@ public interface CourtOrderRepository extends JpaRepository<CourtOrderVO, Intege
     List<CourtOrderVO> findOrdersWithDetailsByMemberid(@Param("memid") Integer memid);
 
     //沃寯添加
+    @Query("SELECT co FROM CourtOrderVO co WHERE " +
+    	       "(:stdmId IS NULL OR co.stadium.stdmId = CAST(:stdmId AS integer)) AND " +
+    	       "(:memberId IS NULL OR LOWER(co.member.account) LIKE LOWER(CONCAT('%', :memberId, '%'))) AND " +
+    	       "(:ordsta IS NULL OR " + 
+    	       "(:ordsta = 'true' AND co.ordsta = true) OR " +
+    	       "(:ordsta = 'false' AND co.ordsta = false))")
+    	List<CourtOrderVO> findByConditions(
+    	    @Param("stdmId") String stdmId,
+    	    @Param("memberId") String memberId,
+    	    @Param("ordsta") String ordsta
+    	);
+    
     @Query("SELECT co FROM CourtOrderVO co WHERE co.stadium.stdmId = :stdmId")
     List<CourtOrderVO> findByStadiumId(@Param("stdmId") Integer stdmId);
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 }
