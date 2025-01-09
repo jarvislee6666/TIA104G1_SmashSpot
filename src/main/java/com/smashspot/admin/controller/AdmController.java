@@ -251,11 +251,31 @@ public class AdmController {
 	}
 	
 	@GetMapping("/listAllMember")
-    public String listAllMember(Model model) {
-        List<MemberVO> memberList = memberSvc.getAll();
-        model.addAttribute("memberList", memberList);
-        return "back-end/adm/listAllMember";
-    }
+	public String listAllMember(
+		    @RequestParam(required = false) String name,
+		    @RequestParam(required = false) String status,
+		    Model model) {
+		    
+		    Map<String, String[]> map = new HashMap<>();
+		    if (name != null && !name.trim().isEmpty()) {
+		        map.put("name", new String[]{name});
+		    }
+		    if (status != null && !status.trim().isEmpty()) {
+		        map.put("status", new String[]{status});
+		    }
+		    
+		    List<MemberVO> memberList;
+		    if (map.isEmpty()) {
+		        memberList = memberSvc.getAll();
+		    } else {
+		        memberList = memberSvc.getAll(map);
+		    }
+		    
+		    model.addAttribute("memberList", memberList);
+		    return "back-end/adm/listAllMember";
+		}
+
+
 
 	@GetMapping("/updateMember")
     public String getOneForUpdate(@RequestParam("memid") Integer memid, Model model) {
