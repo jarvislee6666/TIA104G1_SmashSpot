@@ -101,14 +101,23 @@
 						<td th:text="${admVO.admid}"></td>
 						<td th:text="${admVO.admname}"></td>
 						<td th:text="${admVO.admemail}"></td>
-						<td th:text="${admVO.admpassword}"></td>
+						<td th:text="${#strings.length(admVO.admpassword) <= 2 ? 
+						    admVO.admpassword : 
+						    admVO.admpassword.substring(0,1) + '*'.repeat(#strings.length(admVO.admpassword)-2) + admVO.admpassword.substring(#strings.length(admVO.admpassword)-1)}">
+						</td>
 						<td th:text="${admVO.admphone}"></td>
 						<td th:text="${admVO.admbday}"></td>
 						<td th:text="${admVO.hrdate}"></td>
 						<td th:text="${admVO.admsta ? '正常' : '停用'}"></td>
 						<td th:text="${admVO.supvsr ? '高級' : '一般'}"></td>
 						<td>
-							<a th:href="@{/adm/updateAdm(admid=${admVO.admid})}" class="btn btn-sm btn-outline-secondary">編輯</a>
+						    <!-- 只有當登入的管理員為高級權限時才能看到編輯按鈕 -->
+						    <a th:if="${session.loginAdm != null && session.loginAdm.supvsr == true}" 
+						       th:href="@{/adm/updateAdm(admid=${admVO.admid})}" 
+						       class="btn btn-sm btn-outline-secondary">編輯</a>
+						    <!-- 當登入的管理員為一般權限時顯示無權限訊息 -->
+						    <span th:if="${session.loginAdm != null && session.loginAdm.supvsr == false}" 
+						          class="text-muted">無編輯權限</span>
 						</td>
 					</tr>
 					</c:forEach>
@@ -129,5 +138,12 @@
 						</ul>
 					</nav>
 				</div>
+				
+<script>
+function maskPassword(password) {
+    if (password.length <= 2) return password;
+    return password.charAt(0) + '*'.repeat(password.length - 2) + password.charAt(password.length - 1);
+}
+</script>
 </body>
 </html>

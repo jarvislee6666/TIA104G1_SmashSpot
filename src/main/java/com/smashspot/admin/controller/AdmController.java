@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
@@ -165,20 +165,35 @@ public class AdmController {
 	}
 	
 	@GetMapping("/updateAdm")
-	public String getOne_For_Update(@RequestParam("admid") String admid, ModelMap model) {
-		AdmVO admVO = admSvc.getOneAdm(Integer.valueOf(admid));
-		model.addAttribute("admVO", admVO);
-		return "back-end/adm/updateAdm"; // 查詢完成後轉交update_emp_input.html
+	public String getOne_For_Update(@RequestParam("admid") String admid, ModelMap model, HttpSession session) {
+	    // 檢查登入狀態和權限
+	    AdmVO loginAdm = (AdmVO) session.getAttribute("loginAdm");
+	    
+	    // 如果未登入或不是高級管理員，導回列表頁
+	    if (loginAdm == null || !loginAdm.getSupvsr()) {
+	        return "redirect:/adm/listAllAdm";
+	    }
+	    
+	    AdmVO admVO = admSvc.getOneAdm(Integer.valueOf(admid));
+	    model.addAttribute("admVO", admVO);
+	    return "back-end/adm/updateAdm";
 	}
 	
 	@PostMapping("update")
-	public String update(@Valid AdmVO admVO, BindingResult result, ModelMap model){
+	public String update(@Valid AdmVO admVO, BindingResult result, ModelMap model, HttpSession session) {
+	    // 檢查登入狀態和權限
+	    AdmVO loginAdm = (AdmVO) session.getAttribute("loginAdm");
+	    
+	    // 如果未登入或不是高級管理員，導回列表頁
+	    if (loginAdm == null || !loginAdm.getSupvsr()) {
+	        return "redirect:/adm/listAllAdm";
+	    }
 
-		if (result.hasErrors()) {
+	    if (result.hasErrors()) {
 	        return "back-end/adm/updateAdm";
 	    }
 	    
-		AdmVO original = admSvc.getOneAdm(admVO.getAdmid());
+	    AdmVO original = admSvc.getOneAdm(admVO.getAdmid());
 	    original.setAdmsta(admVO.getAdmsta());
 	    original.setSupvsr(admVO.getSupvsr());
 	    
@@ -211,18 +226,23 @@ public class AdmController {
     }
 	
 	@PostMapping("/login")
-    public String login(@RequestParam String admemail, 
-                       @RequestParam String admpassword,
-                       HttpSession session,
-                       Model model) {
-        AdmVO adm = admSvc.login(admemail, admpassword);
-        if (adm != null) {
-            session.setAttribute("loginAdm", adm);
-            return "redirect:/adm/listAllAdm";
-        }
-        model.addAttribute("error", true);
-        return "back-end/adm/loginAdm";
-    }
+	public String login(@RequestParam String admemail, 
+	                   @RequestParam String admpassword,
+	                   HttpSession session,
+	                   RedirectAttributes redirectAttrs) {
+	    AdmVO adm = admSvc.login(admemail, admpassword);
+	    if (adm != null) {
+	        // 檢查帳號狀態
+	        if (!adm.getAdmsta()) {
+	            redirectAttrs.addFlashAttribute("error", "此帳號已被停用");
+	            return "redirect:/adm/login";
+	        }
+	        session.setAttribute("loginAdm", adm);
+	        return "redirect:/adm/listAllAdm";
+	    }
+	    redirectAttrs.addFlashAttribute("error", "帳號或密碼錯誤");
+	    return "redirect:/adm/login";
+	}
 	
 	@PostMapping("/logout")
 	public String logout(HttpSession session) {
