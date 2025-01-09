@@ -314,18 +314,41 @@ public class AdmController {
 	}
 	
 	@GetMapping("/listAllCourtOrders")
-	public String listAllCourtOrders(Model model) {
-	    List<CourtOrderVO> orderList = courtOrderService.getAll();
+	public String listAllCourtOrders(
+	        @RequestParam(required = false) String stdmId,  // 改為 String 型別
+	        @RequestParam(required = false) String memberId,
+	        @RequestParam(required = false) String ordsta,
+	        Model model) {
 	    
-	    System.out.println("Total orders found: " + (orderList != null ? orderList.size() : "null"));
-	    if (orderList != null) {
-	        for (CourtOrderVO order : orderList) {
-	            System.out.println("Order ID: " + order.getCourtordid());
-	            System.out.println("Stadium: " + (order.getStadium() != null ? order.getStadium().getStdmName() : "null"));
-	        }
+	    Map<String, String[]> map = new HashMap<>();
+	    
+	    // 處理場館 ID
+	    if (stdmId != null && !stdmId.trim().isEmpty()) {
+	        map.put("stdmId", new String[]{stdmId});
 	    }
 	    
+	    // 處理會員帳號
+	    if (memberId != null && !memberId.trim().isEmpty()) {
+	        map.put("memberId", new String[]{memberId});
+	    }
+	    
+	    // 處理預約狀態
+	    if (ordsta != null && !ordsta.trim().isEmpty()) {
+	        map.put("ordsta", new String[]{ordsta});
+	    }
+
+	    List<CourtOrderVO> orderList;
+	    if (map.isEmpty()) {
+	        orderList = courtOrderService.getAll();
+	    } else {
+	        orderList = courtOrderService.getAll(map);
+	    }
+	    
+	    // 取得場館列表
+	    List<StadiumVO> stadiumList = stadiumService.getAll();
+	    
 	    model.addAttribute("orderList", orderList);
+	    model.addAttribute("stadiumList", stadiumList);
 	    return "back-end/adm/listAllCourtOrders";
 	}
 	

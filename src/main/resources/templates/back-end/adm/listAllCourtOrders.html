@@ -49,21 +49,35 @@
                         </div>
                         
                         <div class="search-section mb-4">
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control" placeholder="場地名稱">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="date" class="form-control" placeholder="預約日期">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control" placeholder="預約人ID">
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-primary w-100">搜尋</button>
-                                </div>
-                            </div>
-                        </div>
+						    <form th:action="@{/adm/listAllCourtOrders}" method="get">
+						        <div class="row g-3">
+						            <div class="col-md-3">
+						                <select name="stdmId" class="form-select">
+						                    <option value="">選擇場地</option>
+						                    <option th:each="stadium : ${stadiumList}"
+						                            th:value="${stadium.stdmId}"
+						                            th:text="${stadium.stdmName}"
+						                            th:selected="${param.stdmId != null && param.stdmId[0] == stadium.stdmId.toString()}">
+						                    </option>
+						                </select>
+						            </div>
+						            <div class="col-md-3">
+						                <input type="text" name="memberId" class="form-control" 
+						                       placeholder="輸入預約人帳號" th:value="${param.memberId}">
+						            </div>
+						            <div class="col-md-3">
+						                <select name="ordsta" class="form-select">
+						                    <option value="">預約狀態</option>
+						                    <option value="true" th:selected="${param.ordsta != null && param.ordsta[0] == 'true'}">已預約</option>
+						                    <option value="false" th:selected="${param.ordsta != null && param.ordsta[0] == 'false'}">已取消</option>
+						                </select>
+						            </div>
+						            <div class="col-md-2 d-flex align-items-end">
+						                <button type="submit" class="btn btn-primary w-100">搜尋</button>
+						            </div>
+						        </div>
+						    </form>
+						</div>
 
                         <div class="table-responsive">
                             <table class="table table-hover">

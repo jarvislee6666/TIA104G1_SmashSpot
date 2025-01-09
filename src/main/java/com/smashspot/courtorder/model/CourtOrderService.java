@@ -285,76 +285,37 @@ public class CourtOrderService {
     }
     
     
+    //沃寯添加
+    public List<CourtOrderVO> getAll(Map<String, String[]> map) {
+        String stdmId = null;
+        String memberId = null;
+        String ordsta = null;
+        
+        if (map != null) {
+            // 處理場館 ID
+            if (map.containsKey("stdmId") && map.get("stdmId")[0] != null) {
+                stdmId = map.get("stdmId")[0].trim();
+                if (stdmId.isEmpty()) stdmId = null;
+            }
+            
+            // 處理會員帳號
+            if (map.containsKey("memberId") && map.get("memberId")[0] != null) {
+                memberId = map.get("memberId")[0].trim();
+                if (memberId.isEmpty()) memberId = null;
+            }
+            
+            // 處理預約狀態
+            if (map.containsKey("ordsta") && map.get("ordsta")[0] != null) {
+                ordsta = map.get("ordsta")[0].trim();
+                if (ordsta.isEmpty()) ordsta = null;
+            }
+        }
+        
+        System.out.println("Search parameters - stdmId: " + stdmId + 
+                          ", memberId: " + memberId + 
+                          ", ordsta: " + ordsta);
+        
+        return courtOrderRepository.findByConditions(stdmId, memberId, ordsta);
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
 }
