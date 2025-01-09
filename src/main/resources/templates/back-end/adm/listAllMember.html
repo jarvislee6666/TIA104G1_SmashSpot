@@ -93,8 +93,11 @@
                             <td th:text="${memberVO.addr}"></td>
                             <td th:text="${memberVO.status} ? '正常' : '停用'"></td>
                             <td>
-                                <a th:href="@{/adm/updateMember(memid=${memberVO.memid})}" 
-                                   class="btn btn-sm btn-outline-secondary">編輯</a>
+                                <button th:onclick="'confirmStatusChange(' + ${memberVO.memid} + ', ' + ${memberVO.status} + ')'"
+							            th:class="${memberVO.status ? 'btn btn-sm btn-danger' : 'btn btn-sm btn-success'}"
+							            type="button">
+							        <span th:text="${memberVO.status ? '停權' : '恢復'}"></span>
+							    </button>
                             </td>
                         </tr>
 					</c:forEach>
@@ -115,5 +118,60 @@
 						</ul>
 					</nav>
 				</div>
+				
+				<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <h5 class="modal-title">確認操作</h5>
+				                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				            </div>
+				            <div class="modal-body">
+				                <p id="confirmMessage"></p>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+				                <button type="button" class="btn btn-primary" id="confirmBtn">確認</button>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+				
+<script>
+let selectedMemberId = null;
+let currentStatus = null;
+
+function confirmStatusChange(memId, status) {
+    selectedMemberId = memId;
+    currentStatus = status;
+    
+    const message = status ? 
+        '確定要停權此會員嗎？停權後該會員將無法登入。' : 
+        '確定要恢復此會員的權限嗎？';
+    
+    document.getElementById('confirmMessage').textContent = message;
+    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+
+document.getElementById('confirmBtn').addEventListener('click', function() {
+    if (selectedMemberId !== null) {
+        fetch(`/adm/updateMem`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                memid: selectedMemberId,
+                status: !currentStatus
+            })
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>

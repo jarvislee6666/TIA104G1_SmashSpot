@@ -136,10 +136,17 @@ public class MemberController {
      */
     @PostMapping("/login")
     public String login(@RequestParam String account, @RequestParam String password,
-                       HttpSession session, Model model) {
+                       HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // 驗證會員帳號密碼
         MemberVO mem = memberService.login(account, password);
         if (mem != null) {
+        	
+        	// 檢查會員狀態
+            if (!mem.getStatus()) {
+            	redirectAttributes.addFlashAttribute("error", "您的帳號已被停用");
+                return "redirect:/member/login";
+            }
+            
             // 登入成功，將會員資訊存入session
             session.setAttribute("login", mem);
             
@@ -155,7 +162,7 @@ public class MemberController {
             }
         }
         // 登入失敗，返回登入頁面並顯示錯誤訊息
-        model.addAttribute("error", true);
+        model.addAttribute("error", "帳號或密碼錯誤");
         return "back-end/member/login";
     }
 
