@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AppointmentRecord</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
 <!-- Bootstrap, Icons, Quill CSS -->
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
@@ -311,38 +312,54 @@ footer {
 	font-size: inherit;
 	color: inherit;
 }
+
+.section-title {
+	color: #333;
+	font-size: 1.1rem;
+	font-weight: 600;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid #eee;
+}
+
+.info-section {
+	padding: 0.5rem;
+}
+
+#detailDateTime, #detailMessage {
+	min-height: 60px;
+	white-space: pre-wrap;
+}
+
+.min-vh-10 {
+	min-height: 10vh;
+}
+
+.booking-block {
+    margin-bottom: 15px;  /* 增加區塊間的間距 */
+    line-height: 0.1;    /* 修正行高 */
+}
+
+.booking-date, .booking-time {
+    padding: 2px 0;
+    line-height: 1.5;    /* 確保文字不會重疊 */
+    white-space: normal; /* 允許文字正常換行 */
+}
+
+/* 新增樣式處理時段的排版 */
+.time-ranges {
+    margin-left: 15px;   /* 縮排效果 */
+    line-height: 1.5;    /* 確保時段文字不重疊 */
+}
+
+.booking-date, .booking-time {
+	padding: 2px 0;
+}
 </style>
 </head>
 
 <body class="bg-light">
-	<header>
-		<nav class="navbar nav-container position-fixed w-100 z-3 top-0">
-			<div class="container position-relative">
-				<a class="navbar-brand" href="#"> <img src="./logo/logo.svg"
-					alt="Bootstrap" />
-				</a>
 
-				<!-- Mobile Toggle Button -->
-				<button class="navbar-toggler d-lg-none" type="button"
-					aria-label="Toggle navigation">
-					<span class="bi bi-list" style="font-size: 24px"></span>
-				</button>
-
-				<div class="justify-content-end">
-					<ul class="nav-list">
-						<li class="nav-item"><a href="#" class="nav-link">競標專區</a></li>
-						<li class="nav-item"><a href="#" class="nav-link">場地預約</a></li>
-						<li class="nav-item"><a href="#" class="nav-link">球友論壇</a></li>
-						<li class="nav-item"><a href="#" class="nav-link">客服中心</a></li>
-						<li class="nav-item"><a href="#" class="nav-link">業主專區</a></li>
-						<li class="nav-item"><a href="#" class="nav-link"><i
-								class="bi bi-person"></i> Account</a></li>
-						<li class="nav-item"><a href="#" class="nav-link">登出</a></li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-	</header>
+<div th:replace="back-end/client/Header :: header"></div>
 
 	<main>
 		<div class="container position-relative mb-3">
@@ -359,7 +376,7 @@ footer {
 						</a> <a href="#" class="action-button"> <i class="bi bi-cash-coin"></i>參加中競標
 						</a> <a href="./WinningBids.html" class="action-button"> <i
 							class="bi bi-bag-check"></i>得標清單
-						</a> <a href="./appointmentRecord" class="action-button"> <i
+						</a> <a th:href="@{/member/appointment-records}" class="action-button"> <i
 							class="bi bi-journal-check"></i>場地預約紀錄
 						</a>
 					</div>
@@ -401,8 +418,8 @@ footer {
 
 									<!-- 第六欄: 狀態操作(明細、取消按鈕) -->
 									<td>
-										<button type="button" class="btn  btn-primary btn-sm detail-btn"
-											data-ordid="">明細</button>
+										<button type="button"
+											class="btn  btn-primary btn-sm detail-btn" data-ordid="">明細</button>
 										<button type="button" class="btn btn-danger btn-sm cancel-btn">
 											取消預約</button>
 									</td>
@@ -413,42 +430,57 @@ footer {
 
 					<!-- detailModal: 顯示詳細資料 -->
 					<div class="modal fade" id="detailModal" tabindex="-1">
-						<div class="modal-dialog modal-dialog-centered modal-lg">
+						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title">預約詳細資訊</h5>
+								<div class="modal-header bg-light">
+									<h5 class="modal-title fw-bold">預約詳細資訊</h5>
 									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 								</div>
-								<div class="modal-body">
-									<!-- 這裡放置要顯示的欄位 -->
-									<div class="mb-2">
-										<strong>訂單編號：</strong><span id="detailOrderId"></span>
-									</div>
-									<div class="mb-2">
-										<strong>預約詳情：</strong>
-										<div>
-											<span id="detailDateTime"></span>
-										</div>
-										<div>
-											總金額：<span id="detailTotalAmt"></span> TWD
-										</div>
-									</div>
-									<div class="mb-2">
-										<strong>訂單狀態：</strong><span id="detailStatus"></span>
-									</div>
-									<div class="mb-2">
-										<strong>評價資訊：</strong>
-										<div>
-											星等：<span id="detailStar"></span>
-										</div>
-										<div>
-											留言：
-											<p id="detailMessage" style="white-space: pre-wrap;"></p>
+								<div class="modal-body p-4">
+									<!-- 訂單資訊區塊 -->
+									<div class="info-section mb-4">
+										<h6 class="section-title mb-3">訂單資訊</h6>
+										<div class="row g-3">
+											<div class="col-6">
+												<label class="text-muted small">訂單編號</label>
+												<div class="fw-medium" id="detailOrderId"></div>
+											</div>
+											<div class="col-6">
+												<label class="text-muted small">訂單狀態</label>
+												<div class="fw-medium" id="detailStatus"></div>
+											</div>
 										</div>
 									</div>
 
+									<!-- 預約詳情區塊 -->
+									<div class="info-section mb-4">
+										<h6 class="section-title mb-3">預約詳情</h6>
+										<div class="mb-3">
+											<label class="text-muted small">預約時段</label>
+											<div class="p-3 bg-light rounded" id="detailDateTime"></div>
+										</div>
+										<div>
+											<label class="text-muted small">總金額</label>
+											<div class="fw-bold text-primary">
+												<span id="detailTotalAmt"></span> TWD
+											</div>
+										</div>
+									</div>
+
+									<!-- 評價資訊區塊 -->
+									<div class="info-section">
+										<h6 class="section-title mb-3">評價資訊</h6>
+										<div class="mb-3">
+											<label class="text-muted small">星等評價</label>
+											<div class="text-warning fs-5" id="detailStar"></div>
+										</div>
+										<div>
+											<label class="text-muted small">評價留言</label>
+											<div class="p-3 bg-light rounded min-vh-10"
+												id="detailMessage"></div>
+										</div>
+									</div>
 								</div>
-								<!-- /modal-body -->
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary"
 										data-bs-dismiss="modal">關閉</button>
@@ -524,26 +556,7 @@ footer {
 		</div>
 	</main>
 
-	<footer>
-		<div class="footer-container">
-			<div class="d-flex align-items-center">
-				<img src="./logo/logo.svg" alt="網站logo" class="footer-logo" />
-				<div class="footer-contact">
-					<p class="footer-text">連絡電話: (02) 1234-5678</p>
-					<p>
-						<a href="#" class="text-decoration-none footer-text">客服專區</a>
-					</p>
-				</div>
-			</div>
-			<div class="social-icons">
-				<div class="social-icons-row d-flex justify-content-evenly">
-					<a href="#" class="bi bi-facebook"></a> <a href="#"
-						class="bi bi-instagram"></a> <a href="#" class="bi bi-youtube"></a>
-				</div>
-				<p class="footer-text">追蹤我們的社群平台以取得最新資訊</p>
-			</div>
-		</div>
-	</footer>
+<div th:replace="back-end/client/Footer :: footer"></div>
 
 	<!-- JS 區 -->
 	<script
@@ -552,7 +565,7 @@ footer {
 		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-	<script>
+	<script  th:inline="javascript">
       // header RWD navbar
       document.addEventListener("DOMContentLoaded", function () {
         const toggleBtn = document.querySelector(".navbar-toggler");
@@ -629,15 +642,16 @@ footer {
       $(document).ready(function() {
         // 時段對照表
         const TIME_RANGES = [
-          "X(不開放)","X(不開放)","X(不開放)","X(不開放)",
-          "08:00~10:00","10:00~12:00","12:00~14:00",
-          "14:00~16:00","16:00~18:00","18:00~20:00",
-          "20:00~22:00","X(不開放)"
+        	   "X(不開放)","X(不開放)","X(不開放)","X(不開放)",
+        	   "08:00~10:00","10:00~12:00","12:00~14:00",
+        	   "14:00~16:00","16:00~18:00","18:00~20:00",
+        	   "20:00~22:00","X(不開放)"
         ];
 
-        const memId = 2; // 假設目前登入會員 ID
+        const memId = /*[[${memId}]]*/
+
         $.ajax({
-          url: `http://localhost:8080/court-order/my-orders/${memId}`, 
+          url:`http://localhost:8080/court-order/my-orders/${memId}`, 
           type: "GET",
           dataType: "json",
           success: function(response) {
@@ -658,6 +672,7 @@ footer {
                   }
                 }
               });
+              console.log("Ajax 已執行完...");
 
               // 更新到 class="reserved-count"
               $row.find(".reserved-count").text(totalReservedSlots);
@@ -718,21 +733,21 @@ footer {
           let stadiumName= (order.stadium && order.stadium.stdmName) || "未知場館";
 
           // 解析多筆 detail => 可能有多個日期+時段
-          let dateTimeStr= "";
-          (order.courtOrderDetail||[]).forEach(function(dtl, idx){
-            let ordTimeStr = dtl.ordTime;
-            let reservedTimeArr = [];
-            for(let i=0; i<ordTimeStr.length; i++){
-              if(ordTimeStr.charAt(i)==='1'){
-                reservedTimeArr.push(TIME_RANGES[i]);
-              }
-            }
-            let reservedTimeText = reservedTimeArr.join("、");
-            dateTimeStr += `${dtl.ordDate} ${reservedTimeText}`;
-            if(idx < order.courtOrderDetail.length-1){
-              dateTimeStr += "<br/>";
-            }
-          });
+			let dateTimeStr = "";
+			(order.courtOrderDetail||[]).forEach(function(dtl, idx){
+			    let ordTimeStr = dtl.ordTime;
+			    let reservedTimeArr = [];
+			    for(let i=0; i<ordTimeStr.length; i++){
+			        if(ordTimeStr.charAt(i)==='1'){
+			            reservedTimeArr.push(TIME_RANGES[i]);
+			        }
+			    }
+			    
+			    dateTimeStr += `<div class="booking-block">
+			        <div class="booking-date" style="color: #dc3545; font-weight: bold;">日期：${dtl.ordDate}</div>
+			        <div class="booking-time">時段：${reservedTimeArr.join('、')}</div>
+			    </div>`;
+			});
           
 
           // 評價星等 (0~5)
