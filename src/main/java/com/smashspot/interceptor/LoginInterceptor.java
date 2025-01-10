@@ -24,7 +24,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             String requestURI = request.getRequestURI();
             
             // 如果是出價競標的檢查請求
-            if (requestURI.equals("/api/bid/check-login")) {
+            if (requestURI.equals("/client/bid/check-login")) {
                 // 從 Referer 獲取原始商品頁面 URL
                 String referer = request.getHeader("Referer");
                 if (referer != null) {
