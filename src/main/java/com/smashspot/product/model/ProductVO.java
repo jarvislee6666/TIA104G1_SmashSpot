@@ -75,7 +75,7 @@ public class ProductVO {
 	private byte[] propic;
 	
 	@Column(name = "max_price")
-	private Integer maxprice; // 最高金額(競標中、結標)
+	private Integer maxprice; // 當前最高金額(競標中、結標)
 
 	@OneToMany(mappedBy = "productVO")
 	private Set<OrdersVO> orders = new HashSet<>();
