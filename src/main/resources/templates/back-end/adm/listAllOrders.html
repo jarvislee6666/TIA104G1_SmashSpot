@@ -52,53 +52,62 @@
             <div class="card-body">
               <h5 class="card-title">訂單追蹤紀錄</h5>
               <div class="search-section">
-                <form id="searchForm">
-                  <div class="row g-3">
-                    <div class="col-md">
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="訂單編號"
-                      />
-                    </div>
-                    <div class="col-md">
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="商品名稱"
-                      />
-                    </div>
-                    <div class="col-md">
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="買家ID"
-                      />
-                    </div>
-                    <div class="col-md">
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="賣家ID"
-                      />
-                    </div>
-                    <div class="col-md">
-                      <select class="form-select">
-                        <option>訂單狀態</option>
-                        <option>付款完成</option>
-                        <option>已出貨</option>
-                        <option>訂單完成</option>
-                        <option>訂單取消</option>
-                      </select>
-                    </div>
-                    <div class="col-md-2 d-flex justify-content-center">
-                      <button type="submit" class="btn btn-primary w-75">
-                        搜尋
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
+				  <form id="searchForm" action="/adm/listAllOrders" method="get">
+					  <div class="row g-3">
+					    <!-- 商品名稱輸入框 -->
+					    <div class="col-md">
+					      <input
+					        type="text"
+					        class="form-control"
+					        name="proname"
+					        placeholder="商品名稱"
+					        th:value="${searchProname}"
+					      />
+					    </div>
+					    
+					    <!-- 買家ID輸入框 -->
+					    <div class="col-md">
+					      <input
+					        type="text"
+					        class="form-control"
+					        name="buyerId"
+					        placeholder="買家ID"
+					        th:value="${searchBuyerId}"
+					      />
+					    </div>
+					    
+					    <!-- 賣家ID輸入框 -->
+					    <div class="col-md">
+					      <input
+					        type="text"
+					        class="form-control"
+					        name="sellerId"
+					        placeholder="賣家ID"
+					        th:value="${searchSellerId}"
+					      />
+					    </div>
+					    
+					    <!-- 訂單狀態下拉選單 -->
+					    <div class="col-md">
+					      <select class="form-select" name="ordstaid">
+					        <option value="">訂單狀態</option>
+					        <option value="1" th:selected="${searchOrdstaid == 1}">尚未付款</option>
+					        <option value="2" th:selected="${searchOrdstaid == 2}">付款完成</option>
+					        <option value="3" th:selected="${searchOrdstaid == 3}">已出貨</option>
+					        <option value="4" th:selected="${searchOrdstaid == 4}">訂單完成</option>
+					        <option value="5" th:selected="${searchOrdstaid == 5}">訂單取消</option>
+					      </select>
+					    </div>
+					    
+					    <!-- 搜尋按鈕 -->
+					    <div class="col-md-2 d-flex justify-content-center">
+					      <button type="submit" class="btn btn-primary w-75">
+					        搜尋
+					      </button>
+					    </div>
+					  </div>
+					</form>
+				</div>
 
               <div class="table-responsive">
                 <table class="table">
