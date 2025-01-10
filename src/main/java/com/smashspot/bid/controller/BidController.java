@@ -3,6 +3,8 @@ package com.smashspot.bid.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.smashspot.bid.model.*;
 import com.smashspot.member.model.MemberVO;
@@ -13,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/bid")
+@Controller
 public class BidController {
     
     @Autowired
@@ -23,7 +24,13 @@ public class BidController {
     @Autowired
     private ProductService productService;
     
-    @GetMapping("/check-login")
+    @GetMapping("/member/biddingList")
+	public String listBiddingProduct(Model model) {
+
+		return "back-end/member/biddingList";
+	}
+    
+    @GetMapping("/client/bid/check-login")
     public ResponseEntity<?> checkLoginStatus(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
@@ -38,7 +45,7 @@ public class BidController {
         return ResponseEntity.ok(response);
     }
     
-    @PostMapping("/place")
+    @PostMapping("/client/bid/place")
     public ResponseEntity<?> placeBid(
             @RequestParam Integer productId,
             @RequestParam Integer bidAmount,
@@ -101,7 +108,7 @@ public class BidController {
         }
     }
     
-    @GetMapping("/history/{productId}")
+    @GetMapping("/client/bid/history/{productId}")
     public ResponseEntity<?> getBidHistory(@PathVariable Integer productId) {
         try {
             List<BidVO> bidHistory = bidService.getProductBidHistory(productId);

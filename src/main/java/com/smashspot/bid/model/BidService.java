@@ -2,6 +2,10 @@ package com.smashspot.bid.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.smashspot.member.model.MemberService;
+import com.smashspot.member.model.MemberVO;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -10,6 +14,9 @@ public class BidService {
     
     @Autowired
     private BidRepository bidRepository;
+    
+    @Autowired
+    private MemberService memberService;  // 添加會員服務
 
     /**
      * 建立新的競標出價
@@ -37,7 +44,26 @@ public class BidService {
      * @return List<BidVO> 競標紀錄列表
      */
     public List<BidVO> getProductBidHistory(Integer productId) {
-        return bidRepository.getProductBidHistory(productId);
+        List<BidVO> bidHistory = bidRepository.getProductBidHistory(productId);
+        
+        // 為每個競標記錄添加會員名稱
+        for (BidVO bid : bidHistory) {
+            MemberVO member = memberService.getOneMember(bid.getMemid());
+            if (member != null) {
+                // 設置競標者名稱，可以選擇部分隱藏
+                String name = member.getName();
+                if (name != null && name.length() > 0) {
+                    if (name.length() <= 2) {
+                        bid.setBidderName(name.substring(0, 1) + "***");
+                    } else {
+                        bid.setBidderName(name.substring(0, 1) + "***" + 
+                                        name.substring(name.length() - 1));
+                    }
+                }
+            }
+        }
+        
+        return bidHistory;
     }
 
     /**

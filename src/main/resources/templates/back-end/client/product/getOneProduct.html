@@ -520,15 +520,15 @@
 					                        </thead>
 					                        <tbody>
 					                            <!-- 有競標紀錄時顯示 -->
-					                            <th:block th:if="${not #lists.isEmpty(bidHistory)}">
-					                                <tr th:each="bid : ${bidHistory}">
-					                                    <td class="text-muted" th:text="${#dates.format(bid.bidTime, 'yyyy/MM/dd HH:mm')}">2024/01/02 14:30</td>
-					                                    <td th:text="${bid.bidderName}">u***er</td>
-					                                    <td class="text-end">
-					                                        <span class="fw-bold" th:text="'NT$ ' + ${#numbers.formatDecimal(bid.bidAmount, 0, 'COMMA', 0, 'POINT')}">NT$ 3,000</span>
-					                                    </td>
-					                                </tr>
-					                            </th:block>
+												<th:block th:if="${bidHistory != null and !bidHistory.isEmpty()}">
+												    <tr th:each="bid : ${bidHistory}">
+												        <td class="text-muted" th:text="${#dates.format(bid.bidtime, 'yyyy/MM/dd HH:mm')}">2024/01/02 14:30</td>
+												        <td th:text="${bid.bidderName}">匿名用戶</td>
+												        <td class="text-end">
+												            <span class="fw-bold" th:text="'NT$ ' + ${#numbers.formatDecimal(bid.bidamt, 0, 'COMMA', 0, 'POINT')}">NT$ 3,000</span>
+												        </td>
+												    </tr>
+												</th:block>
 					                        </tbody>
 					                    </table>
 					                </div>
@@ -859,7 +859,7 @@
                     formData.append('productId', productId);
                     formData.append('bidAmount', bidAmount.value);
                     
-                    const response = await fetch('/api/bid/place', {
+                    const response = await fetch('/client/bid/place', {
                         method: 'POST',
                         body: formData
                     });
@@ -903,7 +903,7 @@
 		    bidButton.addEventListener('click', async function() {
 		        try {
 		            // 發送請求檢查登入狀態
-		            const response = await fetch('/api/bid/check-login', {
+		            const response = await fetch('/client/bid/check-login', {
 		                method: 'GET',
 		                headers: {
 		                	// 添加這行
