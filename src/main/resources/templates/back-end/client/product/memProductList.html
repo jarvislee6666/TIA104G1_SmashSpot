@@ -180,7 +180,14 @@
 			        <td class="fw-medium text-primary">
 			          NT$ <span th:text="${productVO.maxprice != null ? #numbers.formatDecimal(productVO.maxprice, 1, 'COMMA', 0, 'POINT') : '暫無出價'}"></span>
 			        </td>
-			        <td>待補出價者資訊</td>
+			        <td>
+					  <span th:if="${productVO.maxprice != null}">
+					    <span th:with="bidHistory=${@bidService.getProductBidHistory(productVO.proid)}"
+					          th:text="${!bidHistory.isEmpty()} ? ${bidHistory.get(bidHistory.size() - 1).bidderName} : '暫無出價'">
+					    </span>
+					  </span>
+					  <span th:unless="${productVO.maxprice != null}">暫無出價</span>
+					</td>
 			        <td>
 					  <span th:data-status="${productVO.bidstaid}" th:switch="${productVO.bidstaid}">
 					    <span th:case="1" class="badge bg-success">競標中</span>

@@ -11,6 +11,8 @@ import com.smashspot.member.model.MemberVO;
 import com.smashspot.product.model.*;
 
 import javax.servlet.http.HttpSession;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,44 @@ public class BidController {
     private ProductService productService;
     
     @GetMapping("/member/biddingList")
-	public String listBiddingProduct(Model model) {
+    public String listBiddingProduct(Model model, HttpSession session) {
+        MemberVO member = (MemberVO) session.getAttribute("login");
+        if (member == null) {
+            return "redirect:/member/login";
+        }
 
-		return "back-end/member/biddingList";
-	}
+        // 獲取所有競標中的商品
+        List<ProductVO> activeProducts = productService.findByBidsta(1);
+        
+        // 建立結果列表
+        List<Map<String, Object>> biddingList = new ArrayList<>();
+        
+        // 遍歷每個商品,檢查會員是否有出價
+        for (ProductVO product : activeProducts) {
+            List<BidVO> memberBids = bidService.getMemberBidsForProduct(member.getMemid(), product.getProid());
+            
+            if (!memberBids.isEmpty()) {
+                // 取得該會員對此商品的最高出價
+                Integer highestBid = memberBids.stream()
+                        .map(BidVO::getBidamt)
+                        .max(Integer::compareTo)
+                        .orElse(0);
+                        
+                // 取得商品當前最高價
+                Integer currentHighestBid = product.getMaxprice();
+                
+                Map<String, Object> bidInfo = new HashMap<>();
+                bidInfo.put("product", product);
+                bidInfo.put("myHighestBid", highestBid);
+                bidInfo.put("currentHighestBid", currentHighestBid);
+                
+                biddingList.add(bidInfo);
+            }
+        }
+        
+        model.addAttribute("biddingList", biddingList);
+        return "back-end/member/biddingList";
+    }
     
     @GetMapping("/client/bid/check-login")
     public ResponseEntity<?> checkLoginStatus(HttpSession session) {
