@@ -105,6 +105,254 @@
     .back-link:hover, .btn_action:hover {
     	transform: translateY(-3px) scale(1.05);
     }
+    
+    
+    /* 標籤頁樣式優化 */
+	.nav-tabs .nav-link {
+	    color: #6c757d;
+	    padding: 0.75rem 1rem;
+	    border: none;
+	    border-bottom: 2px solid transparent;
+	}
+	
+	.nav-tabs .nav-link:hover {
+	    border-color: transparent;
+	    color: #212529;
+	}
+	
+	.nav-tabs .nav-link.active {
+	    color: #0d6efd;
+	    border: none;
+	    border-bottom: 2px solid #0d6efd;
+	    background: transparent;
+	}
+	
+	/* 表格優化 */
+	.table > :not(caption) > * > * {
+	    padding: 1rem;
+	}
+	
+	.table > tbody > tr:hover {
+	    background-color: #f8f9fa;
+	}
+	
+	/* 分頁控制樣式 */
+	.pagination {
+	    margin-bottom: 0;
+	}
+	
+	.pagination .page-link {
+	    border-radius: 0.25rem;
+	    margin: 0 2px;
+	}
+	
+	/* 清單樣式 */
+	.list-unstyled .bi-dot {
+	    font-size: 0.75rem;
+	    vertical-align: middle;
+	}
+	
+	/* Modal 基礎樣式 */
+	.bid-modal {
+	    background: #fff;
+	    border: none;
+	    border-radius: 16px;
+	    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+	}
+	
+	.bid-modal .modal-header {
+	    padding: 24px 24px 0;
+	}
+	
+	.bid-modal .modal-body {
+	    padding: 24px;
+	}
+	
+	/* 標題樣式 */
+	.bid-label {
+	    font-size: 13px;
+	    color: #6e7880;
+	    text-transform: uppercase;
+	    letter-spacing: 0.5px;
+	}
+	
+	.modal-title {
+	    font-size: 24px;
+	    font-weight: 600;
+	    color: #1a1d1f;
+	    margin: 0;
+	}
+	
+	/* 商品摘要樣式 */
+	.product-summary {
+	    background: #f8f9fa;
+	    border-radius: 12px;
+	    padding: 16px;
+	}
+	
+	.product-image {
+	    width: 80px;
+	    height: 80px;
+	    flex-shrink: 0;
+	}
+	
+	.product-image img {
+	    width: 100%;
+	    height: 100%;
+	    object-fit: cover;
+	}
+	
+	.current-price .label {
+	    font-size: 13px;
+	    color: #6e7880;
+	    display: block;
+	    margin-bottom: 4px;
+	}
+	
+	.current-price .price {
+	    font-size: 24px;
+	    font-weight: 600;
+	    color: #1a1d1f;
+	}
+	
+	/* 表單樣式 */
+	.form-label {
+	    font-size: 14px;
+	    font-weight: 500;
+	    color: #1a1d1f;
+	    margin-bottom: 8px;
+	}
+	
+	.bid-input-group .input-wrapper {
+	    position: relative;
+	    display: flex;
+	    align-items: center;
+	}
+	
+	.bid-input-group .currency-symbol {
+	    position: absolute;
+	    left: 16px;
+	    color: #1a1d1f;
+	    font-weight: 500;
+	}
+	
+	.bid-input-group input {
+	    height: 48px;
+	    padding-left: 56px;
+	    font-size: 16px;
+	    border: 2px solid #e6e8ea;
+	    border-radius: 12px;
+	    transition: all 0.2s ease;
+	}
+	
+	.bid-input-group input:focus {
+	    border-color: #1a1d1f;
+	    box-shadow: none;
+	}
+	
+	/* 價格提示樣式 */
+	.price-hints {
+	    background: #f8f9fa;
+	    border-radius: 12px;
+	    padding: 16px;
+	    margin: 0 0 24px;
+	}
+	
+	.hint-item {
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	    padding: 8px 0;
+	}
+	
+	.hint-item:not(:last-child) {
+	    border-bottom: 1px solid #e6e8ea;
+	}
+	
+	.hint-label {
+	    font-size: 14px;
+	    color: #6e7880;
+	}
+	
+	.hint-value {
+	    font-size: 14px;
+	    font-weight: 500;
+	    color: #1a1d1f;
+	}
+	
+	/* 按鈕樣式 */
+	.btn-bid {
+	    width: 100%;
+	    height: 48px;
+	    background: #1a1d1f;
+	    border: none;
+	    border-radius: 12px;
+	    color: #ffffff;
+	    font-size: 16px;
+	    font-weight: 500;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    gap: 8px;
+	    transition: all 0.2s ease;
+	    padding: 0 24px;
+	}
+	
+	.btn-bid:hover {
+	    background: #000000;
+	    transform: translateY(-1px);
+	}
+	
+	.btn-bid:active {
+	    transform: translateY(1px);
+	}
+	
+	.btn-icon {
+	    display: flex;
+	    align-items: center;
+	    font-size: 18px;
+	}
+	
+	/* 關閉按鈕樣式 */
+	.bid-modal .btn-close {
+	    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%231a1d1f'%3E%3Cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3E%3C/svg%3E") center/12px auto no-repeat;
+	    opacity: 0.6;
+	    padding: 12px;
+	    margin: -12px -12px -12px 0;
+	    border-radius: 50%;
+	    transition: all 0.2s ease;
+	}
+	
+	.bid-modal .btn-close:hover {
+    opacity: 1;
+    background-color: #f8f9fa;
+    transform: rotate(90deg);
+	}
+	
+	.bid-modal .btn-close:focus {
+	    box-shadow: none;
+	    outline: none;
+	}
+	
+	/* 響應式調整 */
+	@media (max-width: 576px) {
+	    .modal-dialog {
+	        margin: 1rem;
+	    }
+	    
+	    .product-summary {
+	        padding: 12px;
+	    }
+	    
+	    .product-image {
+	        width: 60px;
+	        height: 60px;
+	    }
+	    
+	    .current-price .price {
+	        font-size: 20px;
+	    }
+	}
 </style>
 
 </head>
@@ -199,12 +447,12 @@
                     <div class="action-buttons d-grid gap-2 d-md-flex mb-4">
                     	<!-- 如果不是商品擁有者 -->
                     	<div th:unless="${isOwner}" class="d-grid gap-2 d-md-flex w-100">
-                        	<a  class="btn btn-primary flex-fill btn_action">
-							    <i class="bi bi-hammer me-2"></i>出價競標
-							</a>
-							<a th:href="@{'/client/orders/DPstep1/' + ${productVO.proid}}" class="btn btn-danger flex-fill btn_action">
-							    <i class="bi bi-cart-fill me-2"></i>直接購買
-							</a>
+						    <button type="button" class="btn btn-primary flex-fill btn_action" id="bidButton">
+						        <i class="bi bi-hammer me-2"></i>出價競標
+						    </button>
+						    <a th:href="@{'/client/orders/DPstep1/' + ${productVO.proid}}" class="btn btn-danger flex-fill btn_action">
+						        <i class="bi bi-cart-fill me-2"></i>直接購買
+						    </a>
 						</div>
 							<!-- 如果是商品擁有者 -->
 						 <div th:if="${isOwner}" class="w-100">
@@ -215,131 +463,239 @@
                     </div>
 
                     <!-- 商品資訊標籤頁 -->
-                    <div class="product-info">
-                        <ul class="nav nav-tabs" id="productTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" data-bs-toggle="tab" 
-                                        data-bs-target="#description" type="button">
-                                    商品介紹
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" 
-                                        data-bs-target="#bidHistory" type="button">
-                                    競標紀錄
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" 
-                                        data-bs-target="#notice" type="button">
-                                    注意事項
-                                </button>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content p-3 border border-top-0 rounded-bottom bg-white">
-                            <!-- 商品介紹 -->
-                            <div class="tab-pane fade show active" id="description">
-                                <p class="mb-0" th:text="${productVO.intro}"></p>
-                            </div>
-
-                            <!-- 競標紀錄 -->
-                            <div class="tab-pane fade" id="bidHistory">
-                                <div class="bid-history">
-                                    <table class="table table-hover">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>出價時間</th>
-                                                <th>出價者</th>
-                                                <th class="text-end">出價金額</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-muted">2024/01/02 14:30</td>
-                                                <td>u***er</td>
-                                                <td class="text-end">NT$ 3,000</td>
-                                            </tr>
-                                            <!-- 更多競標記錄 -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- 注意事項 -->
-                            <div class="tab-pane fade" id="notice">
-                                <div class="alert alert-warning mb-3">
-                                    <h6 class="alert-heading fw-bold">
-                                        <i class="bi bi-exclamation-triangle me-2"></i>競標提醒
-                                    </h6>
-                                    <ul class="mb-0">
-                                        <li>競標出價後無法收回，請確認金額後再出價</li>
-                                        <li>得標後請於3天內完成付款，否則將影響帳號信用評價</li>
-                                        <li>如遇棄標情形，系統將自動通知次高價買家</li>
-                                        <li>多次棄標將導致帳號停權處分</li>
-                                    </ul>
-                                </div>
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading fw-bold">
-                                        <i class="bi bi-info-circle me-2"></i>購買須知
-                                    </h6>
-                                    <ul class="mb-0">
-                                        <li>直購價：NT$ <span th:text="${productVO.purprice}"></span> - 選擇直購可立即購得商品</li>
-                                        <li>競標起價：NT$ <span th:text="${productVO.baseprice}"></span></li>
-                                        <li>每次最低加價金額：NT$ <span th:text="${productVO.minincr}"></span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+					<div class="product-info">
+					    <!-- 標籤頁選項 -->
+					    <ul class="nav nav-tabs" id="productTab" role="tablist">
+					        <li class="nav-item" role="presentation">
+					            <button class="nav-link active fw-medium" 
+					                    id="bidHistory-tab"
+					                    data-bs-toggle="tab" 
+					                    data-bs-target="#bidHistory" 
+					                    type="button"
+					                    role="tab"
+					                    aria-controls="bidHistory"
+					                    aria-selected="true">
+					                <i class="bi bi-graph-up me-1"></i>競標紀錄
+					            </button>
+					        </li>
+					        <li class="nav-item" role="presentation">
+					            <button class="nav-link fw-medium" 
+					                    id="description-tab"
+					                    data-bs-toggle="tab" 
+					                    data-bs-target="#description" 
+					                    type="button"
+					                    role="tab"
+					                    aria-controls="description"
+					                    aria-selected="false">
+					                <i class="bi bi-info-circle me-1"></i>商品介紹
+					            </button>
+					        </li>
+					        <li class="nav-item" role="presentation">
+					            <button class="nav-link fw-medium" 
+					                    id="notice-tab"
+					                    data-bs-toggle="tab" 
+					                    data-bs-target="#notice" 
+					                    type="button"
+					                    role="tab"
+					                    aria-controls="notice"
+					                    aria-selected="false">
+					                <i class="bi bi-exclamation-circle me-1"></i>注意事項
+					            </button>
+					        </li>
+					    </ul>
+					
+					    <!-- 標籤頁內容 -->
+					    <div class="tab-content p-3 border border-top-0 rounded-bottom bg-white">
+					        <!-- 競標紀錄 -->
+					        <div class="tab-pane fade show active" id="bidHistory" role="tabpanel" aria-labelledby="bidHistory-tab">
+					            <div class="bid-history">
+					                <div class="table-responsive">
+					                    <table class="table table-hover align-middle mb-0">
+					                        <thead class="table-light">
+					                            <tr>
+					                                <th style="width: 30%">出價時間</th>
+					                                <th style="width: 40%">出價者</th>
+					                                <th style="width: 30%" class="text-end">出價金額</th>
+					                            </tr>
+					                        </thead>
+					                        <tbody>
+					                            <!-- 有競標紀錄時顯示 -->
+					                            <th:block th:if="${not #lists.isEmpty(bidHistory)}">
+					                                <tr th:each="bid : ${bidHistory}">
+					                                    <td class="text-muted" th:text="${#dates.format(bid.bidTime, 'yyyy/MM/dd HH:mm')}">2024/01/02 14:30</td>
+					                                    <td th:text="${bid.bidderName}">u***er</td>
+					                                    <td class="text-end">
+					                                        <span class="fw-bold" th:text="'NT$ ' + ${#numbers.formatDecimal(bid.bidAmount, 0, 'COMMA', 0, 'POINT')}">NT$ 3,000</span>
+					                                    </td>
+					                                </tr>
+					                            </th:block>
+					                        </tbody>
+					                    </table>
+					                </div>
+					                
+					                <!-- 無競標紀錄時顯示 -->
+					                <div th:if="${#lists.isEmpty(bidHistory)}" class="text-center py-5">
+					                    <i class="bi bi-clock-history fs-1 text-muted mb-3 d-block"></i>
+					                    <p class="text-muted mb-0">目前尚無競標紀錄</p>
+					                    <small class="text-muted d-block mt-1">成為第一個出價的買家！</small>
+					                </div>
+					                
+					                <!-- 分頁控制 -->
+					                <div th:if="${not #lists.isEmpty(bidHistory)}" class="d-flex justify-content-center mt-3">
+					                    <nav aria-label="競標記錄分頁">
+					                        <ul class="pagination pagination-sm">
+					                            <li class="page-item disabled">
+					                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">上一頁</a>
+					                            </li>
+					                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+					                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+					                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+					                            <li class="page-item">
+					                                <a class="page-link" href="#">下一頁</a>
+					                            </li>
+					                        </ul>
+					                    </nav>
+					                </div>
+					            </div>
+					        </div>
+					
+					        <!-- 商品介紹 -->
+					        <div class="tab-pane fade" id="description" role="tabpanel" aria-labelledby="description-tab">
+					            <div class="product-description">
+					                <p class="mb-0" th:text="${productVO.intro}">商品介紹內容...</p>
+					            </div>
+					        </div>
+					
+					        <!-- 注意事項 -->
+					        <div class="tab-pane fade" id="notice" role="tabpanel" aria-labelledby="notice-tab">
+					            <div class="notices">
+					                <!-- 競標規則 -->
+					                <div class="alert alert-warning mb-3">
+					                    <h6 class="alert-heading fw-bold mb-2">
+					                        <i class="bi bi-exclamation-triangle me-2"></i>競標規則
+					                    </h6>
+					                    <ul class="list-unstyled mb-0">
+					                        <li class="mb-2">
+					                            <i class="bi bi-dot me-2"></i>每次加價金額必須 ≥ 最低增額
+					                        </li>
+					                        <li class="mb-2">
+					                            <i class="bi bi-dot me-2"></i>競標出價後無法收回或修改
+					                        </li>
+					                        <li class="mb-2">
+					                            <i class="bi bi-dot me-2"></i>結標前 5 分鐘若有新出價，結標時間自動延長 5 分鐘
+					                        </li>
+					                        <li>
+					                            <i class="bi bi-dot me-2"></i>得標後請於 3 天內完成付款
+					                        </li>
+					                    </ul>
+					                </div>
+					
+					                <!-- 價格資訊 -->
+					                <div class="alert alert-info mb-0">
+					                    <h6 class="alert-heading fw-bold mb-2">
+					                        <i class="bi bi-info-circle me-2"></i>價格資訊
+					                    </h6>
+					                    <ul class="list-unstyled mb-0">
+					                        <li class="mb-2">
+					                            <i class="bi bi-dot me-2"></i>
+					                            起標價：NT$ <span th:text="${#numbers.formatDecimal(productVO.baseprice, 0, 'COMMA', 0, 'POINT')}">1,000</span>
+					                        </li>
+					                        <li class="mb-2">
+					                            <i class="bi bi-dot me-2"></i>
+					                            最低增額：NT$ <span th:text="${#numbers.formatDecimal(productVO.minincr, 0, 'COMMA', 0, 'POINT')}">100</span>
+					                        </li>
+					                        <li>
+					                            <i class="bi bi-dot me-2"></i>
+					                            直購價：NT$ <span th:text="${#numbers.formatDecimal(productVO.purprice, 0, 'COMMA', 0, 'POINT')}">5,000</span>
+					                        </li>
+					                    </ul>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					</div>
                 </div>
             </div>
         </div>
 
       <!-- 出價Modal -->
-      <div class="modal fade" id="biddingModal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">羽球拍</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <p>起標價: 100</p>
-                <p>目前價格: 2000</p>
-                <p>最低增額: 200</p>
-                <input
-                  type="number"
-                  id="bidAmount"
-                  class="form-control bidding-input"
-                  min="2200"
-                  placeholder="請輸入最少2200元已完成出價"
-                />
-                <div class="alert alert-danger bid-alert" id="bidError">
-                  出價失敗，請重新輸入
-                </div>
-                <div class="alert alert-success bid-alert" id="bidSuccess">
-                  出價成功
-                </div>
-              </div>
-              <div class="d-grid">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  onclick="validateBid()"
-                >
-                  出價
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+		<div class="modal fade" id="biddingModal" tabindex="-1" aria-labelledby="biddingModalLabel" aria-hidden="true">
+		    <div class="modal-dialog modal-dialog-centered">
+		        <div class="modal-content bid-modal">
+		            <!-- Modal Header -->
+		            <div class="modal-header border-0 pb-0">
+		                <div>
+		                    <span class="bid-label d-block mb-1">競標商品</span>
+		                    <h4 class="modal-title" id="biddingModalLabel" th:text="${productVO.proname}">商品名稱</h4>
+		                </div>
+		                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            
+		            <!-- Modal Body -->
+		            <div class="modal-body">
+		                <!-- 商品摘要 -->
+		                <div class="product-summary mb-4">
+		                    <div class="d-flex align-items-center">
+		                        <div class="product-image">
+		                            <img th:src="@{'/product/image/' + ${productVO.proid}}" 
+		                                 th:alt="${productVO.proname}" 
+		                                 class="rounded-3">
+		                        </div>
+		                        <div class="current-price ms-3">
+		                            <span class="label">目前最高價</span>
+		                            <div class="price">
+		                                NT$ <span th:text="${#numbers.formatDecimal(productVO.maxprice != null ? productVO.maxprice : productVO.baseprice, 0, 'COMMA', 0, 'POINT')}">0</span>
+		                            </div>
+		                        </div>
+		                    </div>
+		                </div>
+		
+		                <!-- 出價表單 -->
+		                <form id="bidForm" class="needs-validation" novalidate>
+		                    <div class="bid-input-group mb-4">
+		                        <label class="form-label">您的出價金額</label>
+		                        <div class="input-wrapper">
+		                            <div class="currency-symbol">NT$</div>
+		                            <input type="number" 
+		                                   class="form-control" 
+		                                   id="bidAmount"
+		                                   th:min="${productVO.maxprice != null ? productVO.maxprice + productVO.minincr : productVO.baseprice + productVO.minincr}"
+		                                   th:placeholder="'最低出價金額 ' + ${productVO.maxprice != null ? productVO.maxprice + productVO.minincr : productVO.baseprice + productVO.minincr}"
+		                                   required>
+		                        </div>
+		                        <div class="invalid-feedback">
+		                            請輸入大於最低出價金額的值
+		                        </div>
+		                    </div>
+		
+		                    <!-- 價格提示 -->
+		                    <div class="price-hints">
+		                        <div class="hint-item">
+		                            <span class="hint-label">最低出價金額</span>
+		                            <span class="hint-value">
+		                                NT$ <span th:text="${productVO.maxprice != null ? productVO.maxprice + productVO.minincr : productVO.baseprice + productVO.minincr}"></span>
+		                            </span>
+		                        </div>
+		                        <div class="hint-item">
+		                            <span class="hint-label">最低增額</span>
+		                            <span class="hint-value">
+		                                NT$ <span th:text="${productVO.minincr}"></span>
+		                            </span>
+		                        </div>
+		                    </div>
+		
+		                    <!-- 出價按鈕 -->
+		                    <button type="submit" class="btn-bid">
+		                        <span class="btn-text">確認出價</span>
+		                        <span class="btn-icon">
+		                            <i class="bi bi-arrow-right"></i>
+		                        </span>
+		                    </button>
+		                </form>
+		            </div>
+		        </div>
+		    </div>
+		</div>
     </main>
 
 	<div th:replace="back-end/client/Footer :: footer"></div>
@@ -383,6 +739,198 @@
     // 清理定時器
     window.addEventListener('unload', () => {
         clearInterval(countdownInterval);
+    });
+    
+    
+ 	// 更新競標歷史表格
+    function updateBidHistory(bidHistory) {
+        const tbody = document.querySelector('#bidHistory table tbody');
+        if (!tbody) return;
+        
+        // 清空現有內容
+        tbody.innerHTML = '';
+        
+        if (bidHistory && bidHistory.length > 0) {
+            bidHistory.forEach(bid => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
+                    <td>${bid.bidderName || '匿名用戶'}</td>
+                    <td class="text-end">
+                        <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            // 無競標紀錄時顯示提示
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-center py-5">
+                        <i class="bi bi-clock-history fs-1 text-muted mb-3 d-block"></i>
+                        <p class="text-muted mb-0">目前尚無競標紀錄</p>
+                        <small class="text-muted d-block mt-1">成為第一個出價的買家！</small>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    // 更新最高價格顯示
+    function updateHighestBid(newPrice) {
+        const priceDisplays = document.querySelectorAll('.current-price .price, .price-box .text-primary');
+        priceDisplays.forEach(display => {
+            display.textContent = `NT$ ${newPrice.toLocaleString()}`;
+        });
+    }
+
+ 	// 顯示提示訊息
+    function showToast(message, isSuccess = true) {
+        // 先移除可能存在的舊 toast
+        const existingToasts = document.querySelectorAll('.toast-container');
+        existingToasts.forEach(toast => toast.remove());
+
+        const toastHTML = `
+            <div class="toast-container position-fixed top-0 end-0 p-3 mt-5" style="z-index: 1056;">
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header ${isSuccess ? 'bg-success text-white' : 'bg-danger text-white'}">
+                        <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2"></i>
+                        <strong class="me-auto">${isSuccess ? '出價成功' : '出價失敗'}</strong>
+                        <button type="button" class="btn-close ${isSuccess ? 'btn-close-white' : ''}" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', toastHTML);
+        
+        // 3秒後自動移除
+        setTimeout(() => {
+            const toast = document.querySelector('.toast-container');
+            if (toast) {
+                toast.remove();
+            }
+        }, 3000);
+    }
+
+ 	// 當文檔加載完成時的初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        const bidForm = document.getElementById('bidForm');
+        const bidAmount = document.getElementById('bidAmount');
+        const bidButton = document.getElementById('bidButton');
+        
+        if (bidAmount) {
+            const minBidAmount = parseInt(bidAmount.getAttribute('min'));
+            bidAmount.setAttribute('data-min-incr', bidAmount.getAttribute('data-min-incr') || '0');
+            
+            // 即時驗證出價金額
+            bidAmount.addEventListener('input', function() {
+                if (this.value && parseInt(this.value) >= minBidAmount) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        }
+        
+        // 出價表單提交處理
+        if (bidForm) {
+            bidForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                const bidAmount = document.getElementById('bidAmount');
+                const minBidAmount = parseInt(bidAmount.getAttribute('min'));
+                
+                if (!bidAmount.value || parseInt(bidAmount.value) < minBidAmount) {
+                    bidAmount.classList.add('is-invalid');
+                    return;
+                }
+                
+                try {
+                    const productId = new URLSearchParams(window.location.search).get('proid') || 
+                                    window.location.pathname.split('/').pop();
+                    
+                    const formData = new FormData();
+                    formData.append('productId', productId);
+                    formData.append('bidAmount', bidAmount.value);
+                    
+                    const response = await fetch('/api/bid/place', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.status === 401) {
+                        // 未登入情況
+                        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = result.redirect || '/member/login';
+                        return;
+                    }
+                    
+                    if (result.success) {
+                        // 更新頁面顯示
+                        updateHighestBid(result.currentHighestBid);
+                        updateBidHistory(result.bidHistory);
+                        
+                        // 關閉 Modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('biddingModal'));
+                        modal.hide();
+                        
+                        // 顯示成功訊息
+                        showToast(`您已成功出價 NT$ ${parseInt(bidAmount.value).toLocaleString()}`);
+                        
+                        // 重置表單
+                        bidForm.reset();
+                    } else {
+                        // 顯示錯誤訊息
+                        showToast(result.error, false);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('競標過程發生錯誤，請稍後再試', false);
+                }
+            });
+        }
+        
+        // 出價按鈕點擊處理
+		if (bidButton) {
+		    bidButton.addEventListener('click', async function() {
+		        try {
+		            // 發送請求檢查登入狀態
+		            const response = await fetch('/api/bid/check-login', {
+		                method: 'GET',
+		                headers: {
+		                	// 添加這行
+		                    'X-Requested-With': 'XMLHttpRequest'  
+		                }
+		            });
+		            
+		            const result = await response.json();
+		            
+		            if (!result.isLoggedIn || response.status === 401) {
+		                sessionStorage.setItem('redirectAfterLogin', window.location.href);
+		                window.location.href = result.redirect || '/member/login';
+		                return;
+		            }
+		            
+		         	// 已登入則開啟競標 Modal
+		            const biddingModal = new bootstrap.Modal(document.getElementById('biddingModal'));
+		            biddingModal.show();
+		            
+		        } catch (error) {
+		            console.error('Error checking login status:', error);
+		         	// 發生錯誤時也導向登入頁
+		            sessionStorage.setItem('redirectAfterLogin', window.location.href);
+		            window.location.href = '/member/login';
+		        }
+		    });
+		}
     });
 </script>
 </body>
