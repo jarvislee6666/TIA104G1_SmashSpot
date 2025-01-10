@@ -510,6 +510,7 @@
 					        <div class="tab-pane fade show active" id="bidHistory" role="tabpanel" aria-labelledby="bidHistory-tab">
 					            <div class="bid-history">
 								    <!-- 表格區域 -->
+<<<<<<< Upstream, based on branch 'main' of https://github.com/jarvislee6666/TIA104G1_SmashSpot.git
 								    <div id="bidHistoryTableContainer" th:style="${not #lists.isEmpty(bidHistory)} ? 'display: block;' : 'display: none;'">
 								        <div class="table-responsive">
 								            <table class="table table-hover align-middle mb-0">
@@ -537,6 +538,35 @@
 								
 								    <!-- 無記錄提示區域 -->
 								    <div id="noBidMessage" th:style="${#lists.isEmpty(bidHistory)} ? 'display: block;' : 'display: none;'" class="text-center py-5">
+=======
+								    <div id="bidHistoryTableContainer" style="display: none;">
+								        <div class="table-responsive">
+								            <table class="table table-hover align-middle mb-0">
+								                <thead class="table-light">
+								                    <tr>
+								                        <th style="width: 30%">出價時間</th>
+								                        <th style="width: 40%">出價者</th>
+								                        <th style="width: 30%" class="text-end">出價金額</th>
+								                    </tr>
+								                </thead>
+								                <tbody>
+								                    <th:block th:if="${bidHistory != null and !bidHistory.isEmpty()}">
+								                        <tr th:each="bid : ${bidHistory}">
+								                            <td class="text-muted" th:text="${#dates.format(bid.bidtime, 'yyyy/MM/dd HH:mm')}">2024/01/02 14:30</td>
+								                            <td th:text="${bid.bidderName}">匿名用戶</td>
+								                            <td class="text-end">
+								                                <span class="fw-bold" th:text="'NT$ ' + ${#numbers.formatDecimal(bid.bidamt, 0, 'COMMA', 0, 'POINT')}">NT$ 3,000</span>
+								                            </td>
+								                        </tr>
+								                    </th:block>
+								                </tbody>
+								            </table>
+								        </div>
+								    </div>
+								
+								    <!-- 無記錄提示區域 -->
+								    <div id="noBidMessage" th:if="${#lists.isEmpty(bidHistory)}" class="text-center py-5">
+>>>>>>> 9c3cc95 update memProductList (show bidding information)
 								        <i class="bi bi-clock-history fs-1 text-muted mb-3 d-block"></i>
 								        <p class="text-muted mb-0">目前尚無競標紀錄</p>
 								        <small class="text-muted d-block mt-1">成為第一個出價的買家！</small>
@@ -950,7 +980,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // 頁面卸載時清理定時器
     window.addEventListener('unload', () => {
         clearInterval(countdownInterval);
-    });
+    });   
+    
+ 	// 更新競標歷史表格
+    function updateBidHistory(bidHistory) {
+	    const tableContainer = document.getElementById('bidHistoryTableContainer');
+	    const noBidMessage = document.getElementById('noBidMessage');
+	    const tbody = document.querySelector('#bidHistoryTableContainer tbody');
+	    
+	    if (Array.isArray(bidHistory) && bidHistory.length > 0) {
+	        // 有競標記錄時
+	        tableContainer.style.display = 'block';
+	        if (noBidMessage) noBidMessage.style.display = 'none';
+	        
+	        // 更新表格內容
+	        tbody.innerHTML = bidHistory.map(bid => `
+	            <tr>
+	                <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
+	                <td>${bid.bidderName || '匿名用戶'}</td>
+	                <td class="text-end">
+	                    <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
+	                </td>
+	            </tr>
+	        `).join('');
+	    } else {
+	        // 無競標記錄時
+	        tableContainer.style.display = 'none';
+	        if (noBidMessage) noBidMessage.style.display = 'block';
+	    }
+	}
 
     // 從 Thymeleaf 獲取競標歷史數據並初始化顯示
     const bidHistory = /*[[${bidHistory}]]*/ [];
