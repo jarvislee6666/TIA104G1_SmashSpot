@@ -93,11 +93,29 @@ public class ProductController {
 	    });
 	}
 
-    @GetMapping("/adm/listAllProduct")
-	public String listAllProduct(Model model) {
-    	List<ProductVO> list = proSvc.getAll();
-    	model.addAttribute("productListData",list);
-		return "back-end/adm/listAllProduct";
+	@GetMapping("/adm/listAllProduct")
+	public String listAllProduct(
+	        @RequestParam(required = false) String proname,
+	        @RequestParam(required = false) Integer sellerId,
+	        @RequestParam(required = false) Integer bidstaid,
+	        Model model) {
+	        
+	    List<ProductVO> list;
+	    
+	    // 判斷是否有查詢條件
+	    if (proname != null || sellerId != null || bidstaid != null) {
+	        list = proSvc.searchProducts(proname, sellerId, bidstaid);
+	    } else {
+	        list = proSvc.getAll();
+	    }
+	    
+	    // 加入資料到 Model
+	    model.addAttribute("productListData", list);
+	    model.addAttribute("searchProname", proname);
+	    model.addAttribute("searchSellerId", sellerId);
+	    model.addAttribute("searchBidstaid", bidstaid);
+	    
+	    return "back-end/adm/listAllProduct";
 	}
     
     @GetMapping("/client/listAllProductING")

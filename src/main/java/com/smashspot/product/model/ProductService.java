@@ -43,4 +43,10 @@ public class ProductService {
 	public List<ProductVO> getAll() {
 		return repository.findAll();
 	}
+	
+	// 添加複合查詢方法
+    public List<ProductVO> searchProducts(String proname, Integer sellerId, Integer bidstaid) {
+        String searchName = (proname != null && !proname.trim().isEmpty()) ? proname.trim() : null;
+        return repository.findWithFilters(searchName, sellerId, bidstaid);
+    }
 }
