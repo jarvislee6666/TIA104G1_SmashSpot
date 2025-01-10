@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.smashspot.bid.model.BidService;
+import com.smashspot.bid.model.BidVO;
 import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.member.model.MemberVO;
 import com.smashspot.product.model.*;
@@ -44,6 +46,9 @@ public class ProductController {
 	
 	@Autowired
 	ProductClassService proClassSvc;
+	
+	@Autowired
+    private BidService bidService;
 	
 	@ModelAttribute("proClassList")  // 買家首頁 迴圈顯示資料用
 	protected List<ProductClassVO> referenceProClassList(Model model) {
@@ -147,6 +152,10 @@ public class ProductController {
         model.addAttribute("productVO", productVO);
         // 將結標時間轉換為毫秒數傳給前端
         model.addAttribute("endTimeMillis", productVO.getEndtime().getTime());
+        
+        // 獲取競標歷史記錄
+        List<BidVO> bidHistory = bidService.getProductBidHistory(proid);
+        model.addAttribute("bidHistory", bidHistory);
         
         // 添加當前登入會員資訊的判斷
         MemberVO loginMember = (MemberVO) session.getAttribute("login");

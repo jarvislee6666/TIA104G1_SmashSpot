@@ -15,6 +15,16 @@ public class BidVO implements Serializable{
 	private Timestamp bidtime;
 	
 	private Integer bidamt;
+	
+	private transient String bidderName;  // 不需要序列化存儲
+
+	public String getBidderName() {
+	    return bidderName;
+	}
+
+	public void setBidderName(String bidderName) {
+	    this.bidderName = bidderName;
+	}
 
 	public Integer getBidid() {
 		return bidid;

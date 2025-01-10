@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>參加中競標</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+	
+	
+
+</style>
+
+</head>
+<body class="bg-light">
+
+<div th:replace="back-end/client/Header :: header"></div>
+
+    <main class="mb-3">
+      <div class="container position-relative mb-3">
+        <div class="row">
+          <!-- Sidebar -->
+			<div class="col-md-3">
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">會員專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/member/basic-info}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-person-circle"></i>
+			          <span>基本資料</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-calendar-event"></i>
+			          <span>我的活動</span>
+			        </a>
+			        
+			        <a th:href="@{/member/biddingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-hammer"></i>
+			          <span>參加中競標</span>
+			        </a>
+			        
+			        <a th:href="@{/member/buyingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-bag-check"></i>
+			          <span>購買清單</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi-calendar-check"></i>
+			          <span>場地預約紀錄</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <!-- Search -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="mb-3" style="font-size: 24px">參加中競標</h5>
+                <div class="d-flex gap-2">
+				  <input type="search" 
+				         class="form-control" 
+				         placeholder="搜尋商品..." 
+				         style="max-width: 250px" 
+				         id="productSearch"/>
+				</div>
+              </div>
+            </div>
+            <!-- Table Content -->
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 5%"></th>
+                    <th style="width: 15%">商品圖片</th>
+                    <th style="width: 22.5%">商品資訊</th>
+                    <th style="width: 15%">我的出價</th>
+                    <th style="width: 15%">目前最高出價</th>
+                    <th style="width: 15%">結標剩餘時間</th>
+                    <th style="width: 15%"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+                    <td>
+                      <img
+                        src="/api/placeholder/100/100"
+                        alt="商品圖片"
+                        class="product-img"
+                      />
+                    </td>
+                    <td>
+                      <a href="單一商品頁面" class="product-link">商品名稱</a>
+                      <div class="text-muted">商品種類</div>
+                      <div>直購價: NT$ 2,000</div>
+                    </td>
+                    <td>NT$ 500</td>
+                    <td>NT$ 1,500</td>
+                    <td>已結束(得標)</td>
+                    <td>
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#checkoutModal"
+                      >
+                        <i class="bi bi-wallet"></i> 前往付款
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+<div th:replace="back-end/client/Footer :: footer"></div>
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+
+</script>
+</body>
+</html>
