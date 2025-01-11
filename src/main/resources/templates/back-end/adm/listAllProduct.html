@@ -38,31 +38,39 @@
 					<div class="card-body">
 						<div class="d-flex justify-content-between align-items-center mb-4">
 							<h5 class="card-title mb-0">競標商品追蹤</h5>
-							<form>
-								<div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
-									<div class="search-item">
-										<input type="text" class="form-control" placeholder="商品編號">
-									</div>
-
-									<div class="search-item d-flex flex-row align-items-center">
-										<input type="text" class="form-control" placeholder="商品名稱">
-									</div>
-									<div class="search-item d-flex flex-row align-items-center">
-										<input type="text" class="form-control" placeholder="賣家ID">
-									</div>
-									<div class="search-item d-flex flex-row align-items-center">
-										<select class="form-select">
-		                                    <option value="0" disabled>--請選擇競標狀態--</option>
-		                                    <option value="1">競標中</option>
-		                                    <option value="2">已結標</option>
-		                                    <option value="3">已下架</option>
-		                                </select>
-									</div>
-									<button type="submit" class="btn btn-primary"
-										style="padding: 6px 16px; background-color: #0d6efd; color: white; 
-										border: none; border-radius: 4px; cursor: pointer;">搜尋
-									</button>
-								</div>
+							<form action="/adm/listAllProduct" method="get">
+							    <div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
+							        <div class="search-item">
+							            <input type="text" 
+							                   class="form-control" 
+							                   name="proname"
+							                   placeholder="商品名稱"
+							                   th:value="${searchProname}">
+							        </div>
+							        
+							        <div class="search-item d-flex flex-row align-items-center">
+							            <input type="text" 
+							                   class="form-control" 
+							                   name="sellerId"
+							                   placeholder="賣家ID"
+							                   th:value="${searchSellerId}">
+							        </div>
+							        
+							        <div class="search-item d-flex flex-row align-items-center">
+							            <select class="form-select" name="bidstaid">
+							                <option value="">--請選擇競標狀態--</option>
+							                <option value="1" th:selected="${searchBidstaid == 1}">競標中</option>
+							                <option value="2" th:selected="${searchBidstaid == 2}">已結標</option>
+							                <option value="3" th:selected="${searchBidstaid == 3}">已下架</option>
+							            </select>
+							        </div>
+							        
+							        <button type="submit" 
+							                class="btn btn-primary"
+							                style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">
+							            搜尋
+							        </button>
+							    </div>
 							</form>
 						</div>
 						<div class="table-responsive">

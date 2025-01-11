@@ -46,12 +46,32 @@ public class OrdersController {
         return new HashMap<>();
     }
 	
-	@GetMapping("/adm/listAllOrders")
-	public String listAllProduct(Model model) {
-		List<OrdersVO> list = odrsvc.getAll();
-    	model.addAttribute("ordersListData",list);
-		return "back-end/adm/listAllOrders";
-	}
+    @GetMapping("/adm/listAllOrders")
+    public String listAllProduct(
+            @RequestParam(required = false) String proname,
+            @RequestParam(required = false) Integer buyerId,
+            @RequestParam(required = false) Integer sellerId,
+            @RequestParam(required = false) Integer ordstaid,
+            Model model) {
+            
+        List<OrdersVO> list;
+        // 如果所有參數都是 null，則獲取全部訂單
+        if (proname == null && buyerId == null && sellerId == null && ordstaid == null) {
+            list = odrsvc.getAll();
+        } else {
+            list = odrsvc.searchOrders(proname, buyerId, sellerId, ordstaid);
+        }
+        
+        // 加入資料到 Model
+        model.addAttribute("ordersListData", list);
+        // 保存搜尋條件
+        model.addAttribute("searchProname", proname);
+        model.addAttribute("searchBuyerId", buyerId);
+        model.addAttribute("searchSellerId", sellerId);
+        model.addAttribute("searchOrdstaid", ordstaid);
+        
+        return "back-end/adm/listAllOrders";
+    }
 	
 	@GetMapping("/member/buyingList")
 	public String listMemBuyingList(Model model, HttpSession session) {

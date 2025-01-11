@@ -4,11 +4,15 @@ package com.smashspot.member.controller;
 // 引入必要的Java和Spring Framework相關類別
 import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
+
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -17,10 +21,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 // 引入會員相關的服務類別
 import com.smashspot.member.model.EmailService;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.member.model.RedisService;
 
 // 使用@Controller註解標記這是一個Spring MVC控制器
 // @RequestMapping("/member")設定此控制器的基礎URL路徑
@@ -36,8 +42,15 @@ public class MemberController {
     @Autowired
     private EmailService emailService;
     
+    @Autowired
+    private RedisService redisService;
+    
+    @Autowired
+    private RedisTemplate redisTemplate;
+    
     // 建立日誌記錄器，用於記錄控制器中的重要操作和錯誤信息
     private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
+    private static final String MEMBER_TEMP_PREFIX = "member:temp:";
 
     /**
      * 顯示會員註冊頁面
@@ -51,18 +64,91 @@ public class MemberController {
         // 向模型中添加一個空的MemberVO物件，供表單綁定使用
         model.addAttribute("memberVO", new MemberVO());
         return "back-end/member/register";
-    }
+    } 
+// // 註冊表單提交處理
+//    @PostMapping("/register")
+//    public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
+//                        @RequestParam("confirmPassword") String confirmPassword) {
+//        
+//        // 檢查是否有重複的帳號、Email或電話號碼
+//        if (memberService.findByAccount(memberVO.getAccount()) != null) {
+//            result.rejectValue("account", "error.memberVO", "此帳號已存在");
+//        }
+//        if (memberService.findByEmail(memberVO.getEmail()) != null) {
+//            result.rejectValue("email", "error.memberVO", "此 Email 已存在");
+//        }
+//        if (memberService.findByPhone(memberVO.getPhone()) != null) {
+//            result.rejectValue("phone", "error.memberVO", "此電話號碼已存在");
+//        }
+//               
+//        // 確認密碼是否匹配
+//        if (!memberVO.getPassword().equals(confirmPassword)) {
+//            result.rejectValue("password", "error.memberVO", "密碼與確認密碼不符");
+//        }
+//        
+//        // 初始設定會員狀態為未驗證
+//        memberVO.setStatus(false);
+//
+//        // 如果有任何驗證錯誤，返回註冊頁面
+//        if (result.hasErrors()) {
+//            return "back-end/member/register";
+//        }
+//        
+//        try {
+//            // 儲存會員資料
+//            memberService.addMember(memberVO);
+//
+//            // 生成驗證連結
+//            String verificationLink = redisService.generateVerificationLink(memberVO.getEmail());
+//
+//            // 只發送驗證郵件
+//            emailService.sendVerificationEmail(memberVO.getEmail(), verificationLink);
+//
+//            // 導向等待驗證頁面
+//            model.addAttribute("email", memberVO.getEmail());
+//            return "back-end/member/waiting-verification";
+//        } catch (Exception e) {
+//            logger.error("註冊過程發生錯誤", e);
+//            model.addAttribute("error", "註冊失敗: " + e.getMessage());
+//            return "back-end/member/register";
+//        }
+//    }
+//
+//    /**
+//     * 處理驗證連結的請求
+//     */
+//    @GetMapping("/verify")
+//    public String verifyEmail(@RequestParam String token, Model model) {
+//        try {
+//            // 驗證 token 並取得對應的 email
+//            String email = redisService.verifyToken(token);
+//            
+//            if (email != null) {
+//                // 找到對應的會員並更新狀態
+//                MemberVO member = memberService.findByEmail(email);
+//                if (member != null) {
+//                    // 更新會員狀態為已驗證
+//                    member.setStatus(true);
+//                    memberService.updateMember(member);
+//                    
+//                    // 驗證成功後，發送歡迎信
+//                    sendWelcomeEmail(member);
+//                    
+//                    model.addAttribute("success", "信箱驗證成功！歡迎加入SmashSpot，請登入開始使用我們的服務。");
+//                    return "back-end/member/login";
+//                }
+//            }
+//            
+//            // token 無效或找不到對應會員
+//            model.addAttribute("error", "驗證連結已失效或不正確");
+//            return "back-end/member/verification-failed";
+//        } catch (Exception e) {
+//            logger.error("驗證過程發生錯誤", e);
+//            model.addAttribute("error", "驗證過程發生錯誤，請稍後再試");
+//            return "back-end/member/verification-failed";
+//        }
+//    }
 
-    /**
-     * 處理會員註冊請求
-     * 當提交 POST /member/register 時觸發
-     * 
-     * @param memberVO 包含會員註冊信息的物件（經過表單驗證）
-     * @param result 包含驗證結果的BindingResult物件
-     * @param model 用於向視圖傳遞數據的ModelMap物件
-     * @param confirmPassword 確認密碼欄位
-     * @return 註冊成功則轉向登入頁面，失敗則返回註冊頁面
-     */
     @PostMapping("/register")
     public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
                         @RequestParam("confirmPassword") String confirmPassword) {
@@ -82,9 +168,6 @@ public class MemberController {
         if (!memberVO.getPassword().equals(confirmPassword)) {
             result.rejectValue("password", "error.memberVO", "密碼與確認密碼不符");
         }
-        
-        // 設定會員狀態為有效
-        memberVO.setStatus(true);
 
         // 如果有任何驗證錯誤，返回註冊頁面
         if (result.hasErrors()) {
@@ -92,29 +175,101 @@ public class MemberController {
         }
         
         try {
-            // 儲存會員資料
-            memberService.addMember(memberVO);
-
-            // 發送歡迎郵件
-            String subject = "恭喜註冊成功！";
-            String content = String.format(
-                "<p>親愛的 %s 您好，</p>"
-                + "<p>感謝您註冊我們的服務！現在您可以登入並開始使用我們的平台。</p>"
-                + "<p>祝您使用愉快！</p><p>敬上，<br>您的團隊</p>",
-                memberVO.getName()
+            // 生成驗證 token
+            String token = redisService.generateVerificationToken(memberVO);
+            
+            // 將會員資料暫存到 Redis，設定 30 分鐘過期
+            // 使用 Jackson 或其他 JSON 工具將物件序列化
+            ObjectMapper mapper = new ObjectMapper();
+            String memberJson = mapper.writeValueAsString(memberVO);
+            redisTemplate.opsForValue().set(
+                MEMBER_TEMP_PREFIX + token,
+                memberJson,
+                30,
+                TimeUnit.MINUTES
             );
-            emailService.sendHtmlEmail(memberVO.getEmail(), subject, content);
 
-            // 註冊成功，轉向登入頁面
-            model.addAttribute("success", "新增成功");
-            return "back-end/member/login";
-        } catch (Exception e) {
-            // 發生錯誤時返回驗證頁面並顯示錯誤信息
-            model.addAttribute("error", "新增失敗: " + e.getMessage());
+            // 生成驗證連結
+            String verificationLink = redisService.getVerificationLink(token);
+
+            // 發送驗證郵件
+            emailService.sendVerificationEmail(memberVO.getEmail(), verificationLink);
+
+            // 導向等待驗證頁面
+            model.addAttribute("email", memberVO.getEmail());
             return "back-end/member/VerificationPage";
+        } catch (Exception e) {
+            logger.error("註冊過程發生錯誤", e);
+            model.addAttribute("error", "註冊失敗: " + e.getMessage());
+            return "back-end/member/register";
         }
     }
 
+    @GetMapping("/verify")
+    public String verifyEmail(@RequestParam String token, Model model) {
+        try {
+            // 從 Redis 取得暫存的會員資料
+            String memberJson = (String) redisTemplate.opsForValue().get(MEMBER_TEMP_PREFIX + token);
+            
+            if (memberJson != null) {
+                // 將 JSON 轉回 MemberVO 物件
+                ObjectMapper mapper = new ObjectMapper();
+                MemberVO memberVO = mapper.readValue(memberJson, MemberVO.class);
+                
+                // 設定會員狀態為已驗證
+                memberVO.setStatus(true);
+                
+                // 正式將會員資料寫入資料庫
+                memberService.addMember(memberVO);
+                
+                // 刪除 Redis 中的暫存資料
+                redisTemplate.delete(MEMBER_TEMP_PREFIX + token);
+                
+                // 發送歡迎郵件
+                sendWelcomeEmail(memberVO);
+                
+                model.addAttribute("success", "註冊成功！歡迎加入SmashSpot，請登入開始使用我們的服務。");
+                return "back-end/member/login";
+            }
+            
+            model.addAttribute("error", "驗證連結已失效或不正確");
+            return "back-end/member/verification-failed";
+            
+        } catch (Exception e) {
+            logger.error("驗證過程發生錯誤", e);
+            model.addAttribute("error", "驗證過程發生錯誤，請稍後再試");
+            return "back-end/member/verification-failed";
+        }
+    }
+    
+    /**
+     * 發送歡迎信的私有方法
+     */
+    private void sendWelcomeEmail(MemberVO member) throws MessagingException {
+        String welcomeSubject = "歡迎加入SmashSpot！";
+        String welcomeContent = String.format(
+            "<div style='font-family: 微軟正黑體, sans-serif; padding: 20px;'>" +
+            "<h2>親愛的 %s 您好：</h2>" +
+            "<p>感謝您完成電子郵件驗證！您現在已經是SmashSpot的正式會員了。</p>" +
+            "<p>作為我們的會員，您可以立即享有以下專屬權益：</p>" +
+            "<ul style='line-height: 1.6;'>" +
+            "<li>瀏覽和預約場地</li>" +
+            "<li>參與會員專屬活動</li>" +
+            "<li>累積消費點數</li>" +
+            "<li>享受會員專屬優惠</li>" +
+            "</ul>" +
+            "<p>現在就登入開始探索吧！</p>" +
+            "<p>如果您有任何問題或需要協助，歡迎隨時與我們聯繫。</p>" +
+            "<p>祝您有愉快的使用體驗！</p>" +
+            "<hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>" +
+            "<p style='color: #666; font-size: 14px;'>此為系統自動發送的郵件，請勿直接回覆</p>" +
+            "</div>",
+            member.getName()
+        );
+        
+        emailService.sendHtmlEmail(member.getEmail(), welcomeSubject, welcomeContent);
+    }
+    
     /**
      * 顯示登入頁面
      * GET /member/login
@@ -136,10 +291,17 @@ public class MemberController {
      */
     @PostMapping("/login")
     public String login(@RequestParam String account, @RequestParam String password,
-                       HttpSession session, Model model) {
+                       HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // 驗證會員帳號密碼
         MemberVO mem = memberService.login(account, password);
         if (mem != null) {
+        	
+        	// 檢查會員狀態
+            if (!mem.getStatus()) {
+            	redirectAttributes.addFlashAttribute("error", "您的帳號已被停用");
+                return "redirect:/member/login";
+            }
+            
             // 登入成功，將會員資訊存入session
             session.setAttribute("login", mem);
             
@@ -155,7 +317,7 @@ public class MemberController {
             }
         }
         // 登入失敗，返回登入頁面並顯示錯誤訊息
-        model.addAttribute("error", true);
+        model.addAttribute("error", "帳號或密碼錯誤");
         return "back-end/member/login";
     }
 

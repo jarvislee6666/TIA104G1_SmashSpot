@@ -36,11 +36,12 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.smashspot.admin.model.AdmService;
 import com.smashspot.admin.model.AdmVO;
@@ -164,20 +165,35 @@ public class AdmController {
 	}
 	
 	@GetMapping("/updateAdm")
-	public String getOne_For_Update(@RequestParam("admid") String admid, ModelMap model) {
-		AdmVO admVO = admSvc.getOneAdm(Integer.valueOf(admid));
-		model.addAttribute("admVO", admVO);
-		return "back-end/adm/updateAdm"; // 查詢完成後轉交update_emp_input.html
+	public String getOne_For_Update(@RequestParam("admid") String admid, ModelMap model, HttpSession session) {
+	    // 檢查登入狀態和權限
+	    AdmVO loginAdm = (AdmVO) session.getAttribute("loginAdm");
+	    
+	    // 如果未登入或不是高級管理員，導回列表頁
+	    if (loginAdm == null || !loginAdm.getSupvsr()) {
+	        return "redirect:/adm/listAllAdm";
+	    }
+	    
+	    AdmVO admVO = admSvc.getOneAdm(Integer.valueOf(admid));
+	    model.addAttribute("admVO", admVO);
+	    return "back-end/adm/updateAdm";
 	}
 	
 	@PostMapping("update")
-	public String update(@Valid AdmVO admVO, BindingResult result, ModelMap model){
+	public String update(@Valid AdmVO admVO, BindingResult result, ModelMap model, HttpSession session) {
+	    // 檢查登入狀態和權限
+	    AdmVO loginAdm = (AdmVO) session.getAttribute("loginAdm");
+	    
+	    // 如果未登入或不是高級管理員，導回列表頁
+	    if (loginAdm == null || !loginAdm.getSupvsr()) {
+	        return "redirect:/adm/listAllAdm";
+	    }
 
-		if (result.hasErrors()) {
+	    if (result.hasErrors()) {
 	        return "back-end/adm/updateAdm";
 	    }
 	    
-		AdmVO original = admSvc.getOneAdm(admVO.getAdmid());
+	    AdmVO original = admSvc.getOneAdm(admVO.getAdmid());
 	    original.setAdmsta(admVO.getAdmsta());
 	    original.setSupvsr(admVO.getSupvsr());
 	    
@@ -210,18 +226,23 @@ public class AdmController {
     }
 	
 	@PostMapping("/login")
-    public String login(@RequestParam String admemail, 
-                       @RequestParam String admpassword,
-                       HttpSession session,
-                       Model model) {
-        AdmVO adm = admSvc.login(admemail, admpassword);
-        if (adm != null) {
-            session.setAttribute("loginAdm", adm);
-            return "redirect:/adm/listAllAdm";
-        }
-        model.addAttribute("error", true);
-        return "back-end/adm/loginAdm";
-    }
+	public String login(@RequestParam String admemail, 
+	                   @RequestParam String admpassword,
+	                   HttpSession session,
+	                   RedirectAttributes redirectAttrs) {
+	    AdmVO adm = admSvc.login(admemail, admpassword);
+	    if (adm != null) {
+	        // 檢查帳號狀態
+	        if (!adm.getAdmsta()) {
+	            redirectAttrs.addFlashAttribute("error", "此帳號已被停用");
+	            return "redirect:/adm/login";
+	        }
+	        session.setAttribute("loginAdm", adm);
+	        return "redirect:/adm/listAllAdm";
+	    }
+	    redirectAttrs.addFlashAttribute("error", "帳號或密碼錯誤");
+	    return "redirect:/adm/login";
+	}
 	
 	@PostMapping("/logout")
 	public String logout(HttpSession session) {
@@ -230,11 +251,31 @@ public class AdmController {
 	}
 	
 	@GetMapping("/listAllMember")
-    public String listAllMember(Model model) {
-        List<MemberVO> memberList = memberSvc.getAll();
-        model.addAttribute("memberList", memberList);
-        return "back-end/adm/listAllMember";
-    }
+	public String listAllMember(
+		    @RequestParam(required = false) String name,
+		    @RequestParam(required = false) String status,
+		    Model model) {
+		    
+		    Map<String, String[]> map = new HashMap<>();
+		    if (name != null && !name.trim().isEmpty()) {
+		        map.put("name", new String[]{name});
+		    }
+		    if (status != null && !status.trim().isEmpty()) {
+		        map.put("status", new String[]{status});
+		    }
+		    
+		    List<MemberVO> memberList;
+		    if (map.isEmpty()) {
+		        memberList = memberSvc.getAll();
+		    } else {
+		        memberList = memberSvc.getAll(map);
+		    }
+		    
+		    model.addAttribute("memberList", memberList);
+		    return "back-end/adm/listAllMember";
+		}
+
+
 
 	@GetMapping("/updateMember")
     public String getOneForUpdate(@RequestParam("memid") Integer memid, Model model) {
@@ -244,19 +285,22 @@ public class AdmController {
     }
 
 	@PostMapping("updateMem")
-	public String update(@Valid MemberVO memberVO, BindingResult result, ModelMap model) {
-	   result = removeFieldErrors(memberVO, result, "crttime", "password", "chgtime");
-	   
-	   if (result.hasErrors()) {
-	       return "back-end/adm/updateMember";
-	   }
-	   
-	   MemberVO original = memberSvc.getOneMember(memberVO.getMemid());
-	   original.setStatus(memberVO.getStatus());
-	   original.setChgtime(new Timestamp(System.currentTimeMillis())); // 設定當前時間
-	   
-	   memberSvc.updateMember(original);
-	   return "redirect:/adm/listAllMember";
+	@ResponseBody
+	public ResponseEntity<?> updateMemberStatus(@RequestBody Map<String, Object> body) {
+	    try {
+	        Integer memid = Integer.parseInt(body.get("memid").toString());
+	        Boolean status = (Boolean) body.get("status");
+	        
+	        MemberVO memberVO = memberSvc.getOneMember(memid);
+	        memberVO.setStatus(status);
+	        memberVO.setChgtime(new Timestamp(System.currentTimeMillis()));
+	        
+	        memberSvc.updateMember(memberVO);
+	        
+	        return ResponseEntity.ok().build();
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
 	}
 
 	private BindingResult removeFieldErrors(MemberVO memberVO, BindingResult result, String... fieldNames) {
@@ -270,18 +314,41 @@ public class AdmController {
 	}
 	
 	@GetMapping("/listAllCourtOrders")
-	public String listAllCourtOrders(Model model) {
-	    List<CourtOrderVO> orderList = courtOrderService.getAll();
+	public String listAllCourtOrders(
+	        @RequestParam(required = false) String stdmId,  // 改為 String 型別
+	        @RequestParam(required = false) String memberId,
+	        @RequestParam(required = false) String ordsta,
+	        Model model) {
 	    
-	    System.out.println("Total orders found: " + (orderList != null ? orderList.size() : "null"));
-	    if (orderList != null) {
-	        for (CourtOrderVO order : orderList) {
-	            System.out.println("Order ID: " + order.getCourtordid());
-	            System.out.println("Stadium: " + (order.getStadium() != null ? order.getStadium().getStdmName() : "null"));
-	        }
+	    Map<String, String[]> map = new HashMap<>();
+	    
+	    // 處理場館 ID
+	    if (stdmId != null && !stdmId.trim().isEmpty()) {
+	        map.put("stdmId", new String[]{stdmId});
 	    }
 	    
+	    // 處理會員帳號
+	    if (memberId != null && !memberId.trim().isEmpty()) {
+	        map.put("memberId", new String[]{memberId});
+	    }
+	    
+	    // 處理預約狀態
+	    if (ordsta != null && !ordsta.trim().isEmpty()) {
+	        map.put("ordsta", new String[]{ordsta});
+	    }
+
+	    List<CourtOrderVO> orderList;
+	    if (map.isEmpty()) {
+	        orderList = courtOrderService.getAll();
+	    } else {
+	        orderList = courtOrderService.getAll(map);
+	    }
+	    
+	    // 取得場館列表
+	    List<StadiumVO> stadiumList = stadiumService.getAll();
+	    
 	    model.addAttribute("orderList", orderList);
+	    model.addAttribute("stadiumList", stadiumList);
 	    return "back-end/adm/listAllCourtOrders";
 	}
 	
@@ -372,5 +439,6 @@ public class AdmController {
 	    }
 	}
 	
+	 
 	
 }

@@ -53,4 +53,13 @@ public class OrdersService {
     public List<OrdersVO> getAll() {
         return repository.findAll();
     }
+    
+    // 添加複合查詢服務方法
+    public List<OrdersVO> searchOrders(String proname, Integer buyerId, Integer sellerId, Integer ordstaid) {
+        // 處理空值
+        String searchName = (proname != null && !proname.trim().isEmpty()) ? proname.trim() : null;
+        
+        // 調用 repository 的查詢方法
+        return repository.findWithFilters(searchName, buyerId, sellerId, ordstaid);
+    }
 }

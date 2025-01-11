@@ -283,5 +283,73 @@ public class CourtOrderService {
     public List<CourtOrderVO> findOrdersWithDetailsByMemberId(Integer memid) {
         return courtOrderRepository.findOrdersWithDetailsByMemberid(memid);
     }
+    
+    
+    //沃寯添加
+    public List<CourtOrderVO> getAll(Map<String, String[]> map) {
+        String stdmId = null;
+        String memberId = null;
+        String ordsta = null;
+        
+        if (map != null) {
+            // 處理場館 ID
+            if (map.containsKey("stdmId") && map.get("stdmId")[0] != null) {
+                stdmId = map.get("stdmId")[0].trim();
+                if (stdmId.isEmpty()) stdmId = null;
+            }
+            
+            // 處理會員帳號
+            if (map.containsKey("memberId") && map.get("memberId")[0] != null) {
+                memberId = map.get("memberId")[0].trim();
+                if (memberId.isEmpty()) memberId = null;
+            }
+            
+            // 處理預約狀態
+            if (map.containsKey("ordsta") && map.get("ordsta")[0] != null) {
+                ordsta = map.get("ordsta")[0].trim();
+                if (ordsta.isEmpty()) ordsta = null;
+            }
+        }
+        
+        System.out.println("Search parameters - stdmId: " + stdmId + 
+                          ", memberId: " + memberId + 
+                          ", ordsta: " + ordsta);
+        
+        return courtOrderRepository.findByConditions(stdmId, memberId, ordsta);
+    }
+    
+    /**
+     * 更新評價 (starrank, message)
+     */
+    public void updateReview(Integer courtordid, Integer starrank, String message) {
+        CourtOrderVO order = courtOrderRepository.findById(courtordid)
+                .orElseThrow(() -> new RuntimeException("找不到此訂單"));
 
+        // 可檢查：只有「已完成(ordsta=true)」才允許更新評價
+        // 也可檢查：是否該會員本人才可評價...
+        // 這裡單純範例直接給予更新
+        order.setStarrank(starrank);
+        order.setMessage(message);
+
+        courtOrderRepository.save(order);
+    }
+
+    /**
+     * 取消訂單 (ordsta = false, canreason)
+     */
+    public void cancelOrder(Integer courtordid, Boolean ordsta, String canreason) {
+        CourtOrderVO order = courtOrderRepository.findById(courtordid)
+                .orElseThrow(() -> new RuntimeException("找不到此訂單"));
+
+        // 檢查原狀態是否已取消 / 是否已完成 / ...
+        // 這裡單純範例：直接設成 false + 寫入取消原因
+        order.setOrdsta(ordsta);
+        order.setCanreason(canreason);
+
+        courtOrderRepository.save(order);
+    }
+    
+
+    
+    
 }

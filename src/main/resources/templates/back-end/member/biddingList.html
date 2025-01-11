@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>參加中競標</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+	
+	.table img {
+        object-fit: cover;
+    }
+    
+    /* 商品連結特效 */
+    .product-link-underline {
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .link-text {
+        padding-bottom: 2px;
+    }
+    
+    .link-text::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: #0d6efd;
+        transition: width 0.3s ease;
+    }
+    
+    .product-link-underline:hover {
+        color: #0d6efd;
+    }
+    
+    .product-link-underline:hover .link-text::after {
+        width: 100%;
+    }
+    
+    .bi-arrow-right {
+        color: #6c757d;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-link-underline:hover .bi-arrow-right {
+        transform: translateX(3px);
+        color: #0d6efd;
+    }
+	
+
+</style>
+
+</head>
+<body class="bg-light">
+
+<div th:replace="back-end/client/Header :: header"></div>
+
+    <main class="mb-3">
+      <div class="container position-relative mb-3">
+        <div class="row">
+          <!-- Sidebar -->
+			<div class="col-md-3">
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">會員專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/member/basic-info}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-person-circle"></i>
+			          <span>基本資料</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-calendar-event"></i>
+			          <span>我的活動</span>
+			        </a>
+			        
+			        <a th:href="@{/member/biddingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-hammer"></i>
+			          <span>參加中競標</span>
+			        </a>
+			        
+			        <a th:href="@{/member/buyingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-bag-check"></i>
+			          <span>購買清單</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi-calendar-check"></i>
+			          <span>場地預約紀錄</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <!-- Search -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="mb-3" style="font-size: 24px">參加中競標</h5>
+                <div class="d-flex gap-2">
+				  <input type="search" 
+				         class="form-control" 
+				         placeholder="搜尋商品名稱或分類..." 
+				         style="max-width: 250px" 
+				         id="productSearch"/>
+				</div>
+              </div>
+            </div>
+            <!-- Table Content -->
+            <div class="table-responsive">
+			    <table class="table table-hover align-middle bg-white shadow-sm rounded">
+			        <thead class="bg-light">
+			            <tr>
+			                <th style="width: 5%"></th>
+			                <th style="width: 15%">商品圖片</th>
+			                <th style="width: 22.5%">商品資訊</th>
+			                <th style="width: 15%">我的出價</th>
+			                <th style="width: 15%">目前最高出價</th>
+			                <th style="width: 15%">結標剩餘時間</th>
+			                <th style="width: 15%"></th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <tr th:each="bid : ${biddingList}">
+			                <td></td>
+			                <td>
+			                    <!-- 使用Bootstrap的比例容器來固定圖片大小 -->
+			                    <div style="width: 100px; height: 100px;" class="rounded overflow-hidden bg-light">
+			                        <img th:if="${bid.product.propic != null}"
+			                             th:src="@{'/product/image/' + ${bid.product.proid}}"
+			                             alt="商品圖片"
+			                             class="w-100 h-100">
+			                    </div>
+			                </td>
+			                <td>
+			                    <div class="mb-2">
+			                        <a th:href="@{'/client/getOneProduct/' + ${bid.product.proid}}"
+			                           class="product-link-underline d-inline-flex align-items-center gap-2">
+			                            <span class="link-text position-relative" th:text="${bid.product.proname}"></span>
+			                            <i class="bi bi-arrow-right small"></i>
+			                        </a>
+			                    </div>
+			                    <div class="text-secondary small mb-1" th:text="${bid.product.productClassVO.catename}"></div>
+			                    <div class="text-muted small">
+			                        <i class="bi bi-tag-fill me-1"></i>
+			                        直購價：<span class="fw-medium" th:text="'NT$ ' + ${#numbers.formatDecimal(bid.product.purprice, 1, 'COMMA', 0, 'POINT')}">直購價</span>
+			                    </div>
+			                </td>
+			                <td>
+			                    <div class="fw-medium text-primary">
+			                        NT$ <span th:text="${#numbers.formatDecimal(bid.myHighestBid, 1, 'COMMA', 0, 'POINT')}"></span>
+			                    </div>
+			                </td>
+			                <td>
+			                    <div class="fw-medium" th:classappend="${bid.currentHighestBid == bid.myHighestBid ? 'text-success' : ''}">
+			                        NT$ <span th:text="${#numbers.formatDecimal(bid.currentHighestBid, 1, 'COMMA', 0, 'POINT')}"></span>
+			                    </div>
+			                    <div class="small text-success" th:if="${bid.currentHighestBid == bid.myHighestBid}">
+			                        <i class="bi bi-check-circle-fill"></i> 目前最高
+			                    </div>
+			                </td>
+			                <td>
+			                    <span class="remaining-time d-inline-block text-nowrap" 
+			                          th:data-endtime="${bid.product.endtime.time}"
+			                          th:classappend="${bid.product.endtime.before(#dates.createNow())} ? 'text-secondary' : 'text-primary'">
+			                    </span>
+			                </td>
+			                <td>
+			                    <button th:if="${bid.product.endtime.before(#dates.createNow())} and ${bid.currentHighestBid == bid.myHighestBid}"
+			                            class="btn btn-outline-primary btn-sm">
+			                        <i class="bi bi-wallet2"></i> 前往付款
+			                    </button>
+			                </td>
+			            </tr>
+			        </tbody>
+			    </table>
+			</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+<div th:replace="back-end/client/Footer :: footer"></div>
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 獲取所有剩餘時間顯示元素
+    const timeElements = document.querySelectorAll('.remaining-time');
+    
+    // 更新剩餘時間的函數
+    function updateRemainingTime() {
+        const now = new Date().getTime();
+        
+        timeElements.forEach(element => {
+            const endTime = parseInt(element.getAttribute('data-endtime'));
+            
+            // 如果已經結標，不需要更新
+            if (endTime < now) {
+                element.textContent = '已結標';
+                return;
+            }
+            
+            // 計算時間差
+            let timeDiff = endTime - now;
+            
+            // 計算天數、小時、分鐘
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            timeDiff -= days * (1000 * 60 * 60 * 24);
+            
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            timeDiff -= hours * (1000 * 60 * 60);
+            
+            const minutes = Math.floor(timeDiff / (1000 * 60));
+            
+            // 組合剩餘時間字串
+            let timeString = '';
+            if (days > 0) {
+                timeString += `${days}天`;
+            }
+            if (hours > 0 || days > 0) {
+                timeString += `${hours}小時`;
+            }
+            timeString += `${minutes}分鐘`;
+            
+            // 更新顯示
+            element.textContent = timeString + '後結標';
+        });
+    }
+    
+    // 立即執行一次更新
+    updateRemainingTime();
+    
+    // 每分鐘更新一次
+    setInterval(updateRemainingTime, 60000);
+});
+
+//搜尋功能實現
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('productSearch');
+    const tableBody = document.querySelector('tbody');
+    const allRows = Array.from(tableBody.getElementsByTagName('tr'));
+
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+
+        allRows.forEach(row => {
+            // 獲取商品名稱 (修正選擇器)
+            const productName = row.querySelector('.link-text').textContent.toLowerCase();
+            // 獲取商品分類
+            const productCategory = row.querySelector('.text-secondary.small').textContent.toLowerCase();
+            
+            // 判斷是否符合搜尋條件 (擴展搜尋範圍到商品名稱和分類)
+            const matchesSearch = productName.includes(searchTerm) || 
+                                productCategory.includes(searchTerm);
+
+            // 顯示或隱藏行
+            row.style.display = matchesSearch ? '' : 'none';
+        });
+    }
+
+    // 添加事件監聽器
+    searchInput.addEventListener('input', filterProducts);
+});
+</script>
+</body>
+</html>

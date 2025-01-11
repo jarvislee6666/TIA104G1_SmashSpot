@@ -1,35 +1,30 @@
 package com.smashspot.bid.model;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.CreationTimestamp;
-@Entity
-@Table(name = "bid")
-public class BidVO {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "bid_id", updatable = false)
+public class BidVO implements Serializable{
+
 	private Integer bidid;
 	
-	@Column(name = "mem_id", updatable = false)
 	private Integer memid;
 	
-	@Column(name = "pro_id", updatable = false)
 	private Integer proid;
 	
-	@Column(name = "bid_time", updatable = false)
-	@CreationTimestamp
-	private LocalDateTime bidtime;
+	private Timestamp bidtime;
 	
-	@Column(name = "bid_amt", updatable = false)
 	private Integer bidamt;
+	
+	private transient String bidderName;  // 不需要序列化存儲
+
+	public String getBidderName() {
+	    return bidderName;
+	}
+
+	public void setBidderName(String bidderName) {
+	    this.bidderName = bidderName;
+	}
 
 	public Integer getBidid() {
 		return bidid;
@@ -55,11 +50,11 @@ public class BidVO {
 		this.proid = proid;
 	}
 
-	public LocalDateTime getBidtime() {
+	public Timestamp getBidtime() {
 		return bidtime;
 	}
 
-	public void setBidtime(LocalDateTime bidtime) {
+	public void setBidtime(Timestamp bidtime) {
 		this.bidtime = bidtime;
 	}
 
@@ -76,6 +71,5 @@ public class BidVO {
 		return "BidVO [bidid=" + bidid + ", memid=" + memid + ", proid=" + proid + ", bidtime=" + bidtime + ", bidamt="
 				+ bidamt + "]";
 	}
-	
 	
 }

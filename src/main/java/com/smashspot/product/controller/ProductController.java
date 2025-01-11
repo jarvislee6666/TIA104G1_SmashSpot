@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.smashspot.bid.model.BidService;
+import com.smashspot.bid.model.BidVO;
 import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.member.model.MemberVO;
 import com.smashspot.product.model.*;
@@ -44,6 +46,9 @@ public class ProductController {
 	
 	@Autowired
 	ProductClassService proClassSvc;
+	
+	@Autowired
+    private BidService bidService;
 	
 	@ModelAttribute("proClassList")  // 買家首頁 迴圈顯示資料用
 	protected List<ProductClassVO> referenceProClassList(Model model) {
@@ -88,11 +93,29 @@ public class ProductController {
 	    });
 	}
 
-    @GetMapping("/adm/listAllProduct")
-	public String listAllProduct(Model model) {
-    	List<ProductVO> list = proSvc.getAll();
-    	model.addAttribute("productListData",list);
-		return "back-end/adm/listAllProduct";
+	@GetMapping("/adm/listAllProduct")
+	public String listAllProduct(
+	        @RequestParam(required = false) String proname,
+	        @RequestParam(required = false) Integer sellerId,
+	        @RequestParam(required = false) Integer bidstaid,
+	        Model model) {
+	        
+	    List<ProductVO> list;
+	    
+	    // 判斷是否有查詢條件
+	    if (proname != null || sellerId != null || bidstaid != null) {
+	        list = proSvc.searchProducts(proname, sellerId, bidstaid);
+	    } else {
+	        list = proSvc.getAll();
+	    }
+	    
+	    // 加入資料到 Model
+	    model.addAttribute("productListData", list);
+	    model.addAttribute("searchProname", proname);
+	    model.addAttribute("searchSellerId", sellerId);
+	    model.addAttribute("searchBidstaid", bidstaid);
+	    
+	    return "back-end/adm/listAllProduct";
 	}
     
     @GetMapping("/client/listAllProductING")
@@ -148,6 +171,10 @@ public class ProductController {
         // 將結標時間轉換為毫秒數傳給前端
         model.addAttribute("endTimeMillis", productVO.getEndtime().getTime());
         
+        // 獲取競標歷史記錄
+        List<BidVO> bidHistory = bidService.getProductBidHistory(proid);
+        model.addAttribute("bidHistory", bidHistory);
+        
         // 添加當前登入會員資訊的判斷
         MemberVO loginMember = (MemberVO) session.getAttribute("login");
         boolean isOwner = loginMember != null &&                        
@@ -182,6 +209,13 @@ public class ProductController {
 	                                @RequestParam("propic") MultipartFile file) {
 	    Map<String, Object> response = new HashMap<>();
 	    Map<String, String> errors = new HashMap<>();
+	    
+	    // 如果有 memberVO.memid，則設置完整的 MemberVO
+	    if (productVO.getMemberVO() != null && productVO.getMemberVO().getMemid() != null) {
+	        MemberVO memberVO = new MemberVO();
+	        memberVO.setMemid(productVO.getMemberVO().getMemid());
+	        productVO.setMemberVO(memberVO);
+	    }
 	    
 	    // 驗證結標時間
 	    if (productVO.getEndtime() == null) {
@@ -239,15 +273,15 @@ public class ProductController {
 	    return response;
 	}
 
-	@PostMapping("getOneProduct_For_Bid") // 點擊單一商品頁面
-	public String getOne_For_Bid(@RequestParam("proid") String proid, ModelMap model) {
-		/*************************** 2.開始查詢資料 *****************************************/
-		ProductVO productVO = proSvc.getOneProduct(Integer.valueOf(proid));
-
-		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
-		model.addAttribute("productVO", productVO);
-		return "back-end/prodcut/getOneProduct"; // 查詢完成後轉交getOneProduct.html
-	}
+//	@PostMapping("getOneProduct_For_Bid") // 點擊單一商品頁面
+//	public String getOne_For_Bid(@RequestParam("proid") String proid, ModelMap model) {
+//		/*************************** 2.開始查詢資料 *****************************************/
+//		ProductVO productVO = proSvc.getOneProduct(Integer.valueOf(proid));
+//
+//		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
+//		model.addAttribute("productVO", productVO);
+//		return "back-end/prodcut/getOneProduct"; // 查詢完成後轉交getOneProduct.html
+//	}
 
 	@PostMapping("/adm/updateProductSta")  // 更改商品狀態，1.後臺下架 2.前台結標
 	public String update(@RequestParam("proid") String proid, @RequestParam("bidstaid") Integer bidstaid, ModelMap model) throws IOException {

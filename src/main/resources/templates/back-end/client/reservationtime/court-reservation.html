@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>球場預約系統</title>
 <th:block th:replace="back-end/client/Header :: headContent" />
-<link rel="stylesheet" th:href="@{/css/client/Header.css}" />
-<link rel="stylesheet" th:href="@{/css/client/Footer.css}" />
-<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -16,28 +16,28 @@
 	rel="stylesheet">
 <style>
 :root {
-    --primary-blue: #0a4b9f;
-    --secondary-blue: rgba(10, 75, 159, 0.1);  /* primary-blue 的淡色版 */
-    --warning-color: #e6b000;      /* 調整為較深的黃色 */
-    --danger-color: #dc3545;       /* 保持紅色 */
+	--primary-blue: #0a4b9f;
+	--secondary-blue: rgba(10, 75, 159, 0.1); /* primary-blue 的淡色版 */
+	--warning-color: #e6b000; /* 調整為較深的黃色 */
+	--danger-color: #dc3545; /* 保持紅色 */
 	--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.15);
 	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2);
 	--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
-.btn-outline-primary.disabled, 
-.btn-outline-primary:disabled {
-    color: var(--primary-blue);
-    border-color: var(--primary-blue);
-    opacity: 0.5;  /* 使用透明度來表示禁用狀態 */
-    cursor: not-allowed;
+
+.btn-outline-primary.disabled, .btn-outline-primary:disabled {
+	color: var(--primary-blue);
+	border-color: var(--primary-blue);
+	opacity: 0.5; /* 使用透明度來表示禁用狀態 */
+	cursor: not-allowed;
 }
 
 /* 移除 hover 效果 */
-.btn-outline-primary.disabled:hover,
-.btn-outline-primary:disabled:hover {
-    color: var(--primary-blue);
-    background-color: transparent;
-    border-color: var(--primary-blue);
+.btn-outline-primary.disabled:hover, .btn-outline-primary:disabled:hover
+	{
+	color: var(--primary-blue);
+	background-color: transparent;
+	border-color: var(--primary-blue);
 }
 /* Add new container max-width and padding styles */
 .main-container {
@@ -267,7 +267,7 @@ body {
 								<div class="d-flex align-items-center">
 									<a th:if="${week > 0}" class="btn btn-outline-primary me-2"
 										th:href="@{/reservation/week(stdmId=${stdmId}, week=${week - 1})}">
-										上一週 </a> <a th:if="${week <= 0}" 
+										上一週 </a> <a th:if="${week <= 0}"
 										class="btn btn-outline-primary me-2 disabled" href="#">
 										上一週 </a> <span class="px-3 fw-medium"
 										th:text="${#dates.format(startDate, 'yyyy/MM/dd')} + ' ~ ' + ${#dates.format(endDate, 'yyyy/MM/dd')}">
@@ -428,9 +428,9 @@ body {
 									<tbody>
 										<!-- 08:00-10:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            08:00<br>·<br>10:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">08:00<br>·<br>10:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,4,5)},
@@ -459,9 +459,9 @@ body {
 
 										<!-- 10:00-12:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            10:00<br>·<br>12:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">10:00<br>·<br>12:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,5,6)},
@@ -490,9 +490,9 @@ body {
 
 										<!-- 12:00-14:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            12:00<br>·<br>14:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">12:00<br>·<br>14:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,6,7)},
@@ -521,9 +521,9 @@ body {
 
 										<!-- 14:00-16:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            14:00<br>·<br>16:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">14:00<br>·<br>16:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,7,8)},
@@ -552,9 +552,9 @@ body {
 
 										<!-- 16:00-18:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            16:00<br>·<br>18:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">16:00<br>·<br>18:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,8,9)},
@@ -583,9 +583,9 @@ body {
 
 										<!-- 18:00-20:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            18:00<br>·<br>20:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">18:00<br>·<br>20:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,9,10)},
@@ -614,9 +614,9 @@ body {
 
 										<!-- 20:00-22:00 -->
 										<tr>
-                                        <td class="align-middle time-slot" style="width: 60px; min-width: 60px;">
-                                            20:00<br>·<br>22:00
-                                        </td>
+											<td class="align-middle time-slot"
+												style="width: 60px; min-width: 60px;">20:00<br>·<br>22:00
+											</td>
 											<td th:each="resvo : ${reservationList}">
 												<div
 													th:with="available=${#strings.substring(resvo.leftover,10,11)},
@@ -753,7 +753,7 @@ body {
 
 
 
-
+	<div th:replace="back-end/client/Footer :: footer"></div>
 
 
 	<script th:inline="javascript">
