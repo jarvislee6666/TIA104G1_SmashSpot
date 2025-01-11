@@ -65,89 +65,6 @@ public class MemberController {
         model.addAttribute("memberVO", new MemberVO());
         return "back-end/member/register";
     } 
-// // 註冊表單提交處理
-//    @PostMapping("/register")
-//    public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
-//                        @RequestParam("confirmPassword") String confirmPassword) {
-//        
-//        // 檢查是否有重複的帳號、Email或電話號碼
-//        if (memberService.findByAccount(memberVO.getAccount()) != null) {
-//            result.rejectValue("account", "error.memberVO", "此帳號已存在");
-//        }
-//        if (memberService.findByEmail(memberVO.getEmail()) != null) {
-//            result.rejectValue("email", "error.memberVO", "此 Email 已存在");
-//        }
-//        if (memberService.findByPhone(memberVO.getPhone()) != null) {
-//            result.rejectValue("phone", "error.memberVO", "此電話號碼已存在");
-//        }
-//               
-//        // 確認密碼是否匹配
-//        if (!memberVO.getPassword().equals(confirmPassword)) {
-//            result.rejectValue("password", "error.memberVO", "密碼與確認密碼不符");
-//        }
-//        
-//        // 初始設定會員狀態為未驗證
-//        memberVO.setStatus(false);
-//
-//        // 如果有任何驗證錯誤，返回註冊頁面
-//        if (result.hasErrors()) {
-//            return "back-end/member/register";
-//        }
-//        
-//        try {
-//            // 儲存會員資料
-//            memberService.addMember(memberVO);
-//
-//            // 生成驗證連結
-//            String verificationLink = redisService.generateVerificationLink(memberVO.getEmail());
-//
-//            // 只發送驗證郵件
-//            emailService.sendVerificationEmail(memberVO.getEmail(), verificationLink);
-//
-//            // 導向等待驗證頁面
-//            model.addAttribute("email", memberVO.getEmail());
-//            return "back-end/member/waiting-verification";
-//        } catch (Exception e) {
-//            logger.error("註冊過程發生錯誤", e);
-//            model.addAttribute("error", "註冊失敗: " + e.getMessage());
-//            return "back-end/member/register";
-//        }
-//    }
-//
-//    /**
-//     * 處理驗證連結的請求
-//     */
-//    @GetMapping("/verify")
-//    public String verifyEmail(@RequestParam String token, Model model) {
-//        try {
-//            // 驗證 token 並取得對應的 email
-//            String email = redisService.verifyToken(token);
-//            
-//            if (email != null) {
-//                // 找到對應的會員並更新狀態
-//                MemberVO member = memberService.findByEmail(email);
-//                if (member != null) {
-//                    // 更新會員狀態為已驗證
-//                    member.setStatus(true);
-//                    memberService.updateMember(member);
-//                    
-//                    // 驗證成功後，發送歡迎信
-//                    sendWelcomeEmail(member);
-//                    
-//                    model.addAttribute("success", "信箱驗證成功！歡迎加入SmashSpot，請登入開始使用我們的服務。");
-//                    return "back-end/member/login";
-//                }
-//            }
-//            
-//            // token 無效或找不到對應會員
-//            model.addAttribute("error", "驗證連結已失效或不正確");
-//            return "back-end/member/verification-failed";
-//        } catch (Exception e) {
-//            logger.error("驗證過程發生錯誤", e);
-//            model.addAttribute("error", "驗證過程發生錯誤，請稍後再試");
-//            return "back-end/member/verification-failed";
-//        }
-//    }
 
     @PostMapping("/register")
     public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
@@ -233,13 +150,42 @@ public class MemberController {
             }
             
             model.addAttribute("error", "驗證連結已失效或不正確");
-            return "back-end/member/verification-failed";
+            return "back-end/member/VerificationPage";
             
         } catch (Exception e) {
             logger.error("驗證過程發生錯誤", e);
             model.addAttribute("error", "驗證過程發生錯誤，請稍後再試");
-            return "back-end/member/verification-failed";
+            return "back-end/member/VerificationPage";
         }
+    }
+    //重新寄送驗證信
+    @PostMapping("/resend-verification")
+    public String resendVerification(@RequestParam String email, Model model) {
+        try {
+            // 檢查是否有該email的暫存會員資料
+            String memberJson = (String) redisTemplate.opsForValue().get(MEMBER_TEMP_PREFIX + email);
+            
+            if (memberJson != null) {
+                // 重新生成驗證token
+                ObjectMapper mapper = new ObjectMapper();
+                MemberVO memberVO = mapper.readValue(memberJson, MemberVO.class);
+                String token = redisService.generateVerificationToken(memberVO);
+                
+                // 重新發送驗證郵件
+                String verificationLink = redisService.getVerificationLink(token);
+                emailService.sendVerificationEmail(email, verificationLink);
+                
+                model.addAttribute("success", "驗證信已重新發送，請查收您的信箱");
+            } else {
+                model.addAttribute("error", "無法找到註冊資料，請重新註冊");
+            }
+        } catch (Exception e) {
+            logger.error("重新發送驗證信失敗", e);
+            model.addAttribute("error", "發送驗證信失敗，請稍後再試");
+        }
+        
+        model.addAttribute("email", email);
+        return "back-end/member/VerificationPage";
     }
     
     /**
@@ -353,10 +299,7 @@ public class MemberController {
         return "back-end/member/basicInfo";
     }
 
-    /**
-     * 處理會員資料更新請求
-     * POST /member/update-info
-     */
+    
     @PostMapping("/update-info")
     public String updateInfo(
             @Valid @ModelAttribute("memberForm") MemberVO memberVO,
@@ -364,51 +307,52 @@ public class MemberController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         
-        // 驗證表單數據
-        if (result.hasErrors()) {
-            return "back-end/member/basicInfo";
-        }
-
         try {
-            // 獲取原始會員資料
-            MemberVO original = memberService.getOneMember(memberVO.getMemid());
-            if (original == null) {
-                redirectAttributes.addFlashAttribute("error", "會員資料不存在");
-                return "back-end/member/basic-info";
+            // 從 session 中獲取當前登入的會員資料
+            MemberVO currentMember = (MemberVO) session.getAttribute("login");
+            if (currentMember == null) {
+                return "redirect:/member/login";
             }
 
-            // 更新會員資料
-            original.setName(memberVO.getName());
-            original.setEmail(memberVO.getEmail());
-            original.setPhone(memberVO.getPhone());
-            original.setBday(memberVO.getBday());
-            original.setAddr(memberVO.getAddr());
-            original.setChgtime(new Timestamp(System.currentTimeMillis()));
-
-            // 僅在有新密碼輸入時更新密碼
-            if (memberVO.getPassword() != null && !memberVO.getPassword().isEmpty()) {
-                original.setPassword(memberVO.getPassword());
+            // 保留原有的重要資料
+            memberVO.setMemid(currentMember.getMemid());
+            memberVO.setAccount(currentMember.getAccount());  // 重要：保留原有帳號
+            memberVO.setStatus(currentMember.getStatus());
+            memberVO.setMempic(currentMember.getMempic());
+            memberVO.setCrttime(currentMember.getCrttime());
+            
+            // 如果密碼欄位為空，保留原密碼
+            if (memberVO.getPassword() == null || memberVO.getPassword().trim().isEmpty()) {
+                memberVO.setPassword(currentMember.getPassword());
             }
 
-            // 保存更新後的資料
-            memberService.updateMember(original);
+            // 設置更新時間
+            memberVO.setChgtime(new Timestamp(System.currentTimeMillis()));
 
-            // 更新session中的會員資料
-            session.setAttribute("login", original);
+            // 在更新之前，記錄要更新的資料，方便除錯
+            logger.info("準備更新會員資料: ID={}, Account={}, Name={}, Email={}", 
+                memberVO.getMemid(), 
+                memberVO.getAccount(),
+                memberVO.getName(),
+                memberVO.getEmail());
 
-            // 設定成功消息
-            redirectAttributes.addFlashAttribute("message", "資料更新成功");
+            // 更新資料
+            memberService.updateMember(memberVO);
+            
+            // 更新 session 中的會員資料
+            session.setAttribute("login", memberVO);
+            
+            redirectAttributes.addFlashAttribute("message", "資料更新成功！");
             redirectAttributes.addFlashAttribute("messageType", "success");
             
-            return "back-end/member/basic-info";
         } catch (Exception e) {
-            // 設定錯誤消息
+            logger.error("更新失敗", e);
             redirectAttributes.addFlashAttribute("message", "更新失敗：" + e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "danger");
-            return "back-end/member/basic-info";
         }
-    }
-    
+        
+        return "redirect:/member/basic-info";
+    }  
     /**
      * 處理會員登出請求
      * POST /member/logout

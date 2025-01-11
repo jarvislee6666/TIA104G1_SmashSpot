@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>驗證失敗</title>
+    <!-- Bootstrap 和其他資源引用 -->
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+    <link rel="stylesheet" th:href="@{/css/client/login.css}"/>
+</head>
+<body class="bg-light">
+    <!-- Header -->
+    <header th:replace="back-end/client/Header :: header"></header>
+
+    <main>
+        <div class="container text-center my-5">
+            <div class="card mx-auto" style="max-width: 500px;">
+                <div class="card-body">
+                    <div class="text-danger mb-3">
+                        <i class="bi bi-x-circle" style="font-size: 3rem;"></i>
+                    </div>
+                    <h2 class="card-title mb-3">驗證失敗</h2>
+                    <p class="card-text">
+                        很抱歉，您的驗證未能通過。請檢查您的資訊並重試。
+                    </p>
+                    <div class="mt-4">
+                        <a th:href="@{/}" class="btn btn-primary">返回首頁</a>
+                        <a th:href="@{/verificationPage}" class="btn btn-secondary ms-2">重新驗證</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="back-end/client/Footer :: footer"></footer>
+
+    <!-- Scripts -->
+    <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleBtn = document.querySelector(".navbar-toggler");
+            const navList = document.querySelector(".nav-list");
+
+            toggleBtn.addEventListener("click", function () {
+                navList.classList.toggle("show");
+            });
+        });
+    </script>
+</body>
+</html>

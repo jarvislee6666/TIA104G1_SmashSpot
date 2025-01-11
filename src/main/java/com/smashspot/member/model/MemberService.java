@@ -53,22 +53,49 @@ public class MemberService {
         }
     }
     
-//    // 更新會員資料的方法
-//    public void updateMember(MemberVO memberVO) {
-//        // 直接調用repository的save方法更新資料
-//        repository.save(memberVO);
-//    }
     
     @Transactional
     public void updateMember(MemberVO memberVO) {
         try {
+            // 記錄更新前的資料狀態
+            logger.info("開始更新會員資料，會員ID: {}", memberVO.getMemid());
+            logger.debug("更新的會員資料: {}", memberVO);
+
+            // 檢查必要欄位
+            if (memberVO.getMemid() == null) {
+                throw new IllegalArgumentException("會員ID不能為空");
+            }
+
+            // 驗證資料格式
+            if (!isValidPhoneNumber(memberVO.getPhone())) {
+                throw new IllegalArgumentException("手機號碼格式不正確");
+            }
+
+            if (!isValidEmail(memberVO.getEmail())) {
+                throw new IllegalArgumentException("Email格式不正確");
+            }
+
+            // 保存資料
             repository.save(memberVO);
-            logger.info("會員資料更新成功: {}", memberVO.getAccount());
+            
+            logger.info("會員資料更新成功");
         } catch (Exception e) {
             logger.error("會員資料更新失敗", e);
-            throw e;
+            throw new RuntimeException("更新會員資料時發生錯誤: " + e.getMessage());
         }
     }
+
+    // 驗證方法
+    private boolean isValidPhoneNumber(String phone) {
+        return phone != null && phone.matches("^09\\d{8}$");
+    }
+
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+    }
+    
+    
+    
     
     // 根據會員ID查詢單一會員資料
     public MemberVO getOneMember(Integer memid) {
