@@ -210,6 +210,13 @@ public class ProductController {
 	    Map<String, Object> response = new HashMap<>();
 	    Map<String, String> errors = new HashMap<>();
 	    
+	    // 如果有 memberVO.memid，則設置完整的 MemberVO
+	    if (productVO.getMemberVO() != null && productVO.getMemberVO().getMemid() != null) {
+	        MemberVO memberVO = new MemberVO();
+	        memberVO.setMemid(productVO.getMemberVO().getMemid());
+	        productVO.setMemberVO(memberVO);
+	    }
+	    
 	    // 驗證結標時間
 	    if (productVO.getEndtime() == null) {
 	        errors.put("endtime", "請選擇結標時間");
