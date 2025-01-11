@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AppointmentRecord</title>
+<title>場地預約紀錄</title>
 <th:block th:replace="back-end/client/Header :: headContent" />
-<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
-<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
-<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Header.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
 <!-- Bootstrap, Icons, Quill CSS -->
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
@@ -338,31 +338,50 @@ footer {
 }
 
 .booking-block {
-    margin-bottom: 15px;  /* 增加區塊間的間距 */
-    line-height: 0.1;    /* 修正行高 */
-}
-
-.booking-date, .booking-time {
-    padding: 2px 0;
-    line-height: 1.5;    /* 確保文字不會重疊 */
-    white-space: normal; /* 允許文字正常換行 */
-}
-
-/* 新增樣式處理時段的排版 */
-.time-ranges {
-    margin-left: 15px;   /* 縮排效果 */
-    line-height: 1.5;    /* 確保時段文字不重疊 */
+	margin-bottom: 15px; /* 增加區塊間的間距 */
+	line-height: 0.1; /* 修正行高 */
 }
 
 .booking-date, .booking-time {
 	padding: 2px 0;
+	line-height: 1.5; /* 確保文字不會重疊 */
+	white-space: normal; /* 允許文字正常換行 */
+}
+
+/* 新增樣式處理時段的排版 */
+.time-ranges {
+	margin-left: 15px; /* 縮排效果 */
+	line-height: 1.5; /* 確保時段文字不重疊 */
+}
+
+.booking-date, .booking-time {
+	padding: 2px 0;
+}
+
+.font-family-inherit {
+	font-family: inherit;
+}
+
+.font-size-inherit {
+	font-size: inherit;
+}
+
+.text-color-inherit {
+	color: inherit;
+}
+
+/* 假如你想要讓 textarea 有更好的調整空間，可以再補充一些樣式 */
+textarea {
+	width: 100%;
+	min-height: 100px;
+	resize: vertical; /* 讓使用者可以垂直拉伸 */
 }
 </style>
 </head>
 
 <body class="bg-light">
 
-<div th:replace="back-end/client/Header :: header"></div>
+	<div th:replace="back-end/client/Header :: header"></div>
 
 	<main>
 		<div class="container position-relative mb-3">
@@ -379,8 +398,8 @@ footer {
 						</a> <a href="#" class="action-button"> <i class="bi bi-cash-coin"></i>參加中競標
 						</a> <a href="./WinningBids.html" class="action-button"> <i
 							class="bi bi-bag-check"></i>得標清單
-						</a> <a th:href="@{/member/appointment-records}" class="action-button"> <i
-							class="bi bi-journal-check"></i>場地預約紀錄
+						</a> <a th:href="@{/member/appointment-records}" class="action-button">
+							<i class="bi bi-journal-check"></i>場地預約紀錄
 						</a>
 					</div>
 				</div>
@@ -422,7 +441,9 @@ footer {
 									<!-- 第六欄: 狀態操作(明細、取消按鈕) -->
 									<td>
 										<button type="button"
-											class="btn  btn-primary btn-sm detail-btn" data-ordid="">明細</button>
+											class="btn  btn-primary btn-sm detail-btn" data-ordid="">時段明細</button>
+										<button type="button"
+											class="btn btn-warning btn-sm review-btn">給予評價</button>
 										<button type="button" class="btn btn-danger btn-sm cancel-btn">
 											取消預約</button>
 									</td>
@@ -495,6 +516,7 @@ footer {
 
 
 					<!--  給予評價彈窗 -->
+					<!--  給予評價彈窗 -->
 					<div id="reviewModal" class="modal fade" tabindex="-1">
 						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
@@ -517,49 +539,52 @@ footer {
 
 									<div class="mb-3">
 										<label>留言評論</label>
-										<textarea id="review-comment" class="form-control"></textarea>
+										<textarea id="review-comment" class="form-control"
+											placeholder="請在此輸入..."></textarea>
 									</div>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary"
 										data-bs-dismiss="modal">取消</button>
-									<button type="button" class="btn btn-primary">送出評價</button>
+									<button type="button" class="btn btn-primary"
+										id="sendReviewBtn">送出評價</button>
 								</div>
 							</div>
 						</div>
 					</div>
 
+
 					<!-- 取消預約彈窗 -->
 					<div class="modal fade" id="cancelModal" tabindex="-1"
-						aria-labelledby="cancelModalLabel" aria-hidden="true">
+						aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="cancelModalLabel">取消預約</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-								</div>
+								...
 								<div class="modal-body">
-									<p>頻繁取消預約將影響您後續進行其他預約的權益，請於下方說明取消該筆預約的原因，預約費用會於三個工作天內退回原帳戶...</p>
+									<p>頻繁取消預約將影響您後續進行其他預約的權益，請於下方說明取消該筆預約的原因...</p>
 									<div class="mb-3">
-										<label for="cancel-reason" class="form-label"> 取消原因 </label>
-										<div id="cancel-reason"></div>
+										<label for="cancel-reason">取消原因</label>
+										<textarea id="cancel-reason" class="form-control"
+											placeholder="請在此輸入..."></textarea>
 									</div>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary"
 										data-bs-dismiss="modal">再想想</button>
-									<button type="button" class="btn btn-danger">確定取消</button>
+									<button type="button" class="btn btn-danger"
+										id="confirmCancelBtn">確定取消</button>
 								</div>
 							</div>
 						</div>
 					</div>
+
 					<!-- /彈窗結束 -->
 				</div>
 			</div>
 		</div>
 	</main>
 
-<div th:replace="back-end/client/Footer :: footer"></div>
+	<div th:replace="back-end/client/Footer :: footer"></div>
 
 	<!-- JS 區 -->
 	<script
@@ -568,219 +593,282 @@ footer {
 		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-	<script  th:inline="javascript">
-      // header RWD navbar
-      document.addEventListener("DOMContentLoaded", function () {
-        const toggleBtn = document.querySelector(".navbar-toggler");
-        const navList = document.querySelector(".nav-list");
-        toggleBtn.addEventListener("click", function () {
-          navList.classList.toggle("show");
-        });
-      });
+	<script th:inline="javascript">
+  // --- (A) RWD Navbar (原程式) ---
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.querySelector(".navbar-toggler");
+    const navList = document.querySelector(".nav-list");
+    toggleBtn.addEventListener("click", function () {
+      navList.classList.toggle("show");
+    });
+  });
 
-      // 給予評價/取消預約 按鈕點擊事件
-      document.querySelectorAll(".review-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const reviewModal = new bootstrap.Modal(
-            document.getElementById("reviewModal")
-          );
-          reviewModal.show();
-        });
-      });
-      document.querySelectorAll(".cancel-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const cancelModal = new bootstrap.Modal(
-            document.getElementById("cancelModal")
-          );
-          cancelModal.show();
-        });
-      });
+  // --- (B) 星星評分相關 ---
+  // 這裡定義一個全域變數來記錄當前評分
+  let currentRating = 0;
 
-      // 星星評分
-      document.addEventListener("DOMContentLoaded", function () {
-        const starRatingContainer = document.getElementById("star-rating");
-        if(starRatingContainer){
-          const stars = Array.from(starRatingContainer.querySelectorAll(".star"));
-          let currentRating = 0;
-          function clearStars() {
-            stars.forEach((star) => star.classList.remove("active"));
-          }
-          function setStars(rating) {
-            clearStars();
-            stars.slice(0, rating).forEach((star) => star.classList.add("active"));
-            currentRating = rating;
-          }
-          stars.forEach((star) => {
-            star.addEventListener("click", function () {
-              const rating = parseInt(this.getAttribute("data-rating"));
-              setStars(rating);
-            });
-          });
+  document.addEventListener("DOMContentLoaded", function () {
+    const starRatingContainer = document.getElementById("star-rating");
+    if(starRatingContainer){
+      const stars = Array.from(starRatingContainer.querySelectorAll(".star"));
+      
+      // 清空所有 star
+      function clearStars() {
+        stars.forEach((star) => star.classList.remove("active"));
+      }
+      // 設置指定數量的 star 為 active
+      function setStars(rating) {
+        clearStars();
+        stars.slice(0, rating).forEach((star) => star.classList.add("active"));
+        currentRating = rating;
+      }
+      // 綁定每顆星星的點擊事件
+      stars.forEach((star) => {
+        star.addEventListener("click", function () {
+          const rating = parseInt(this.getAttribute("data-rating"));
+          setStars(rating);
+        });
+      });
+    }
+  });
+
+  // --- (C) 使用 jQuery 做 AJAX ---
+  $(document).ready(function() {
+
+    // 1) 監聽「給評價」按鈕點擊 => 打開評價Modal
+    $(".review-btn").on("click", function() {
+      // 從所在的 <tr> 取得 courtordid
+      const courtordid = $(this).closest("tr").attr("data-ordid");
+      if (!courtordid) {
+        alert("無法取得訂單編號 (courtordid)");
+        return;
+      }
+      // 清理評論輸入欄、星星
+      resetReviewModal();
+
+      // 「送出評價」按鈕點擊 => 呼叫後端 PATCH
+      $("#sendReviewBtn").off("click").on("click", function() {
+        const rating = currentRating; // 全域變數
+        const message = $("#review-comment").val().trim();
+        if (rating === 0 && !message) {
+          alert("請至少給星等或填寫一些留言！");
+          return;
         }
-      });
-
-      // Quill 初始化 (留言評論 / 取消原因)
-      document.querySelectorAll("#review-comment, #cancel-reason").forEach((textarea) => {
-        new Quill(textarea, {
-          modules: {
-            toolbar: [
-              [{ header: [1, 2, false] }],
-              ["bold", "italic", "underline"],
-              ["link", "blockquote", "code-block", "image"],
-              [{ list: "ordered" }, { list: "bullet" }],
-              [{ script: "sub" }, { script: "super" }],
-              [{ align: [] }],
-            ],
-          },
-          placeholder: "請在此輸入...",
-          theme: "snow",
-        });
-        // 設置 .ql-editor 樣式
-        textarea.querySelector(".ql-editor")?.classList.add(
-          "font-family-inherit","font-size-inherit","text-color-inherit"
-        );
-      });
-
-      // ============= (AJAX) 解析時段明細 + 明細Modal邏輯 ==============
-      $(document).ready(function() {
-        // 時段對照表
-        const TIME_RANGES = [
-        	   "X(不開放)","X(不開放)","X(不開放)","X(不開放)",
-        	   "08:00~10:00","10:00~12:00","12:00~14:00",
-        	   "14:00~16:00","16:00~18:00","18:00~20:00",
-        	   "20:00~22:00","X(不開放)"
-        ];
-
-        const memId = /*[[${memId}]]*/
 
         $.ajax({
-          url:`http://localhost:8080/court-order/my-orders/${memId}`, 
-          type: "GET",
-          dataType: "json",
-          success: function(response) {
-            console.log("後端回傳(含明細 ord_time):", response);
-            // response = [ { courtordid, totamt, stadium, member, starrank, message, courtOrderDetail[...] }, ...]
-
-            response.forEach(function(order) {
-              // 找到對應 <tr>
-              const rowSelector = `tr[data-ordid='${order.courtordid}']`;
-              let $row = $(rowSelector);
-              
-              let totalReservedSlots = 0;
-              (order.courtOrderDetail || []).forEach(function(dtl) {
-                let ordTimeStr = dtl.ordTime;
-                for (let i = 0; i < ordTimeStr.length; i++) {
-                  if (ordTimeStr.charAt(i) === '1') {
-                    totalReservedSlots++;
-                  }
-                }
-              });
-              console.log("Ajax 已執行完...");
-
-              // 更新到 class="reserved-count"
-              $row.find(".reserved-count").text(totalReservedSlots);
-
-              // 1) 填入 預約時段 (綜合)
-              let details = order.courtOrderDetail || [];
-              let finalTimeStr = "";
-              details.forEach(function(dtl, idx) {
-                let ordTimeStr = dtl.ordTime;
-                let reservedTimeArr = [];
-                for (let i = 0; i < ordTimeStr.length; i++) {
-                  if (ordTimeStr.charAt(i) === '1') {
-                    reservedTimeArr.push(TIME_RANGES[i]);
-                  }
-                }
-                let reservedTimeText = reservedTimeArr.join("、");
-                finalTimeStr += `${dtl.ordDate} ${reservedTimeText}`;
-                if(idx < details.length - 1){
-                  finalTimeStr += " / ";
-                }
-              });
-              $row.find(".json-reserveTime").text(finalTimeStr);
-
-              // 2) 設定「明細按鈕」的資料 (order)
-              $row.find(".detail-btn").data("order", order);
-            });
-
-            // 綁定 detail-btn 點擊事件: 開 detailModal
-            $(".detail-btn").on("click", function(){
-              const order = $(this).data("order");
-              if(!order){
-                alert("無法取得訂單詳細資料");
-                return;
-              }
-              // 在這裡把 order 的資訊顯示到 Modal
-              openDetailModal(order);
-            });
+          url: `/court-order/review/${courtordid}`,  // 依你後端路由
+          method: "PATCH",
+          contentType: "application/json",
+          data: JSON.stringify({
+            starrank: rating,
+            message: message
+          }),
+          success: function(resp) {
+            if (resp.success) {
+              alert("評價已更新");
+              // 可加上刷新頁面 or 更新畫面顯示
+              $("#reviewModal").modal("hide");
+            } else {
+              alert("評價失敗: " + resp.message);
+            }
           },
-          error: function(xhr, status, error) {
-            console.error("查詢預約紀錄失敗:", error);
+          error: function(err) {
+            console.error(err);
+            alert("呼叫評價 API 失敗");
           }
         });
-
-        // 打開 detailModal，並填入資料
-        function openDetailModal(order){
-          // order: { courtordid, totamt, stadium, member, starrank, message, courtOrderDetail[...] }
-          // 例如: 會員姓名: order.member.name / order.member.email / ...
-          // 場館名稱: order.stadium.stdmName
-          // 狀態: ?? (可依 order 狀態)
-          // 解析 ord_time => same logic or show finalTimeStr
-
-          // Demo: 假設 MemberVO 有 name/email/phone
-          let memberName = (order.member && order.member.name) || "未知";
-          let memberEmail= (order.member && order.member.email) || "unknown@example.com";
-          let memberPhone= (order.member && order.member.phone) || "N/A";
-
-          // 場館名稱
-          let stadiumName= (order.stadium && order.stadium.stdmName) || "未知場館";
-
-          // 解析多筆 detail => 可能有多個日期+時段
-			let dateTimeStr = "";
-			(order.courtOrderDetail||[]).forEach(function(dtl, idx){
-			    let ordTimeStr = dtl.ordTime;
-			    let reservedTimeArr = [];
-			    for(let i=0; i<ordTimeStr.length; i++){
-			        if(ordTimeStr.charAt(i)==='1'){
-			            reservedTimeArr.push(TIME_RANGES[i]);
-			        }
-			    }
-			    
-			    dateTimeStr += `<div class="booking-block">
-			        <div class="booking-date" style="color: #dc3545; font-weight: bold;">日期：${dtl.ordDate}</div>
-			        <div class="booking-time">時段：${reservedTimeArr.join('、')}</div>
-			    </div>`;
-			});
-          
-
-          // 評價星等 (0~5)
-          let starRank= order.starrank||0;
-          let starHtml= "";
-          for(let i=0; i<starRank; i++){
-            starHtml+= "★";
-          }
-          for(let i=starRank; i<5; i++){
-            starHtml+= "☆";
-          }
-
-          // 將資料填入 Modal
-          $("#detailOrderId").text(order.courtordid);
-          $("#detailMemberName").text(memberName);
-          $("#detailMemberEmail").text(memberEmail);
-          $("#detailMemberPhone").text(memberPhone);
-          $("#detailStadiumName").text(stadiumName);
-          $("#detailDateTime").html(dateTimeStr);
-          $("#detailTotalAmt").text(order.totamt||0);
-          $("#detailStatus").text(order.ordsta ? "已預約" : "已取消"); // or order.ordsta
-          $("#detailStar").text(starHtml);
-          $("#detailMessage").text(order.message || "");
-
-          // 彈出 modal
-          let detailModal = new bootstrap.Modal(document.getElementById("detailModal"));
-          detailModal.show();
-        }
       });
-      // ============ (AJAX) END =============
-    </script>
+
+      // 打開 Modal
+      const reviewModal = new bootstrap.Modal(document.getElementById("reviewModal"));
+      reviewModal.show();
+    });
+
+    // 2) 監聽「取消預約」按鈕點擊 => 打開取消Modal
+    $(".cancel-btn").on("click", function() {
+      const courtordid = $(this).closest("tr").attr("data-ordid");
+      if (!courtordid) {
+        alert("無法取得訂單編號 (courtordid)");
+        return;
+      }
+      // 清空原因欄
+      $("#cancel-reason").val("");
+
+      // 確定取消 => PATCH
+      $("#confirmCancelBtn").off("click").on("click", function() {
+        const reason = $("#cancel-reason").val().trim();
+        if (!reason) {
+          alert("請輸入取消原因");
+          return;
+        }
+
+        $.ajax({
+          url: `/court-order/cancel/${courtordid}`,
+          method: "PATCH",
+          contentType: "application/json",
+          data: JSON.stringify({
+            ordsta: false,       // 訂單改為 false
+            canreason: reason    // 寫入取消原因
+          }),
+          success: function(resp) {
+            if (resp.success) {
+              alert("訂單已取消");
+              // 可在這裡直接更新該列的「狀態」文字、或整頁刷新
+              // ...
+              $("#cancelModal").modal("hide");
+            } else {
+              alert("取消失敗: " + resp.message);
+            }
+          },
+          error: function(err) {
+            console.error(err);
+            alert("呼叫取消 API 失敗");
+          }
+        });
+      });
+
+      // 打開 Modal
+      const cancelModal = new bootstrap.Modal(document.getElementById("cancelModal"));
+      cancelModal.show();
+    });
+
+    // 3) 解析「預約紀錄」的 AJAX (原本就有)
+    const TIME_RANGES = [
+      "X(不開放)","X(不開放)","X(不開放)","X(不開放)",
+      "08:00~10:00","10:00~12:00","12:00~14:00",
+      "14:00~16:00","16:00~18:00","18:00~20:00",
+      "20:00~22:00","X(不開放)"
+    ];
+
+    // 假設後端 thymeleaf 有放 memId
+    const memId = /*[[${memId}]]*/
+
+    $.ajax({
+      url:`http://localhost:8080/court-order/my-orders/${memId}`, 
+      type: "GET",
+      dataType: "json",
+      success: function(response) {
+        console.log("後端回傳(含明細 ord_time):", response);
+
+        response.forEach(function(order) {
+          // 找到對應 <tr>
+          const rowSelector = `tr[data-ordid='${order.courtordid}']`;
+          let $row = $(rowSelector);
+
+          // (a) 計算總時段數量
+          let totalReservedSlots = 0;
+          (order.courtOrderDetail || []).forEach(function(dtl) {
+            let ordTimeStr = dtl.ordTime;
+            for (let i = 0; i < ordTimeStr.length; i++) {
+              if (ordTimeStr.charAt(i) === '1') {
+                totalReservedSlots++;
+              }
+            }
+          });
+          $row.find(".reserved-count").text(totalReservedSlots);
+
+          // (b) 填入 時段文字
+          let details = order.courtOrderDetail || [];
+          let finalTimeStr = "";
+          details.forEach(function(dtl, idx) {
+            let ordTimeStr = dtl.ordTime;
+            let reservedTimeArr = [];
+            for (let i = 0; i < ordTimeStr.length; i++) {
+              if (ordTimeStr.charAt(i) === '1') {
+                reservedTimeArr.push(TIME_RANGES[i]);
+              }
+            }
+            let reservedTimeText = reservedTimeArr.join("、");
+            finalTimeStr += `${dtl.ordDate} ${reservedTimeText}`;
+            if(idx < details.length - 1){
+              finalTimeStr += " / ";
+            }
+          });
+          $row.find(".json-reserveTime").text(finalTimeStr);
+
+          // (c) 綁定「詳細」按鈕的 order 資料
+          $row.find(".detail-btn").data("order", order);
+        });
+
+        // (d) detail-btn => 開 detailModal
+        $(".detail-btn").on("click", function(){
+          const order = $(this).data("order");
+          if(!order){
+            alert("無法取得訂單詳細資料");
+            return;
+          }
+          openDetailModal(order);
+        });
+      },
+      error: function(xhr, status, error) {
+        console.error("查詢預約紀錄失敗:", error);
+      }
+    });
+
+
+    // 打開 detailModal, 填資料
+    function openDetailModal(order){
+      // 例如會員資料
+      let memberName = (order.member && order.member.name) || "未知";
+      let memberEmail= (order.member && order.member.email) || "unknown@example.com";
+      let memberPhone= (order.member && order.member.phone) || "N/A";
+      // 場館
+      let stadiumName= (order.stadium && order.stadium.stdmName) || "未知場館";
+
+      // 組合時段顯示
+      let dateTimeStr = "";
+      (order.courtOrderDetail||[]).forEach(function(dtl, idx){
+        let ordTimeStr = dtl.ordTime;
+        let reservedTimeArr = [];
+        for(let i=0; i<ordTimeStr.length; i++){
+          if(ordTimeStr.charAt(i)==='1'){
+            reservedTimeArr.push(TIME_RANGES[i]);
+          }
+        }
+        dateTimeStr += `
+          <div class="booking-block">
+            <div class="booking-date" style="color: #dc3545; font-weight: bold;">日期：${dtl.ordDate}</div>
+            <div class="booking-time">時段：${reservedTimeArr.join('、')}</div>
+          </div>`;
+      });
+
+      // 星等顯示
+      let starRank= order.starrank || 0;
+      let starHtml= "";
+      for(let i=0; i<starRank; i++){
+        starHtml+= "★";
+      }
+      for(let i=starRank; i<5; i++){
+        starHtml+= "☆";
+      }
+
+      // 放到 modal
+      $("#detailOrderId").text(order.courtordid);
+      $("#detailMemberName").text(memberName);
+      $("#detailMemberEmail").text(memberEmail);
+      $("#detailMemberPhone").text(memberPhone);
+      $("#detailStadiumName").text(stadiumName);
+      $("#detailDateTime").html(dateTimeStr);
+      $("#detailTotalAmt").text(order.totamt||0);
+      $("#detailStatus").text(order.ordsta ? "已預約" : "已取消");
+      $("#detailStar").text(starHtml);
+      $("#detailMessage").text(order.message || "");
+
+      // 彈出
+      let detailModal = new bootstrap.Modal(document.getElementById("detailModal"));
+      detailModal.show();
+    }
+
+    // 小工具: 清空評價Modal
+    function resetReviewModal() {
+      currentRating = 0;
+      // 移除所有 star active
+      $("#star-rating .star").removeClass("active");
+      // 清空文字
+      $("#review-comment").val("");
+    }
+  });
+</script>
+
 </body>
 </html>

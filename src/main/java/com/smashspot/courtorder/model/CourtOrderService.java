@@ -318,4 +318,38 @@ public class CourtOrderService {
         return courtOrderRepository.findByConditions(stdmId, memberId, ordsta);
     }
     
+    /**
+     * 更新評價 (starrank, message)
+     */
+    public void updateReview(Integer courtordid, Integer starrank, String message) {
+        CourtOrderVO order = courtOrderRepository.findById(courtordid)
+                .orElseThrow(() -> new RuntimeException("找不到此訂單"));
+
+        // 可檢查：只有「已完成(ordsta=true)」才允許更新評價
+        // 也可檢查：是否該會員本人才可評價...
+        // 這裡單純範例直接給予更新
+        order.setStarrank(starrank);
+        order.setMessage(message);
+
+        courtOrderRepository.save(order);
+    }
+
+    /**
+     * 取消訂單 (ordsta = false, canreason)
+     */
+    public void cancelOrder(Integer courtordid, Boolean ordsta, String canreason) {
+        CourtOrderVO order = courtOrderRepository.findById(courtordid)
+                .orElseThrow(() -> new RuntimeException("找不到此訂單"));
+
+        // 檢查原狀態是否已取消 / 是否已完成 / ...
+        // 這裡單純範例：直接設成 false + 寫入取消原因
+        order.setOrdsta(ordsta);
+        order.setCanreason(canreason);
+
+        courtOrderRepository.save(order);
+    }
+    
+
+    
+    
 }
