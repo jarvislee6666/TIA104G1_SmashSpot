@@ -91,7 +91,16 @@
                         </div>
 
                         <!-- 基本資料更新表單 -->
-                        <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">
+                      <!--  <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">-->
+                      		<!-- 在表單中添加隱藏的 memid 欄位 -->
+						<form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">
+    						<input type="hidden" th:field="*{memid}" />
+    						<!-- 添加隱藏的必要欄位 -->
+    							<input type="hidden" th:field="*{memid}" />
+    							<input type="hidden" th:field="*{account}" />  
+    							<!-- 添加帳號隱藏欄位 -->
+                            
+                            
                             <!-- 使用者帳號 (只讀欄位) -->
                             <div class="mb-3">
                                 <label for="id" class="form-label">使用者帳號</label>
@@ -226,6 +235,34 @@ $(document).ready(function() {
             alertMessage.fadeOut('slow');
         }, 3000);
     }
+});
+</script>
+<script>$(document).ready(function() {
+    $('form').on('submit', function(e) {
+        // 在提交前檢查並記錄表單數據
+        const formData = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            phone: $('#phone').val(),
+            birthday: $('#birthday').val(),
+            address: $('#address').val()
+        };
+        
+        console.log('提交的表單資料:', formData);
+        
+        // 基本驗證
+        if (!formData.phone.match(/^09\d{8}$/)) {
+            alert('手機號碼格式不正確');
+            e.preventDefault();
+            return false;
+        }
+        
+        if (!formData.email.match(/^[A-Za-z0-9+_.-]+@(.+)$/)) {
+            alert('Email格式不正確');
+            e.preventDefault();
+            return false;
+        }
+    });
 });
 </script>
 </body>
