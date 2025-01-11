@@ -37,11 +37,11 @@ public class MemChatController {
 	 * WebSocket 連接建立時的回調
 	 */
 	@OnOpen
-	public void onOpen(@PathParam("admname") String admname, Session session, EndpointConfig config) {
+	public void onOpen(@PathParam("memname") String memname, Session session, EndpointConfig config) {
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-		if (httpSession == null || httpSession.getAttribute("loginAdm") == null) {
+		if (httpSession == null || httpSession.getAttribute("login") == null) {
 			try {
-				session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized admin"));
+				session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized member"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -49,8 +49,8 @@ public class MemChatController {
 		}
 
 		// 驗證成功，繼續處理
-		sessionsMap.put(admname, session);
-		System.out.println(admname + " connected as admin.");
+		sessionsMap.put(memname, session);
+		System.out.println(memname + " connected as member.");
 	}
 
 	/**
@@ -63,13 +63,13 @@ public class MemChatController {
 			chatMessageService.save(chatMessage);
 
 			// 發送給接收者
-			String senderName = chatMessage.getSenderName();
-			Session senderSession = sessionsMap.get(senderName);
-			if (senderSession != null && senderSession.isOpen()) {
-				senderSession.getBasicRemote().sendText(message);
+			String receiver = chatMessage.getRecipientId();
+			Session receiverSession = sessionsMap.get(receiver);
+			if (receiverSession != null && receiverSession.isOpen()) {
+				receiverSession.getBasicRemote().sendText(message);
 			} else {
 				// 保存為離線訊息
-				System.out.println("Receiver " + senderName + " is offline. Storing message.");
+				System.out.println("Receiver " + receiver + " is offline. Storing message.");
 				chatMessageService.save(chatMessage); // 離線訊息儲存（可擴展專門的離線訊息處理邏輯）
 			}
 		} catch (Exception e) {
