@@ -1,12 +1,88 @@
 package com.smashspot.websocketchat.chatroom;
 
+import java.util.Collection;
 import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
+import javax.annotation.PostConstruct;
 
-import com.smashspot.websocketchat.user.User;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 
-public interface ChatroomRepository extends CrudRepository<Chatroom, String>{
+@Repository
+public class ChatroomRepository {
 
-	Optional<Chatroom> findBySenderIdAndRecipientId(String senderId, String recipientId);
+    private static final String HASH_KEY = "Chatrooms";
+
+    // 在 RedisConfig 中實作，用來支援序列化/反序列化
+    private final RedisTemplate<String, Chatroom> redisTemplate;
+    // HashOperations<HASH_KEY, key, value>
+    private HashOperations<String, String, Chatroom> hashOperations;
+
+    public ChatroomRepository(RedisTemplate<String, Chatroom> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
+    @PostConstruct
+    private void init() {
+        this.hashOperations = redisTemplate.opsForHash();
+    }
+    
+    /**
+     * 獲取所有聊天室
+     * @return 聊天室集合
+     */
+    public Collection<Chatroom> findAll() {
+        return hashOperations.values(HASH_KEY);
+    }
+    
+    /**
+     * 根據 chatId 查詢聊天室
+     * @param chatId 聊天室ID
+     * @return Optional<Chatroom>
+     */
+    public Optional<Chatroom> findByChatId(String chatId) {
+        return hashOperations.entries(HASH_KEY).values().stream()
+                .filter(chatroom -> chatId.equals(chatroom.getChatId()))
+                .findFirst();
+    }
+
+    /**
+    * 根據 senderName 和 recipientId 查詢聊天室
+    * @param senderName 發送者名稱
+    * @param recipientId 接收者ID
+    * @return Optional<Chatroom>
+    */
+    public Optional<Chatroom> findBySenderNameAndRecipientId(String senderName, String recipientId) {
+        String key = generateKey(senderName, recipientId);
+        return Optional.ofNullable(hashOperations.get(HASH_KEY, key));
+    }
+
+    /**
+     * 儲存 Chatroom 資料到 Redis
+     */
+    public void save(Chatroom chatroom) {
+        String key = generateKey(chatroom.getSenderName(), chatroom.getRecipientId());
+        hashOperations.put(HASH_KEY, key, chatroom);
+    }
+
+    /**
+     * 生成唯一鍵值
+     * @param senderName 發送者名稱
+     * @param recipientId 接收者 ID
+     * @return 唯一鍵值
+     */
+    private String generateKey(String senderName, String recipientId) {
+        return String.format("%s_%s", senderName, recipientId);
+    }
+    
+    /**
+     * 刪除聊天室
+     * @param senderName 發送者名稱
+     * @param recipientId 接收者ID
+     */
+    public void delete(String senderName, String recipientId) {
+        String key = generateKey(senderName, recipientId);
+        hashOperations.delete(HASH_KEY, key);
+    }
 }
