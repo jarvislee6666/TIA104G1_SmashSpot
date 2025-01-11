@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="css/chatroomList.css">
+<link rel="stylesheet" th:href="@{/css/chatroomList.css}">
 <title>後台訊息列表</title>
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
@@ -19,55 +19,102 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-light mb-4">
-		<div class="container-fluid">
-			<div class="navbar-content">
-				<a class="navbar-brand" href="#">管理員後台</a>
-				<div class="nav-buttons">
-					<!-- Existing nav buttons -->
-					<a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>客服中心
-					</a>
-				</div>
-				<div class="d-flex align-items-center border-start ps-4">
-					<div class="nav-item me-3">
-						<span class="nav-link"> <i class="fas fa-user me-1"></i> <span
-							id="adminName">管理員</span>
-						</span>
-					</div>
-					<button class="btn btn-outline-secondary btn-sm" id="logoutBtn">
-						<i class="fas fa-sign-out-alt me-1"></i> 登出
-					</button>
-				</div>
-			</div>
-		</div>
-	</nav>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-light mb-4" th:fragment="navbar">
+        <div class="container-fluid">
+            <div class="navbar-content">
+                <a class="navbar-brand" th:href="@{/admin}">管理員後台</a>
+                <div class="nav-buttons">
+                    <a class="nav-link" th:href="@{/customer-service}">
+                        <i class="fas fa-comments me-2"></i>客服中心
+                    </a>
+                </div>
+                <div class="d-flex align-items-center border-start ps-4">
+                    <div class="nav-item me-3">
+                        <span class="nav-link">
+                            <i class="fas fa-user me-1"></i>
+                            <span id="adminName" th:text="${adminName}">管理員</span>
+                        </span>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-1"></i> 登出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-2 mb-4">
-				<div class="card">
-					<div class="card-body p-0">
-						<div class="nav flex-column nav-pills">
-							<a class="nav-link active" href="#"> <i
-								class="fas fa-list me-2"></i>訊息列表
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 側邊欄 -->
+            <div class="col-md-2 mb-4" th:fragment="sidebar">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="nav flex-column nav-pills">
+                            <a class="nav-link" th:href="@{/messages}"
+                               th:classappend="${currentPage == 'messages' ? 'active' : ''}">
+                                <i class="fas fa-list me-2"></i>訊息列表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-			<div class="col-md-10">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title mb-4">訊息列表</h5>
-						<div class="message-list" id="messageListContainer">
-							<!-- Message items will be dynamically added here -->
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <!-- 主要內容區 -->
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">訊息列表</h5>
+                        <div class="message-list" id="messageListContainer">
+                            <!-- 使用 Thymeleaf 遍歷訊息列表 -->
+                            <div th:each="conversation : ${conversations}"
+                                 th:id="'conversation-' + ${conversation.userId}"
+                                 class="message-item"
+                                 th:classappend="${conversation.unreadCount > 0 ? 'unread' : ''}"
+                                 th:data-user-id="${conversation.userId}">
+                                
+                                <!-- 用戶頭像 -->
+                                <img th:if="${conversation.avatarUrl}"
+                                     th:src="${conversation.avatarUrl}"
+                                     th:alt="${conversation.userFullName} + '的頭像'"
+                                     class="message-avatar"
+                                     th:onerror="'this.src=\'/api/placeholder/100/100\''"/>
+                                
+                                <!-- 訊息內容 -->
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <span class="message-sender" th:text="${conversation.userFullName}">用戶名稱</span>
+                                        <span class="message-time" 
+                                              th:text="${#temporals.format(conversation.lastMessageTime, 'HH:mm')}">
+                                              時間
+                                        </span>
+                                    </div>
+                                    <p class="message-preview" th:text="${conversation.lastMessage}">
+                                        最新訊息預覽
+                                    </p>
+                                </div>
+                                
+                                <!-- 未讀訊息狀態 -->
+                                <div class="message-status" th:if="${conversation.unreadCount > 0}">
+                                    <div class="status-badge"></div>
+                                    <span class="status-count" th:text="${conversation.unreadCount}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 初始化數據 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const currentUser = {
+            nickname: /*[[${adminName}]]*/ 'admin',
+            fullname: /*[[${adminFullName}]]*/ '管理員'
+        };
+        /*]]>*/
+    </script>
 
 	<!-- WebSocket and SockJS libraries -->
 	<script

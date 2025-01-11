@@ -118,4 +118,18 @@ public class MemberService {
         // 驗證失敗返回null
         return null;
     }
+    
+    /**
+     * 根據 memberId 查詢 MemberVO 並返回 name
+     * @param memberId 成員 ID
+     * @return Optional 包裝的名稱
+     */
+    public Optional<String> getMemberNameById(Integer memberId) {
+        try {
+            return repository.findById(memberId)
+                    .map(MemberVO::getName);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid memberId format. Must be an integer.");
+        }
+    }
 }

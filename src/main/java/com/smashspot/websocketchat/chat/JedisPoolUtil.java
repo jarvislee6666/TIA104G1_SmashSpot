@@ -2,7 +2,7 @@ package com.smashspot.websocketchat.chat;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-//222
+
 public class JedisPoolUtil {
 	private static JedisPool pool = null;
 

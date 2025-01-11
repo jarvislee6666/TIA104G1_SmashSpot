@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="css/chatroomAdm.css">
+  <link rel="stylesheet" th:href="@{/css/chatroomAdm.css}">
 <title>後台客服聊天室</title>
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
@@ -20,71 +20,79 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-light mb-4">
-		<!-- Existing navbar remains the same -->
-		<div class="container-fluid">
-			<div class="navbar-content">
-				<a class="navbar-brand" href="#">管理員後台</a>
-				<div class="nav-buttons">
-					<!-- Existing nav buttons -->
-					<a class="nav-link" href="#"> <i class="fas fa-comments me-2"></i>客服中心
-					</a>
-				</div>
-				<div class="d-flex align-items-center border-start ps-4">
-					<div class="nav-item me-3">
-						<span class="nav-link"> <i class="fas fa-user me-1"></i> <span
-							id="adminName">管理員</span>
-						</span>
-					</div>
-					<button class="btn btn-outline-secondary btn-sm" id="logoutBtn">
-						<i class="fas fa-sign-out-alt me-1"></i> 登出
-					</button>
-				</div>
-			</div>
-		</div>
-	</nav>
+    <nav class="navbar navbar-light mb-4">
+        <div class="container-fluid">
+            <div class="navbar-content">
+                <a class="navbar-brand" th:href="@{/}">管理員後台</a>
+                <div class="nav-buttons">
+                    <a class="nav-link" th:href="@{/customer-service}">
+                        <i class="fas fa-comments me-2"></i>客服中心
+                    </a>
+                </div>
+                <div class="d-flex align-items-center border-start ps-4">
+                    <div class="nav-item me-3">
+                        <span class="nav-link">
+                            <i class="fas fa-user me-1"></i>
+                            <span id="adminName" th:text="${adminName}">管理員</span>
+                        </span>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-1"></i> 登出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-	<div class="container-fluid">
-		<div class="row mb-5">
-			<div class="col-md-2 mb-4">
-				<div class="card">
-					<div class="card-body p-0">
-						<div class="nav flex-column nav-pills">
-							<a class="nav-link active" href="#"> <i
-								class="fas fa-list me-2"></i>個別聊天室
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
+    <div class="container-fluid">
+        <div class="row mb-5">
+            <div class="col-md-2 mb-4">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="nav flex-column nav-pills">
+                            <a class="nav-link active" th:href="@{/chat-rooms}">
+                                <i class="fas fa-list me-2"></i>個別聊天室
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-			<div class="col-md-10">
-				<div class="card">
-					<div class="card-body">
-						<div class="d-flex align-items-center">
-							<a href="./後台訊息列表.html"> <i class="bi bi-arrow-90deg-left"></i>
-							</a> <span>&nbsp; &nbsp;</span>
-							<h5 class="card-title" id="userFullName">游薺虢(用戶名)</h5>
-						</div>
-						<hr />
-						<div class="chat-messages" id="chatMessages">
-							<!-- Chat messages will be dynamically added here -->
-						</div>
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <a th:href="@{/message-list}">
+                                <i class="bi bi-arrow-90deg-left"></i>
+                            </a>
+                            <span>&nbsp; &nbsp;</span>
+                            <h5 class="card-title" id="userFullName" th:text="${userFullName}">游薺虢(用戶名)</h5>
+                        </div>
+                        <hr />
+                        <div class="chat-messages" id="chatMessages" th:fragment="messageList">
+                            <!-- Messages will be dynamically loaded here -->
+                            <div th:each="message : ${messages}" 
+                                 th:class="${message.senderId == currentUserId ? 'message sent' : 'message received'}">
+                                <div class="message-content">
+                                    <span class="message-text" th:text="${message.content}"></span>
+                                    <span class="message-time" th:text="${#temporals.format(message.timestamp, 'HH:mm')}"></span>
+                                </div>
+                            </div>
+                        </div>
 
-						<div class="chat-input w-100">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="請輸入訊息..."
-									id="messageInput" />
-								<button class="btn btn-primary" type="button" id="sendButton">
-									發送</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div class="chat-input w-100">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="請輸入訊息..." id="messageInput" />
+                                <button class="btn btn-primary" type="button" id="sendButton">發送</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+   
 	<!-- WebSocket and SockJS libraries -->
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>

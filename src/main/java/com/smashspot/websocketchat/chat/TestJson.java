@@ -1,5 +1,5 @@
 //package com.smashspot.websocketchat.chat;
-//222
+//
 //import java.util.ArrayList;
 //import java.util.Date;
 //import java.util.List;
@@ -19,7 +19,7 @@
 //		String STORE_KEY = "chat:" + chatMessage.getChatId();
 //		chatMessage.setId("test-id2");
 //		chatMessage.setChatId("test-chat-id2");
-//		chatMessage.setSenderId("test-sender-id2");
+////		chatMessage.setSender("test-sender-id2");
 //		chatMessage.setRecipientId("test-recipient-id");
 //		chatMessage.setContent("Hello, this is a test message!");
 //		chatMessage.setTimestamp(new Date());
@@ -54,7 +54,7 @@
 //
 //        // 輸出解析成功的訊息
 //        chatMessages.forEach(message -> {
-//            System.out.println("Sender: " + message.getSenderId());
+////            System.out.println("Sender: " + message.getSenderId());
 //            System.out.println("Message: " + message.getContent());
 //            System.out.println("Timestamp: " + message.getTimestamp());
 //        });
