@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -113,5 +114,56 @@ public class CourtOrderController {
         // 直接回傳 CourtOrderVO，其中有 Set<CourtOrderDetailVO>
         return list;
     }
+    
+    /**
+     * 1) 更新評價與留言
+     */
+    @PatchMapping("/review/{courtordid}")
+    public Map<String, Object> updateReview(
+        @PathVariable("courtordid") Integer courtordid, 
+        @RequestBody CourtOrderVO requestBody
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 取得前端傳入的評價、留言
+            Integer starrank = requestBody.getStarrank();  
+            String message   = requestBody.getMessage();
 
+            // 呼叫 Service 做更新
+            courtOrderSvc.updateReview(courtordid, starrank, message);
+
+            result.put("success", true);
+            result.put("message", "評價更新成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 2) 取消預約 (編輯狀態 + 取消原因)
+     */
+    @PatchMapping("/cancel/{courtordid}")
+    public Map<String, Object> cancelOrder(
+        @PathVariable("courtordid") Integer courtordid, 
+        @RequestBody CourtOrderVO requestBody
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Boolean ordsta    = requestBody.getOrdsta();     // false
+            String canreason  = requestBody.getCanreason();  // 取消原因
+
+            // 呼叫 Service 做更新
+            courtOrderSvc.cancelOrder(courtordid, ordsta, canreason);
+
+            result.put("success", true);
+            result.put("message", "訂單已取消");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+    
 }
