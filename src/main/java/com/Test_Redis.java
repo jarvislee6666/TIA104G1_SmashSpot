@@ -15,7 +15,7 @@ public class Test_Redis implements CommandLineRunner{
     public void run(String... args) throws Exception {
         try {
             // 測試存儲和讀取
-            redisTemplate.opsForValue().set("test", "nlnlouo");
+            redisTemplate.opsForValue().set("test", "test redis");
             String value = redisTemplate.opsForValue().get("test");
             System.out.println("Redis測試值: " + value);
             
