@@ -1,4 +1,4 @@
-package com.smashspot.websocketchat.chat;
+package com.smashspot.websocketchat.model;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

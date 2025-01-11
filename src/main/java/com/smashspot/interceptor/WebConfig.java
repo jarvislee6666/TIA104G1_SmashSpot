@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 	        .addPathPatterns("/member/basic-info","/client/memProductList",
 	        				 "/client/addProduct","/reservation/week","/client/orders/DPstep1/{proid}",
-	        				 "member/appointment-records", "/court-order/**","/client/bid/**")
+	        				 "member/appointment-records", "/court-order/**","/client/bid/**", "/mem/websocket/chat/**")
 	        .excludePathPatterns("/member/login");
 
     }
