@@ -2,7 +2,12 @@ package com.smashspot.websocketchat.chat;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.smashspot.member.model.MemberVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,13 +20,36 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Entity
 public class ChatMessage {
+
 	@Id
 	private String id;
 	private String chatId;
-	private String senderId;
-	private String recipientId;
+//  @Transient
+	private MemberVO sender; // 從 MemberVO 中獲取相關資訊
+
+	@JsonProperty
+	private String senderName; // 明確定義 senderName 屬性
+	
+	@Builder.Default
+	private String recipientId = "Adm"; // 固定值 "Adm"
 	private String content;
 	private Date timestamp;
-	
+	private boolean read; // 表示訊息是否已讀
+
+	public String getSenderName() {
+        return sender != null ? sender.getName() : senderName;
+    }
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+    }
 }

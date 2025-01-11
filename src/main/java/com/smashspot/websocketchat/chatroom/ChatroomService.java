@@ -32,26 +32,26 @@ public class ChatroomService {
      * 根據 senderId 查詢對應的 senderName 並獲取聊天室 ID
      * 如果不存在並 createNewRoomIfNotExists 為 true，則創建新聊天室
      */
-//    public Optional<String> getChatroomId(
-//            Integer senderId, // 傳入 senderId
-//            boolean createNewRoomIfNotExists
-//    ) {
-//        // 根據 senderId 獲取 MemberVO 的 name
-//        String senderName = memberService.getMemberNameById(senderId)
-//                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
-//
-//        return chatroomRepository.findBySenderNameAndRecipientId(senderName, "Adm")
-//                .map(Chatroom::getChatId)
-//                .or(() -> {
-//                    if (createNewRoomIfNotExists) {
-//                    	System.out.println("Creating new chatroom...");
-//                        var chatId = createChatId(senderName);
-//                        return Optional.of(chatId);
-//                    }
-//                    return Optional.empty();
-//                });
-//        
-//    }
+    public Optional<String> getChatroomId(
+            Integer senderId, // 傳入 senderId
+            boolean createNewRoomIfNotExists
+    ) {
+        // 根據 senderId 獲取 MemberVO 的 name
+        String senderName = memberService.getMemberNameById(senderId)
+                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+
+        return chatroomRepository.findBySenderNameAndRecipientId(senderName, "Adm")
+                .map(Chatroom::getChatId)
+                .or(() -> {
+                    if (createNewRoomIfNotExists) {
+                    	System.out.println("Creating new chatroom...");
+                        var chatId = createChatId(senderName);
+                        return Optional.of(chatId);
+                    }
+                    return Optional.empty();
+                });
+        
+    }
 
     /**
      * 創建新的聊天室 ID
