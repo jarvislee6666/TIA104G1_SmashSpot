@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.smashspot.bid.model.BidService;
+import com.smashspot.bid.model.BidVO;
 import com.smashspot.coupon.model.CouponService;
 import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.member.model.MemberVO;
@@ -39,6 +41,9 @@ public class OrdersController {
 	
 	@Autowired
 	CouponService copSvc;
+	
+	@Autowired
+    BidService bidService; // 注入 BidService
     
     // 創建一個 Model 屬性來存儲訂單數據
     @ModelAttribute("orderData")
@@ -92,9 +97,16 @@ public class OrdersController {
 	public String DPstep1(@PathVariable Integer proid, Model model, HttpSession session) {
 		// 獲取當前登入的會員
 	    MemberVO loginMember = (MemberVO) session.getAttribute("login");
+	    if (loginMember == null) {
+            return "redirect:/member/login";
+        }
 	    
 		// 獲取商品資訊
 	    ProductVO productVO = proSvc.getOneProduct(proid);
+	    if (productVO == null) {
+            // 商品不存在的處理
+            return "redirect:/client/listAllProductING";
+        }
 	    
 	    // 檢查是否是商品擁有者
 	    if (loginMember.getMemid().equals(productVO.getMemberVO().getMemid())) {
@@ -102,7 +114,34 @@ public class OrdersController {
 	        return "redirect:/client/getOneProduct/" + proid;
 	    }
 	    
-	    model.addAttribute("productVO", productVO);
+	    // 確定商品價格
+        Integer finalPrice;
+        String purchaseType;
+        
+        if (productVO.getBidstaid() == 2) {
+            // 競標結束的情況
+            List<BidVO> memberBids = bidService.getMemberBidsForProduct(loginMember.getMemid(), proid);
+            Integer highestBid = memberBids.stream()
+                    .map(BidVO::getBidamt)
+                    .max(Integer::compareTo)
+                    .orElse(0);
+
+            // 檢查是否為最高出價者
+            if (!highestBid.equals(productVO.getMaxprice())) {
+                return "redirect:/client/getOneProduct/" + proid;
+            }
+            
+            finalPrice = productVO.getMaxprice(); // 使用最終競標價
+            purchaseType = "auction";
+        } else {
+            // 直購的情況
+            finalPrice = productVO.getPurprice(); // 使用直購價
+            purchaseType = "direct";
+        }
+	    
+        model.addAttribute("productVO", productVO);
+        model.addAttribute("finalPrice", finalPrice);
+        model.addAttribute("purchaseType", purchaseType);
 	    return "back-end/client/orders/DPstep1";
 	}
 	
@@ -127,12 +166,45 @@ public class OrdersController {
             return ResponseEntity.badRequest()
                 .body(Map.of("success", false, "message", "商品不存在"));
         }
+        
+        // 確定實際價格（競標或直購）
+        Integer originalPrice;
+        if (product.getBidstaid() == 2) {
+            // 競標結束的情況
+            originalPrice = product.getMaxprice();
+        } else {
+            // 直購的情況
+            originalPrice = product.getPurprice();
+        }
+        
+        // 如果有使用優惠券，驗證優惠券並計算折扣後金額
+        if (copid != null) {
+            CouponVO coupon = copSvc.getOneCoupon(copid);
+            
+            // 計算折扣後金額
+            int expectedDiscountedPrice = originalPrice - coupon.getDiscount();
+            if (expectedDiscountedPrice < 0) {
+                expectedDiscountedPrice = 0;
+            }
+            
+            // 驗證提交的折扣後價格是否正確
+            if (finalPrice != expectedDiscountedPrice) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "折扣金額計算不正確"));
+            }
+        } else {
+            // 如果沒有使用優惠券，則驗證價格是否等於原始價格
+            if (!originalPrice.equals(finalPrice)) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "價格資訊不正確"));
+            }
+        }
     	
     	// 將步驟一的數據存入 session
         orderData.put("payment", payment);
         orderData.put("copid", copid);
         orderData.put("finalPrice", finalPrice);
-        orderData.put("originalPrice", product.getPurprice());
+        orderData.put("originalPrice", originalPrice);
         orderData.put("productId", productId);
         
         return ResponseEntity.ok(Map.of("success", true));
