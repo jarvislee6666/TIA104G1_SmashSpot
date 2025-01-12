@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>球場預約系統</title>
 <th:block th:replace="back-end/client/Header :: headContent" />
-<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
-<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
-<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Header.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -675,6 +675,78 @@ body {
 					</div>
 				</div>
 			</div>
+
+			<!-- 主要內容區 下半部：評價 + 地圖 (第三個 row) -->
+			<div class="row mt-4 mb-4">
+				<!-- 左側評價區 -->
+				<div class="col-md-3">
+					<div class="card custom-shadow">
+						<div class="card-body">
+							<h5
+								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">場地評價</h5>
+							<!-- 平均評分顯示 (可依照後端計算出的平均分數來套) -->
+							<div class="mb-3">
+								<small>平均評分：</small> <i class="fas fa-star text-warning"></i> <span
+									th:text="${averageRating}">4.5</span> <span
+									class="ms-1 text-muted" th:if="${totalReviews != null}"
+									th:text="'(共 ' + ${totalReviews} + ' 則評價)'"> (共 15 則評價)
+								</span>
+							</div>
+
+							<!-- 評價列表 (使用 th:each 動態渲染) -->
+							<div class="review-list"
+								style="max-height: 300px; overflow-y: auto;">
+								<div class="review-item mb-3 pb-3 border-bottom"
+									th:each="review : ${reviewList}"
+									th:if="${review.starrank != null or (review.message != null and review.message != '')}">
+									<div class="d-flex justify-content-between align-items-center">
+										<div class="stars">
+											<!-- 動態呈現星星，可依照 review.rating 顯示幾顆實心星 -->
+											<i class="fas fa-star text-warning"
+												th:classappend="${review.starrank >= 1} ? '' : ' d-none'"></i>
+											<i class="fas fa-star text-warning"
+												th:classappend="${review.starrank >= 2} ? '' : ' d-none'"></i>
+											<i class="fas fa-star text-warning"
+												th:classappend="${review.starrank >= 3} ? '' : ' d-none'"></i>
+											<i class="fas fa-star text-warning"
+												th:classappend="${review.starrank >= 4} ? '' : ' d-none'"></i>
+											<i class="fas fa-star text-warning"
+												th:classappend="${review.starrank >= 5} ? '' : ' d-none'"></i>
+										</div>
+										<small class="text-muted"
+											th:text="${#dates.format(review.ordcrttime, 'yyyy/MM/dd HH:mm')}">2024/03/15</small>
+									</div>
+									<div class="mt-2 fs-6">
+										<strong th:text="${review.member.name}">撂月亭</strong>
+										<p class="mb-0 small  fs-6" th:text="${review.message}">羽毛滿天飛。</p>
+									</div>
+								</div>
+							</div>
+
+							<!-- 新增評價按鈕 -->
+							<div class="text-center mt-3">
+								<a th:href="@{/member/appointment-records}"
+									class="btn btn-primary"> 撰寫評價 </a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 右側地圖 -->
+				<div class="col-md-9">
+					<div class="card custom-shadow">
+						<div class="card-body">
+							<h5
+								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">地圖</h5>
+							<div id="map" class="rounded" style="height: 300px;">
+								<!-- 後續可用 Google Maps 或 Leaflet JS 在此初始化地圖 -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 第三個 row 結束 (評價 + 地圖) -->
+
 		</div>
 	</div>
 
@@ -764,7 +836,7 @@ body {
 	</script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<script>
+	<script  th:inline="javascript">
 	function goNextStep() {
 	    // 1. 關閉 bookingModal
 	    const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
@@ -1160,7 +1232,45 @@ body {
         }
         return week;
     }
-</script>
 
+    let latFromServer = /*[[${stadiumVO.latitude}]]*/ 25.0339031;
+    let lngFromServer = /*[[${stadiumVO.longitude}]]*/ 121.5645098;
+    
+    const venueLocation = {
+            lat: latFromServer,
+            lng: lngFromServer
+        };
+
+        
+    // 初始化地圖功能
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 16,
+            center: venueLocation,
+        });
+    
+        const marker = new google.maps.Marker({
+            position: venueLocation,
+            map: map,
+//             title: '飆汗羽球館'
+        });
+    
+//         const infowindow = new google.maps.InfoWindow({
+//             content: `
+//                 <div style="padding: 5px;">
+//                     <h6 style="margin: 0 0 5px 0;">飆汗羽球館</h6>
+//                     <p style="margin: 0;">台北市XX區XX路XX號</p>
+//                     <p style="margin: 5px 0 0 0;">電話：0912345678</p>
+//                 </div>
+//             `
+//         });
+    
+        marker.addListener('click', () => {
+            infowindow.open(map, marker);
+        });
+    }
+</script>
+    <!-- 請記得替換 YOUR_API_KEY 為您的 Google Maps API 金鑰 -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpeKJsYqFNvxDjFzALran62W4aP-PmJs&callback=initMap"></script>
 </body>
 </html>

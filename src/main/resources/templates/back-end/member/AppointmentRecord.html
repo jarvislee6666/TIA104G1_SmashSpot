@@ -330,7 +330,7 @@ footer {
 
 #detailDateTime, #detailMessage {
 	min-height: 60px;
-	white-space: pre-wrap;
+	/* 	white-space: pre-wrap; */
 }
 
 .min-vh-10 {
@@ -338,8 +338,13 @@ footer {
 }
 
 .booking-block {
-	margin-bottom: 15px; /* 增加區塊間的間距 */
+	margin-bottom: 30px; /* 增加區塊間的間距 */
 	line-height: 0.1; /* 修正行高 */
+}
+
+/* 第一個 booking-block 不留額外空間 */
+.booking-block:first-of-type {
+	margin-top: 0;
 }
 
 .booking-date, .booking-time {
@@ -352,10 +357,6 @@ footer {
 .time-ranges {
 	margin-left: 15px; /* 縮排效果 */
 	line-height: 1.5; /* 確保時段文字不重疊 */
-}
-
-.booking-date, .booking-time {
-	padding: 2px 0;
 }
 
 .font-family-inherit {
@@ -424,7 +425,7 @@ textarea {
 								<tr th:each="order, idx : ${orders}"
 									th:attr="data-ordid=${order.courtordid}">
 									<!-- 第一欄: 這裡若要顯示第幾筆 -->
-									<td th:text="${idx.count}+1">1</td>
+									<td th:text="${idx.count}">1</td>
 
 									<!-- 第二欄: 場地名稱 -->
 									<td th:text="${order.stadium.stdmName}"></td>
@@ -436,7 +437,7 @@ textarea {
 									<td th:text="${order.totamt} + ' TWD'"></td>
 
 									<!-- 第五欄: 預約狀態 -->
-									<td>已預約</td>
+									<td th:text="${order.ordsta} ? '已預約' : '已取消'"></td>
 
 									<!-- 第六欄: 狀態操作(明細、取消按鈕) -->
 									<td>
@@ -481,7 +482,7 @@ textarea {
 										<h6 class="section-title mb-3">預約詳情</h6>
 										<div class="mb-3">
 											<label class="text-muted small">預約時段</label>
-											<div class="p-3 bg-light rounded" id="detailDateTime"></div>
+											<div class="p-1 bg-light rounded" id="detailDateTime"></div>
 										</div>
 										<div>
 											<label class="text-muted small">總金額</label>
@@ -502,6 +503,11 @@ textarea {
 											<label class="text-muted small">評價留言</label>
 											<div class="p-3 bg-light rounded min-vh-10"
 												id="detailMessage"></div>
+										</div>
+										<div>
+											<label class="text-muted small">取消原因</label>
+											<div class="p-3 bg-light rounded min-vh-10"
+												id="detailcanreason"></div>
 										</div>
 									</div>
 								</div>
@@ -559,7 +565,6 @@ textarea {
 						aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
-								...
 								<div class="modal-body">
 									<p>頻繁取消預約將影響您後續進行其他預約的權益，請於下方說明取消該筆預約的原因...</p>
 									<div class="mb-3">
@@ -667,6 +672,7 @@ textarea {
             if (resp.success) {
               alert("評價已更新");
               // 可加上刷新頁面 or 更新畫面顯示
+              window.location.reload();
               $("#reviewModal").modal("hide");
             } else {
               alert("評價失敗: " + resp.message);
@@ -713,8 +719,7 @@ textarea {
           success: function(resp) {
             if (resp.success) {
               alert("訂單已取消");
-              // 可在這裡直接更新該列的「狀態」文字、或整頁刷新
-              // ...
+              window.location.reload();
               $("#cancelModal").modal("hide");
             } else {
               alert("取消失敗: " + resp.message);
@@ -853,6 +858,7 @@ textarea {
       $("#detailStatus").text(order.ordsta ? "已預約" : "已取消");
       $("#detailStar").text(starHtml);
       $("#detailMessage").text(order.message || "");
+      $("#detailcanreason").text(order.canreason || "");
 
       // 彈出
       let detailModal = new bootstrap.Modal(document.getElementById("detailModal"));

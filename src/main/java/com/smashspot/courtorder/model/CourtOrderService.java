@@ -3,6 +3,7 @@ package com.smashspot.courtorder.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -337,16 +338,115 @@ public class CourtOrderService {
     /**
      * 取消訂單 (ordsta = false, canreason)
      */
+    /**
+     * 取消訂單 (ordsta = false, canreason)
+     */
     public void cancelOrder(Integer courtordid, Boolean ordsta, String canreason) {
+        // 1) 先撈出訂單主檔
         CourtOrderVO order = courtOrderRepository.findById(courtordid)
                 .orElseThrow(() -> new RuntimeException("找不到此訂單"));
 
-        // 檢查原狀態是否已取消 / 是否已完成 / ...
-        // 這裡單純範例：直接設成 false + 寫入取消原因
-        order.setOrdsta(ordsta);
-        order.setCanreason(canreason);
+        // 2) 檢查原本若已取消，不重複處理 
+        if (Boolean.FALSE.equals(order.getOrdsta())) {
+            throw new RuntimeException("此訂單先前已取消，無法重複取消");
+        }
 
+        // 3) 準備檢查是否超過可取消期限
+        Set<CourtOrderDetailVO> details = order.getCourtOrderDetail();
+        if (details == null || details.isEmpty()) {
+            throw new RuntimeException("該訂單沒有明細，無法進行取消");
+        }
+
+        // (3.1) 找出該筆訂單「所有明細」中的最早日期
+        // CourtOrderDetailVO#getOrdDate() 若是 java.util.Date
+        // 直接用 Collections.min() 或 Stream min() 都可以。
+        Date earliestDate = details.stream()
+                .map(CourtOrderDetailVO::getOrdDate)
+                .min(Date::compareTo)
+                .orElseThrow(() -> new RuntimeException("訂單明細無日期資訊"));
+        
+     // (3.2) 取得「今天」日期
+        // 取得當下的毫秒數
+        long nowMillis = System.currentTimeMillis();  
+        // 建立 java.sql.Date
+        java.sql.Date today = new java.sql.Date(nowMillis);
+
+        // (3.3) 若 today >= earliestDate，表示已到日期或已超過，不允許取消
+        if (!today.before(earliestDate)) {
+            throw new RuntimeException("已超過可取消日期，無法取消預約。");
+        }
+
+        // 4) 還原(釋放)已訂走的時段
+        //    (接下來就是你原本的釋放邏輯)
+        for (CourtOrderDetailVO detail : details) {
+            // (a) 將該筆 detail 的 ordTime 取出
+            String ordTime = detail.getOrdTime();
+            if (ordTime == null || ordTime.length() != 12 || !ordTime.matches("[0-1x]{12}")) {
+                // 可視情況直接跳過或拋異常
+                continue;
+            }
+
+            // (b) 找到對應的 reservation_time
+            Integer stdmId = order.getStadium().getStdmId();
+            Date ordDate = detail.getOrdDate();
+            ReservationTimeVO rsvTime = reservationTimeRepository
+                    .findByStadiumIdAndDates(stdmId, ordDate);
+            if (rsvTime == null) {
+                // 若找不到對應日期的 reservation_time，可能代表還原失敗，
+                // 可以拋異常或記錄 log
+                continue;
+            }
+
+            // (c) 將 booked 欄位做「減回」處理
+            String oldBooked = rsvTime.getBooked(); // e.g. "xxxx0100001x"
+            String newBooked = subtractBooked(oldBooked, ordTime);
+            rsvTime.setBooked(newBooked);
+
+            // (d) 更新 DB
+            reservationTimeRepository.save(rsvTime);
+
+            // (e) 最後也把 Detail 裡的 ordTime 改成 "xxxx0000000x" (看你需求)
+            detail.setOrdTime("xxxx0000000x");
+        }
+
+        // 5) 最後才更新主檔 (狀態+原因)
+        order.setOrdsta(ordsta);       // 通常傳入 false
+        order.setCanreason(canreason); // 寫入取消原因
+        // (若要順便把 total 金額歸 0，依需求自行決定)
+        // order.setTotamt(0);
+
+        // 6) 存回資料庫
         courtOrderRepository.save(order);
+    }
+
+    
+    /**
+     * 將 oldBooked 與 ordTime 做相減。
+     * - ordTime 若在 i 位='1' => oldBooked[i] -= 1
+     * - 不能小於 0
+     */
+    private String subtractBooked(String oldBooked, String ordTime) {
+        char[] arr = oldBooked.toCharArray();
+        for (int i = 0; i < 12; i++) {
+            // 遇到 'x' 直接跳過不處理
+            if (arr[i] == 'x') {
+                continue;
+            }
+            int oldVal = arr[i] - '0';
+            int subVal = (ordTime.charAt(i) == '1') ? 1 : 0;
+            int diff = oldVal - subVal;
+
+            if (diff < 0) {
+                diff = 0; // 以防萬一
+            }
+            arr[i] = (char) (diff + '0');
+        }
+        return new String(arr);
+    }
+    
+    public List<CourtOrderVO> findReviewsByStadiumId(Integer stadiumId) {
+        // 直接呼叫 Repository
+        return courtOrderRepository.findByStadiumId(stadiumId);
     }
     
 
