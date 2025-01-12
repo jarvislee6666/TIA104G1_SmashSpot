@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.member.model.MemberVO;
 import com.smashspot.reservationtime.model.ReservationTimeService;
 import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.stadium.model.StdmService;
+import com.smashspot.courtorder.model.CourtOrderService;
 
 @Controller
 @RequestMapping("/reservation")
@@ -30,6 +32,9 @@ public class ReservationTimeController {
     
     @Autowired
     private StdmService stdmService;
+    
+	@Autowired
+	private CourtOrderService courtOrderSvc;
 
     @GetMapping("/week")
     public String getWeeklyReservation(
@@ -131,10 +136,18 @@ public class ReservationTimeController {
             reservationList.add(map);
             tempCal.add(Calendar.DAY_OF_MONTH, 1);
         }
+        
+        // 3. 撈該場館的評價列表
+        List<CourtOrderVO> reviewList = courtOrderSvc.findReviewsByStadiumId(stdmId);
+
+        // 4. 放到 model，給 Thymeleaf 用
+        model.addAttribute("reviewList", reviewList);
 
         model.addAttribute("stdmId", stdmId);
         model.addAttribute("week", week);
         model.addAttribute("reservationList", reservationList);
+        
+
 
         return "back-end/client/reservationtime/court-reservation";
     }
