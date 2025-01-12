@@ -108,7 +108,7 @@
 					                </p>
 					            </div>
 					            <div class="col-auto">
-					                <h5 class="mb-0" th:text="'NT$ ' + ${productVO.purprice}">NT$ 3,000</h5>
+					                <h5 class="mb-0" th:text="'NT$ ' + ${#numbers.formatDecimal(finalPrice, 1, 'COMMA', 0, 'POINT')}">NT$ 3,000</h5>
 					            </div>
 					        </div>
 					    </div>
@@ -149,45 +149,61 @@
                     </div>
 
                     <!-- Coupon -->
+                    <h5 class="card-title mb-3">使用優惠券</h5>
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h5 class="card-title mb-3">使用優惠券</h5>
-                            <div class="input-group">
-                                <input type="text" id="couponCode" class="form-control" placeholder="請輸入優惠券代碼">
-                                <button class="btn btn-outline-dark" type="button" onclick="applyCoupon()">套用</button>
+                            <div class="input-group mt-2">
+                                <input type="text" id="couponCode" class="form-control" placeholder="請輸入優惠碼">
+                                <button class="btn btn-outline-dark" type="button" onclick="validateCoupon()">套用</button>
                             </div>
-                            <div id="couponMessage" class="mt-2"></div>
+                            <!-- 提示訊息容器 -->
+							<div id="alertContainer" class="mt-2"></div>
+                            <input type="hidden" id="copid" name="copid" value="">
                         </div>
                     </div>
 
-                    <!-- Order Summary -->
-                    <div class="card bg-light border-0">
-					    <div class="card-body">
-					        <div class="d-flex justify-content-between mb-2">
-					            <span>商品總金額</span>
-					            <span>NT$ <span id="originalPrice" th:text="${productVO.purprice}">3,000</span></span>
+					<!-- 價格顯示區域 -->
+					<div class="mb-4">
+					    <h5 class="mb-3">價格資訊</h5>
+					    <div class="card">
+					        <div class="card-body">
+					            <!-- 原價 -->
+					            <div class="d-flex justify-content-between align-items-center mb-3">
+					                <span class="text-muted">商品價格</span>
+					                <span class="text-dark" th:text="'NT$ ' + ${#numbers.formatDecimal(finalPrice, 1, 'COMMA', 0, 'POINT')}">
+					                </span>
+					            </div>
+					            
+					            <!-- 優惠折扣（預設隱藏） -->
+					            <div class="d-flex justify-content-between align-items-center mb-3" 
+					                 id="discountRow" style="display: none !important;">
+					                <span class="text-muted">優惠折扣</span>
+					                <span class="text-danger" id="discountAmount">-NT$ 0</span>
+					            </div>
+					            
+					            <hr class="my-3">
+					            
+					            <!-- 最終價格 -->
+					            <div class="d-flex justify-content-between align-items-center">
+					                <span class="fw-bold">應付總額</span>
+					                <span class="fw-bold fs-5" id="finalPriceDisplay"
+					                      th:text="'NT$ ' + ${#numbers.formatDecimal(finalPrice, 1, 'COMMA', 0, 'POINT')}">
+					                </span>
+					            </div>
 					        </div>
-					        <div class="d-flex justify-content-between mb-2">
-					            <span>優惠折抵</span>
-					            <span class="text-danger">-NT$ <span id="discountAmount">0</span></span>
-					        </div>
-					        <hr>
-					        <div class="d-flex justify-content-between fw-bold">
-					            <span>應付總金額</span>
-					            <span>NT$ <span id="finalPrice" th:text="${productVO.purprice}">3,000</span></span>
-					        </div>
-					        <!-- 維持隱藏欄位用於儲存優惠券ID -->
-                            <input type="hidden" id="appliedCouponId" value="">
-                            <input type="hidden" id="productId" th:value="${productVO.proid}">
 					    </div>
 					</div>
+					
+					<!-- 隱藏的價格輸入 -->
+					<input type="hidden" id="finalPrice" name="finalPrice" th:value="${finalPrice}">
+					<input type="hidden" id="productId" th:value="${productVO.proid}">
 
                     <!-- Navigation Buttons -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="#" class="btn btn-outline-dark">
-                            <i class="bi bi-arrow-left me-2"></i>返回購物
-                        </a>
-                        <a href="checkout-step2.html" class="btn btn-dark">
+                        <a href="javascript:void(0)" onclick="goBack()" class="btn btn-outline-dark">
+						    <i class="bi bi-arrow-left me-2"></i>返回前頁
+						</a>
+                        <a href="javascript:void(0)" class="btn btn-dark" onclick="saveStep1Data()">
                             下一步<i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -202,76 +218,152 @@
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
-function applyCoupon() {
-    const couponCode = document.getElementById('couponCode').value;
-    const originalPrice = parseInt(document.getElementById('originalPrice').textContent);
+/*<![CDATA[*/
+	// 取得商品來源
+    const purchaseType = /*[[${purchaseType}]]*/ 'direct';
+    const productId = /*[[${productVO.proid}]]*/ 0;
     
-    if (!couponCode) {
-        showMessage('請輸入優惠碼', false);
-        return;
-    }
-
-    // call couponController API 路徑
-    fetch('/api/public/coupon/validate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `code=${encodeURIComponent(couponCode)}&originalPrice=${originalPrice}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.valid) {
-            document.getElementById('discountAmount').textContent = data.discount;
-            document.getElementById('finalPrice').textContent = data.discountedPrice;
-            document.getElementById('appliedCouponId').value = data.copid;
-            showMessage(data.message, true);
+    // 返回前頁功能
+    function goBack() {
+        if (purchaseType === 'auction') {
+            // 如果是從競標頁面來的，返回競標清單
+            window.location.href = '/member/biddingList';
         } else {
-            document.getElementById('discountAmount').textContent = '0';
-            document.getElementById('finalPrice').textContent = originalPrice;
-            document.getElementById('appliedCouponId').value = '';
-            showMessage(data.message, false);
+            // 如果是從商品頁面來的，返回商品詳情
+            window.location.href = '/client/getOneProduct/' + productId;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showMessage('系統錯誤，請稍後再試', false);
-    });
-}
-
-function showMessage(message, isSuccess) {
-    const messageDiv = document.getElementById('couponMessage');
-    messageDiv.className = `alert mt-2 ${isSuccess ? 'alert-success' : 'alert-danger'}`;
-    messageDiv.textContent = message;
-}
-
-//當進入下一步時保存數據
-function saveStep1Data() {
-    const formData = new FormData();
-    formData.append('payment', document.querySelector('input[name="payment"]:checked').value);
-    formData.append('copid', document.getElementById('appliedCouponId').value);
-    formData.append('finalPrice', document.getElementById('finalPrice').textContent);
-    formData.append('productId', document.getElementById('productId').value);
-
-    fetch('/client/orders/saveStep1', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // 成功後跳轉到步驟二
-            window.location.href = '/client/orders/DPstep2';
+    }
+	
+	// 獲取商品價格
+    const originalPrice = /*[[${finalPrice}]]*/ 0;
+    let currentFinalPrice = originalPrice;
+    
+ 	// 驗證優惠券
+    function validateCoupon() {
+        const couponCode = document.getElementById('couponCode').value;
+        if (!couponCode) {
+            showAlert('請輸入優惠碼', 'warning');
+            return;
         }
-    })
-    .catch(error => console.error('Error:', error));
-}
 
-// 修改下一步按鈕的點擊事件
-document.querySelector('.btn-dark').addEventListener('click', function(e) {
-    e.preventDefault();
-    saveStep1Data();
-});
+        fetch('/api/public/coupon/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `code=${encodeURIComponent(couponCode)}&originalPrice=${originalPrice}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                // 更新優惠券資訊
+                document.getElementById('copid').value = data.copid;
+                
+                // 更新折扣顯示
+                const discountRow = document.getElementById('discountRow');
+                const discountAmount = document.getElementById('discountAmount');
+                const finalPriceDisplay = document.getElementById('finalPriceDisplay');
+                const finalPriceInput = document.getElementById('finalPrice');
+                
+                // 顯示折扣金額
+                discountAmount.textContent = `-NT$ ${formatNumber(data.discount)}`;
+                discountRow.style.display = 'flex';
+                
+                // 更新最終價格
+                currentFinalPrice = data.discountedPrice;
+                finalPriceDisplay.textContent = `NT$ ${formatNumber(currentFinalPrice)}`;
+                finalPriceInput.value = currentFinalPrice;
+                
+                showAlert('優惠券套用成功！', 'success');
+            } else {
+                // 重置優惠券相關欄位
+                resetCoupon();
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            resetCoupon();
+            showAlert('系統錯誤，請稍後再試', 'danger');
+        });
+    }
+    
+    // 重置優惠券
+    function resetCoupon() {
+        const discountRow = document.getElementById('discountRow');
+        const finalPriceDisplay = document.getElementById('finalPriceDisplay');
+        const finalPriceInput = document.getElementById('finalPrice');
+        const copidInput = document.getElementById('copid');
+        
+        discountRow.style.display = 'none';
+        currentFinalPrice = originalPrice;
+        finalPriceDisplay.textContent = `NT$ ${formatNumber(currentFinalPrice)}`;
+        finalPriceInput.value = currentFinalPrice;
+        copidInput.value = '';
+    }
+    
+    // 格式化數字為千分位
+    function formatNumber(number) {
+        return new Intl.NumberFormat('zh-TW').format(number);
+    }
+    
+    // 顯示提示訊息
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
+	
+	//當進入下一步時保存數據
+	function saveStep1Data() {
+	    const formData = new FormData();
+	    const paymentInput = document.querySelector('input[name="payment"]:checked');
+	    const copidInput = document.getElementById('copid');
+	    const finalPriceInput = document.getElementById('finalPrice');
+	    const productIdInput = document.getElementById('productId');
+	    
+	 	// 驗證所有必需的欄位都存在
+	    if (!paymentInput || !finalPriceInput || !productIdInput) {
+	        showAlert('系統錯誤：缺少必要的表單欄位', 'danger');
+	        return;
+	    }
+	 	
+	    formData.append('payment', paymentInput.value);
+	    formData.append('copid', copidInput ? copidInput.value : '');
+	    formData.append('finalPrice', finalPriceInput.value);
+	    formData.append('productId', productIdInput.value);
+	    
+	
+	    fetch('/client/orders/saveStep1', {
+	        method: 'POST',
+	        body: formData
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	        if (data.success) {
+	            // 成功後跳轉到步驟二
+	            window.location.href = '/client/orders/DPstep2';
+	        }else {
+	            // 顯示錯誤信息
+	            showAlert(data.message || '保存失敗，請稍後再試', 'danger');
+	        }
+	    })
+	    .catch(error => {
+	        console.error('Error:', error);
+	        showAlert('系統錯誤，請稍後再試', 'danger');
+	    });
+	}
+	
+	// 修改下一步按鈕的點擊事件
+	document.querySelector('.btn-dark').addEventListener('click', function(e) {
+	    e.preventDefault();
+	    saveStep1Data();
+	});
+/*]]>*/
 </script>
 </body>
 </html>

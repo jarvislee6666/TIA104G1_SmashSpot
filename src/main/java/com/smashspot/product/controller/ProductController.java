@@ -273,16 +273,6 @@ public class ProductController {
 	    return response;
 	}
 
-//	@PostMapping("getOneProduct_For_Bid") // 點擊單一商品頁面
-//	public String getOne_For_Bid(@RequestParam("proid") String proid, ModelMap model) {
-//		/*************************** 2.開始查詢資料 *****************************************/
-//		ProductVO productVO = proSvc.getOneProduct(Integer.valueOf(proid));
-//
-//		/*************************** 3.查詢完成,準備轉交(Send the Success view) **************/
-//		model.addAttribute("productVO", productVO);
-//		return "back-end/prodcut/getOneProduct"; // 查詢完成後轉交getOneProduct.html
-//	}
-
 	@PostMapping("/adm/updateProductSta")  // 更改商品狀態，1.後臺下架 2.前台結標
 	public String update(@RequestParam("proid") String proid, @RequestParam("bidstaid") Integer bidstaid, ModelMap model) throws IOException {
 

@@ -137,7 +137,7 @@
 			                <th style="width: 22.5%">商品資訊</th>
 			                <th style="width: 15%">我的出價</th>
 			                <th style="width: 15%">目前最高出價</th>
-			                <th style="width: 15%">結標剩餘時間</th>
+			                <th style="width: 15%">競標狀態</th>
 			                <th style="width: 15%"></th>
 			            </tr>
 			        </thead>
@@ -173,25 +173,32 @@
 			                    </div>
 			                </td>
 			                <td>
-			                    <div class="fw-medium" th:classappend="${bid.currentHighestBid == bid.myHighestBid ? 'text-success' : ''}">
+			                    <div class="fw-medium" th:classappend="${bid.isHighestBidder ? 'text-success' : ''}">
 			                        NT$ <span th:text="${#numbers.formatDecimal(bid.currentHighestBid, 1, 'COMMA', 0, 'POINT')}"></span>
 			                    </div>
-			                    <div class="small text-success" th:if="${bid.currentHighestBid == bid.myHighestBid}">
+			                    <div class="small text-success" th:if="${bid.isHighestBidder}">
 			                        <i class="bi bi-check-circle-fill"></i> 目前最高
 			                    </div>
 			                </td>
 			                <td>
-			                    <span class="remaining-time d-inline-block text-nowrap" 
-			                          th:data-endtime="${bid.product.endtime.time}"
-			                          th:classappend="${bid.product.endtime.before(#dates.createNow())} ? 'text-secondary' : 'text-primary'">
-			                    </span>
-			                </td>
+				                <!-- 競標狀態和時間顯示 -->
+				                <div th:if="${bid.bidStatus == 1}">
+				                    <span class="remaining-time d-inline-block text-nowrap text-primary" 
+				                          th:data-endtime="${bid.product.endtime.time}">
+				                    </span>
+				                </div>
+				                <div th:if="${bid.bidStatus == 2}" class="text-secondary">
+				                    <i class="bi bi-flag-fill me-1"></i>已結標
+				                </div>
+			           		</td>
 			                <td>
-			                    <button th:if="${bid.product.endtime.before(#dates.createNow())} and ${bid.currentHighestBid == bid.myHighestBid}"
-			                            class="btn btn-outline-primary btn-sm">
-			                        <i class="bi bi-wallet2"></i> 前往付款
-			                    </button>
-			                </td>
+				                <!-- 付款按鈕只在已結標且是最高出價者時顯示 -->
+				                <button th:if="${bid.bidStatus == 2 and bid.isHighestBidder}"
+				                        class="btn btn-outline-primary btn-sm"
+				                        th:onclick="'window.location.href=\'' + @{'/client/orders/DPstep1/' + ${bid.product.proid}} + '\''">
+				                    <i class="bi bi-wallet2"></i> 前往付款
+				                </button>
+				            </td>
 			            </tr>
 			        </tbody>
 			    </table>
@@ -217,9 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
         timeElements.forEach(element => {
             const endTime = parseInt(element.getAttribute('data-endtime'));
             
-            // 如果已經結標，不需要更新
+         	// 如果已經結標，不需要更新
             if (endTime < now) {
                 element.textContent = '已結標';
+                element.classList.remove('text-primary');
+                element.classList.add('text-secondary');
                 return;
             }
             

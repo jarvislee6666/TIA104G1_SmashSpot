@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.smashspot.bid.model.*;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.orders.model.OrdersService;
+import com.smashspot.orders.model.OrdersVO;
 import com.smashspot.product.model.*;
 
 import javax.servlet.http.HttpSession;
@@ -26,6 +28,9 @@ public class BidController {
     @Autowired
     private ProductService productService;
     
+    @Autowired
+    private OrdersService ordersService;
+    
     @GetMapping("/member/biddingList")
     public String listBiddingProduct(Model model, HttpSession session) {
         MemberVO member = (MemberVO) session.getAttribute("login");
@@ -33,14 +38,28 @@ public class BidController {
             return "redirect:/member/login";
         }
 
-        // 獲取所有競標中的商品
-        List<ProductVO> activeProducts = productService.findByBidsta(1);
+        // 獲取狀態為1(競標中)和2(已結標)的商品
+        List<ProductVO> activeAndEndedProducts = new ArrayList<>();
+        activeAndEndedProducts.addAll(productService.findByBidsta(1)); // 競標中的商品
+        activeAndEndedProducts.addAll(productService.findByBidsta(2)); // 已結標的商品
         
         // 建立結果列表
         List<Map<String, Object>> biddingList = new ArrayList<>();
         
         // 遍歷每個商品,檢查會員是否有出價
-        for (ProductVO product : activeProducts) {
+        for (ProductVO product : activeAndEndedProducts) {
+        	// 檢查該商品是否已有完成付款的訂單
+            List<OrdersVO> orders = ordersService.findByProduct(product.getProid());
+            boolean hasCompletedOrder = orders.stream()
+                    .anyMatch(order -> order.getOrdstaid() == 2 || order.getOrdstaid() == 3 || order.getOrdstaid() == 4);
+                
+            // 如果商品已經完成付款，則跳過不顯示
+            if (hasCompletedOrder) {
+                continue;
+            }
+        	
+        	
+        	
             List<BidVO> memberBids = bidService.getMemberBidsForProduct(member.getMemid(), product.getProid());
             
             if (!memberBids.isEmpty()) {
@@ -53,10 +72,15 @@ public class BidController {
                 // 取得商品當前最高價
                 Integer currentHighestBid = product.getMaxprice();
                 
+                // 檢查是否為最高出價者
+                boolean isHighestBidder = highestBid.equals(currentHighestBid);
+                
                 Map<String, Object> bidInfo = new HashMap<>();
                 bidInfo.put("product", product);
                 bidInfo.put("myHighestBid", highestBid);
                 bidInfo.put("currentHighestBid", currentHighestBid);
+                bidInfo.put("isHighestBidder", isHighestBidder);
+                bidInfo.put("bidStatus", product.getBidstaid()); // 添加商品狀態
                 
                 biddingList.add(bidInfo);
             }
