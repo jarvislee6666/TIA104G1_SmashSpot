@@ -5,6 +5,9 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>新增場館資料 - addStdm.html</title>
+<!-- Google Maps API 金鑰 -->
+<script
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpeKJsYqFNvxDjFzALran62W4aP-PmJs"></script>
 <th:block th:replace="back-end/adm/Header :: headContent" />
 <head th:insert="~{/back-end/adm/included-fragment}"></head>
 <script
@@ -30,14 +33,11 @@
 						<div class="nav flex-column nav-pills">
 							<a class="nav-link active" th:href="@{/adm/addStdm}"> <i
 								class="fas fa-plus-circle me-2"></i>場館刊登
-							</a> 
-							<a class="nav-link" th:href="@{/adm/listAllStdm}"> <i 
+							</a> <a class="nav-link" th:href="@{/adm/listAllStdm}"> <i
 								class="fas fa-list me-2"></i>場館刊登列表
-							</a> 
-							<a class="nav-link" th:href="@{/adm/listAllCourtOrders}"> <i 
+							</a> <a class="nav-link" th:href="@{/adm/listAllCourtOrders}"> <i
 								class="fas fa-history me-2"></i>預約訂單紀錄
-							</a> 
-							<a class="nav-link" th:href="@{/adm/listAllChart}"> <i
+							</a> <a class="nav-link" th:href="@{/adm/listAllChart}"> <i
 								class="fas fa-chart-line me-2"></i>場館成效統計
 							</a>
 						</div>
@@ -53,17 +53,17 @@
 						<div th:if="${message}" class="alert alert-warning" role="alert"
 							th:text="${message}"></div>
 
-<div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
-<div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+						<div th:if="${success}" class="alert alert-success" role="alert"
+							th:text="${success}"></div>
+						<div th:if="${error}" class="alert alert-danger" role="alert"
+							th:text="${error}"></div>
 
 						<form id="venue-form" class="venue-form"
 							th:action="@{/adm/insertStdm}" method="post"
 							th:object="${stadiumVO}" enctype="multipart/form-data">
 							<div class="mb-4">
-								<label class="form-label">場館名稱</label> 
-								<input type="text"
-									th:field="*{stdmName}" 
-									class="form-control"
+								<label class="form-label">場館名稱</label> <input type="text"
+									th:field="*{stdmName}" class="form-control"
 									th:class="${#fields.hasErrors('stdmName')} ? 'form-control is-invalid' : 'form-control'">
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmName')}"
@@ -71,21 +71,21 @@
 							</div>
 
 							<div class="mb-4">
-								<label class="form-label">場館地址</label> 
-								<input type="text"
-									th:field="*{stdmAddr}" 
-									class="form-control"
+
+								<label class="form-label">場館地址</label> <input type="text"
+									th:field="*{stdmAddr}" class="form-control"
 									th:class="${#fields.hasErrors('stdmAddr')} ? 'form-control is-invalid' : 'form-control'">
+								<button type="button" class="btn btn-outline-primary"
+									onclick="getLatLngFromAddress()">取得經緯度</button>
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmAddr')}"
 									th:errors="*{stdmAddr}"></div>
 							</div>
 
+
 							<div class="mb-4">
-								<label class="form-label">場館簡介</label> 
-								<input type="text"
-									th:field="*{stdmIntro}" 
-									class="form-control"
+								<label class="form-label">場館簡介</label> <input type="text"
+									th:field="*{stdmIntro}" class="form-control"
 									th:class="${#fields.hasErrors('stdmIntro')} ? 'form-control is-invalid' : 'form-control'">
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmIntro')}"
@@ -93,11 +93,15 @@
 							</div>
 
 							<div class="mb-4">
-								<label class="form-label">場地數量</label> 
-								<input type="number"
-									th:field="*{courtCount}" 
-									class="form-control"
+								<label class="form-label">場地數量</label>
+								<!-- 改成 select 下拉 -->
+								<select th:field="*{courtCount}" class="form-control"
 									th:class="${#fields.hasErrors('courtCount')} ? 'form-control is-invalid' : 'form-control'">
+									<!-- #numbers.sequence(start, end) 產生 [start, ..., end] -->
+									<option th:each="i : ${#numbers.sequence(1,9)}" th:value="${i}"
+										th:text="${i}"></option>
+								</select>
+
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('courtCount')}"
 									th:errors="*{courtCount}"></div>
@@ -106,8 +110,7 @@
 							<div class="mb-4">
 								<label class="form-label">場租費</label>
 								<div class="input-group">
-									<input type="number" 
-										th:field="*{courtPrice}"
+									<input type="number" th:field="*{courtPrice}"
 										class="form-control"
 										th:class="${#fields.hasErrors('courtPrice')} ? 'form-control is-invalid' : 'form-control'">
 									<span class="input-group-text">元/小時</span>
@@ -123,81 +126,39 @@
 									<input type="file" id="upFiles" name="stdmPic"
 										class="form-control"
 										th:class="${#fields.hasErrors('stdmPic')} ? 'form-control is-invalid' : 'form-control'"
-										accept="image/png,image/jpeg,image/gif"
-										onc="previewImage()" multiple="multiple"
-										onchange="hideContent('upFiles.errors');">
-									
+										accept="image/png,image/jpeg,image/gif" onc="previewImage()"
+										multiple="multiple" onchange="hideContent('upFiles.errors');">
+
 									<div id="blob_holder" class="mt-2"></div>
 								</div>
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('stdmPic')}" th:errors="*{stdmPic}">
 								</div>
 								<!-- JS錯誤訊息容器 -->
-								<div class="invalid-feedback" 
-									id="upFiles.errors"
+								<div class="invalid-feedback" id="upFiles.errors"
 									th:if="${#fields.hasErrors('stdmPic')}"
 									th:utext="${errorMessage}"></div>
 							</div>
 
-							<div class="mb-4">
-								<label class="form-label">開館時間</label>
-								<div class="input-group">
-									<input type="number" 
-										th:field="*{openTime}"
-										class="form-control"
-										th:class="${#fields.hasErrors('openTime')} ? 'form-control is-invalid' : 'form-control'">
-									<div class="invalid-feedback"
-										th:if="${#fields.hasErrors('openTime')}"
-										th:errors="*{openTime}"></div>
-								</div>
-							</div>
+							<input type="hidden" name="openTime" value="8" /> <input
+								type="hidden" name="closeTime" value="22" />
 
-							<div class="mb-4">
-								<label class="form-label">閉館時間</label>
-								<div class="input-group">
-									<input type="number" 
-										th:field="*{closeTime}"
-										class="form-control"
-										th:class="${#fields.hasErrors('closeTime')} ? 'form-control is-invalid' : 'form-control'">
-									<div class="invalid-feedback"
-										th:if="${#fields.hasErrors('closeTime')}"
-										th:errors="*{closeTime}"></div>
-								</div>
-							</div>
 							<div>以下測試用:</div>
-							<div class="mb-4">
-								<label class="form-label">經度</label>
-								<div class="input-group">
-									<input type="number" 
-										th:field="*{longitude}"
-										class="form-control"
-										th:class="${#fields.hasErrors('longitude')} ? 'form-control is-invalid' : 'form-control'">
-									<div class="invalid-feedback"
-										th:if="${#fields.hasErrors('longitude')}"
-										th:errors="*{longitude}"></div>
-								</div>
-							</div>
-							<div class="mb-4">
-								<label class="form-label">緯度</label>
-								<div class="input-group">
-									<input type="number" 
-										th:field="*{latitude}"
-										class="form-control"
-										th:class="${#fields.hasErrors('latitude')} ? 'form-control is-invalid' : 'form-control'">
-									<div class="invalid-feedback"
-										th:if="${#fields.hasErrors('latitude')}"
-										th:errors="*{latitude}"></div>
-								</div>
-							</div>
+							<!-- 經度欄位，新增一個 id="longitude" -->
+							<label>經度</label> <input type="text" id="longitude"
+								th:field="*{longitude}" class="form-control" /> <br>
+
+							<!-- 緯度欄位，新增一個 id="latitude" -->
+							<label>緯度</label> <input type="text" id="latitude"
+								th:field="*{latitude}" class="form-control" /> <br>
+
 							<!-- 地點選擇 -->
 							<div class="mb-4">
 								<label class="form-label">地點編號</label> <select
-									th:field="*{locationVO.locId}" 
-									class="form-control">
+									th:field="*{locationVO.locId}" class="form-control">
 									<option value="">請選擇地點</option>
 									<option th:each="location : ${locMapData}"
-											th:value="${location.key}" 
-											th:text="${location.value}">
+										th:value="${location.key}" th:text="${location.value}">
 									</option>
 								</select>
 								<div class="invalid-feedback"
@@ -208,11 +169,9 @@
 							<!-- 管理員選擇 -->
 							<div class="mb-4">
 								<label class="form-label">管理員編號:</label> <select
-									th:field="*{admVO.admid}" 
-									class="form-control">
+									th:field="*{admVO.admid}" class="form-control">
 									<option th:each="admVO : ${admListData}"
-											th:value="${admVO.admid}" 
-											th:text="${admVO.admname}" />
+										th:value="${admVO.admid}" th:text="${admVO.admname}" />
 								</select>
 								<div class="invalid-feedback"
 									th:if="${#fields.hasErrors('admVO.admid')}"
@@ -231,9 +190,13 @@
 	</div>
 
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
+		document
+				.addEventListener(
+						'DOMContentLoaded',
+						function() {
 							const form = document.getElementById('venue-form');
-							const loadingOverlay = document.querySelector('.loading-overlay');
+							const loadingOverlay = document
+									.querySelector('.loading-overlay');
 
 							// 隱藏錯誤訊息函數
 							function hideContent(d) {
@@ -254,9 +217,12 @@
 
 							// 圖片預覽功能
 							function previewImage() {
-								var upfile1 = document.getElementById("upFiles");
-								upfile1.addEventListener("change", function(event) {
-									var files = event.target.files || event.dataTransfer.files;
+								var upfile1 = document
+										.getElementById("upFiles");
+								upfile1.addEventListener("change", function(
+										event) {
+									var files = event.target.files
+											|| event.dataTransfer.files;
 									for (var i = 0; i < files.length; i++) {
 										previewfile(files[i])
 									}
@@ -266,7 +232,8 @@
 							// 處理預覽
 							function previewfile(file) {
 								// 如果支援 FileReader 且檔案類型正確
-								if (filereader_support === true && acceptedTypes[file.type] === true) {
+								if (filereader_support === true
+										&& acceptedTypes[file.type] === true) {
 									var reader = new FileReader();
 									reader.onload = function(event) {
 										var image = new Image();
@@ -274,15 +241,17 @@
 										image.width = 100;
 										image.height = 75;
 										image.border = 2;
-										
+
 										// 更新預覽區域
-										var blob_holder = document.getElementById('blob_holder');
+										var blob_holder = document
+												.getElementById('blob_holder');
 										if (blob_holder.hasChildNodes()) {
-											blob_holder.removeChild(blob_holder.childNodes[0]);
+											blob_holder
+													.removeChild(blob_holder.childNodes[0]);
 										}
 										blob_holder.appendChild(image);
 									};
-									
+
 									reader.readAsDataURL(file);
 									document.getElementById('submit').disabled = false;
 								} else {
@@ -303,9 +272,10 @@
 							}
 
 							// 表單提交處理
-							document.querySelector('form').addEventListener('submit', function(e) {
-								showLoading();
-							});
+							document.querySelector('form').addEventListener(
+									'submit', function(e) {
+										showLoading();
+									});
 
 							function showLoading() {
 								loadingOverlay.style.display = 'flex';
@@ -319,5 +289,38 @@
 							previewImage();
 						});
 	</script>
+
+	<script>
+        // 2. 利用 Google Maps Geocoder 依地址抓取經緯度
+        function getLatLngFromAddress() {
+            // 取出「地址欄位」的值
+            const address = document.getElementById('stdmAddr').value;
+            if (!address) {
+                alert("請先輸入地址");
+                return;
+            }
+
+            // 建立 Geocoder 物件
+            const geocoder = new google.maps.Geocoder();
+
+            // 將地址轉成經緯度
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === 'OK') {
+                    // 取得經緯度
+                    const location = results[0].geometry.location;
+                    const lat = location.lat();  // 緯度
+                    const lng = location.lng();  // 經度
+
+                    // 寫回表單的經緯度欄位
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+
+                    console.log('lat:', lat, 'lng:', lng);
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+    </script>
 </body>
 </html>
