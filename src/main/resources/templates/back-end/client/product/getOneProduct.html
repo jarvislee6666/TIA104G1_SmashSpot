@@ -688,230 +688,8 @@
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
-//     function updateCountdown() {
-//         const countdownElement = document.getElementById('countdown');
-//         const endTimeMillis = parseInt(countdownElement.getAttribute('data-end-time'));
-//         const now = new Date().getTime();
-//         const diff = endTimeMillis - now;
-        
-//         if (diff <= 0) {
-//             countdownElement.textContent = '競標已結束';
-//             countdownElement.classList.add('text-danger');
-//             return;
-//         }
-        
-//         // 計算天、時、分、秒
-//         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-//         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-//         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-//         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
-//         // 格式化時間
-//         const timeString = `${days}天 ${String(hours).padStart(2, '0')}小時 ${String(minutes).padStart(2, '0')}分鐘 ${String(seconds).padStart(2, '0')}秒`;
-//         countdownElement.textContent = timeString;
-        
-//         // 如果剩餘時間少於1小時，添加緊急樣式
-//         if (diff < 1000 * 60 * 60) {
-//             countdownElement.classList.add('text-danger');
-//         }
-//     }
-    
-//     // 初始更新
-//     updateCountdown();
-//     // 每秒更新一次
-//     const countdownInterval = setInterval(updateCountdown, 1000);
-    
-//     // 清理定時器
-//     window.addEventListener('unload', () => {
-//         clearInterval(countdownInterval);
-//     });
-    
-    
-//  	// 更新競標歷史表格
-//     function updateBidHistory(bidHistory) {
-// 	    const tableContainer = document.getElementById('bidHistoryTableContainer');
-// 	    const noBidMessage = document.getElementById('noBidMessage');
-// 	    const tbody = document.querySelector('#bidHistoryTableContainer tbody');
-	    
-// 	    if (Array.isArray(bidHistory) && bidHistory.length > 0) {
-// 	        // 有競標記錄時
-// 	        tableContainer.style.display = 'block';
-// 	        if (noBidMessage) noBidMessage.style.display = 'none';
-	        
-// 	        // 更新表格內容
-// 	        tbody.innerHTML = bidHistory.map(bid => `
-// 	            <tr>
-// 	                <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
-// 	                <td>${bid.bidderName || '匿名用戶'}</td>
-// 	                <td class="text-end">
-// 	                    <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
-// 	                </td>
-// 	            </tr>
-// 	        `).join('');
-// 	    } else {
-// 	        // 無競標記錄時
-// 	        tableContainer.style.display = 'none';
-// 	        if (noBidMessage) noBidMessage.style.display = 'block';
-// 	    }
-// 	}
-
-//     // 更新最高價格顯示
-//     function updateHighestBid(newPrice) {
-//         const priceDisplays = document.querySelectorAll('.current-price .price, .price-box .text-primary');
-//         priceDisplays.forEach(display => {
-//             display.textContent = `NT$ ${newPrice.toLocaleString()}`;
-//         });
-//     }
-
-//  	// 顯示提示訊息
-//     function showToast(message, isSuccess = true) {
-//         // 先移除可能存在的舊 toast
-//         const existingToasts = document.querySelectorAll('.toast-container');
-//         existingToasts.forEach(toast => toast.remove());
-
-//         const toastHTML = `
-//             <div class="toast-container position-fixed top-0 end-0 p-3 mt-5" style="z-index: 1056;">
-//                 <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-//                     <div class="toast-header ${isSuccess ? 'bg-success text-white' : 'bg-danger text-white'}">
-//                         <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2"></i>
-//                         <strong class="me-auto">${isSuccess ? '出價成功' : '出價失敗'}</strong>
-//                         <button type="button" class="btn-close ${isSuccess ? 'btn-close-white' : ''}" data-bs-dismiss="toast"></button>
-//                     </div>
-//                     <div class="toast-body">
-//                         ${message}
-//                     </div>
-//                 </div>
-//             </div>
-//         `;
-        
-//         document.body.insertAdjacentHTML('beforeend', toastHTML);
-        
-//         // 3秒後自動移除
-//         setTimeout(() => {
-//             const toast = document.querySelector('.toast-container');
-//             if (toast) {
-//                 toast.remove();
-//             }
-//         }, 3000);
-//     }
-
-//  	// 當文檔加載完成時的初始化
-//     document.addEventListener('DOMContentLoaded', function() {
-//         const bidForm = document.getElementById('bidForm');
-//         const bidAmount = document.getElementById('bidAmount');
-//         const bidButton = document.getElementById('bidButton');
-        
-//         if (bidAmount) {
-//             const minBidAmount = parseInt(bidAmount.getAttribute('min'));
-//             bidAmount.setAttribute('data-min-incr', bidAmount.getAttribute('data-min-incr') || '0');
-            
-//             // 即時驗證出價金額
-//             bidAmount.addEventListener('input', function() {
-//                 if (this.value && parseInt(this.value) >= minBidAmount) {
-//                     this.classList.remove('is-invalid');
-//                     this.classList.add('is-valid');
-//                 } else {
-//                     this.classList.remove('is-valid');
-//                     this.classList.add('is-invalid');
-//                 }
-//             });
-//         }
-        
-//         // 出價表單提交處理
-//         if (bidForm) {
-//             bidForm.addEventListener('submit', async function(event) {
-//                 event.preventDefault();
-                
-//                 const bidAmount = document.getElementById('bidAmount');
-//                 const minBidAmount = parseInt(bidAmount.getAttribute('min'));
-                
-//                 if (!bidAmount.value || parseInt(bidAmount.value) < minBidAmount) {
-//                     bidAmount.classList.add('is-invalid');
-//                     return;
-//                 }
-                
-//                 try {
-//                     const productId = new URLSearchParams(window.location.search).get('proid') || 
-//                                     window.location.pathname.split('/').pop();
-                    
-//                     const formData = new FormData();
-//                     formData.append('productId', productId);
-//                     formData.append('bidAmount', bidAmount.value);
-                    
-//                     const response = await fetch('/client/bid/place', {
-//                         method: 'POST',
-//                         body: formData
-//                     });
-                    
-//                     const result = await response.json();
-                    
-//                     if (response.status === 401) {
-//                         // 未登入情況
-//                         sessionStorage.setItem('redirectAfterLogin', window.location.href);
-//                         window.location.href = result.redirect || '/member/login';
-//                         return;
-//                     }
-                    
-//                     if (result.success) {
-//                         // 更新頁面顯示
-//                         updateHighestBid(result.currentHighestBid);
-//                         updateBidHistory(result.bidHistory);
-                        
-//                         // 關閉 Modal
-//                         const modal = bootstrap.Modal.getInstance(document.getElementById('biddingModal'));
-//                         modal.hide();
-                        
-//                         // 顯示成功訊息
-//                         showToast(`您已成功出價 NT$ ${parseInt(bidAmount.value).toLocaleString()}`);
-                        
-//                         // 重置表單
-//                         bidForm.reset();
-//                     } else {
-//                         // 顯示錯誤訊息
-//                         showToast(result.error, false);
-//                     }
-//                 } catch (error) {
-//                     console.error('Error:', error);
-//                     showToast('競標過程發生錯誤，請稍後再試', false);
-//                 }
-//             });
-//         }
-        
-//         // 出價按鈕點擊處理
-// 		if (bidButton) {
-// 		    bidButton.addEventListener('click', async function() {
-// 		        try {
-// 		            // 發送請求檢查登入狀態
-// 		            const response = await fetch('/client/bid/check-login', {
-// 		                method: 'GET',
-// 		                headers: {
-// 		                	// 添加這行
-// 		                    'X-Requested-With': 'XMLHttpRequest'  
-// 		                }
-// 		            });
-		            
-// 		            const result = await response.json();
-		            
-// 		            if (!result.isLoggedIn || response.status === 401) {
-// 		                sessionStorage.setItem('redirectAfterLogin', window.location.href);
-// 		                window.location.href = result.redirect || '/member/login';
-// 		                return;
-// 		            }
-		            
-// 		         	// 已登入則開啟競標 Modal
-// 		            const biddingModal = new bootstrap.Modal(document.getElementById('biddingModal'));
-// 		            biddingModal.show();
-		            
-// 		        } catch (error) {
-// 		            console.error('Error checking login status:', error);
-// 		         	// 發生錯誤時也導向登入頁
-// 		            sessionStorage.setItem('redirectAfterLogin', window.location.href);
-// 		            window.location.href = '/member/login';
-// 		        }
-// 		    });
-// 		}
-//     });
-
+//全局變數
+let countdownInterval;
 // 倒數計時相關函數
 function updateCountdown() {
     const countdownElement = document.getElementById('countdown');
@@ -922,6 +700,21 @@ function updateCountdown() {
     if (diff <= 0) {
         countdownElement.textContent = '競標已結束';
         countdownElement.classList.add('text-danger');
+        
+        // 獲取按鈕容器
+        const actionButtons = document.querySelector('.action-buttons');
+        
+        // 更新按鈕區域的HTML
+        actionButtons.innerHTML = `
+            <div class="w-100">
+                <button class="btn btn-secondary w-100 disabled" disabled>
+                    <i class="bi bi-exclamation-circle me-2"></i>已結標，無法出價或購買
+                </button>
+            </div>
+        `;
+        
+        // 清除倒數計時器
+        clearInterval(countdownInterval);
         return;
     }
     
@@ -945,12 +738,40 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化倒數計時
     updateCountdown();
     // 每秒更新一次倒數計時
-    const countdownInterval = setInterval(updateCountdown, 1000);
+    countdownInterval = setInterval(updateCountdown, 1000);
     
     // 頁面卸載時清理定時器
     window.addEventListener('unload', () => {
         clearInterval(countdownInterval);
-    });
+    });   
+    
+ 	// 更新競標歷史表格
+    function updateBidHistory(bidHistory) {
+	    const tableContainer = document.getElementById('bidHistoryTableContainer');
+	    const noBidMessage = document.getElementById('noBidMessage');
+	    const tbody = document.querySelector('#bidHistoryTableContainer tbody');
+	    
+	    if (Array.isArray(bidHistory) && bidHistory.length > 0) {
+	        // 有競標記錄時
+	        tableContainer.style.display = 'block';
+	        if (noBidMessage) noBidMessage.style.display = 'none';
+	        
+	        // 更新表格內容
+	        tbody.innerHTML = bidHistory.map(bid => `
+	            <tr>
+	                <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
+	                <td>${bid.bidderName || '匿名用戶'}</td>
+	                <td class="text-end">
+	                    <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
+	                </td>
+	            </tr>
+	        `).join('');
+	    } else {
+	        // 無競標記錄時
+	        tableContainer.style.display = 'none';
+	        if (noBidMessage) noBidMessage.style.display = 'block';
+	    }
+	}
 
     // 從 Thymeleaf 獲取競標歷史數據並初始化顯示
     const bidHistory = /*[[${bidHistory}]]*/ [];
