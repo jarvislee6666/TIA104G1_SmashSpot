@@ -326,7 +326,7 @@ public class StdmController {
 	    }
 
 	    /*************************** 4.進行更新 ***************************/
-	    stdmVO.setOprSta(true);
+//	    stdmVO.setOprSta(true);
 	    stdmSvc.updateStdm(stdmVO);
 
 	    /*************************** 5.更新完成，導向或轉交到成功頁面 ***************************/

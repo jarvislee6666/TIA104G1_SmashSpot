@@ -229,6 +229,26 @@
 									th:errors="*{admVO.admid}"></div>
 							</div>
 
+							<div class="mb-4">
+								<!-- Label -->
+								<label class="form-label" for="oprStaSelect"> 營運狀態 </label>
+
+								<!-- 下拉式選單，對應 StadiumVO 裡的 boolean oprSta 屬性 -->
+								<select th:field="*{oprSta}" id="oprStaSelect"
+									class="form-select"
+									th:class="${#fields.hasErrors('oprSta')} ? 'form-select is-invalid' : 'form-select'">
+
+									<!-- 從字面上來看，true=啟用 / false=停用 -->
+									<option th:value="true">啟用</option>
+									<option th:value="false">停用</option>
+								</select>
+
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('oprSta')}" th:errors="*{oprSta}">
+								</div>
+							</div>
+
+
 							<!-- 送出 -->
 							<div class="text-end">
 								<a th:href="@{/adm/listAllStdm}" class="btn btn-secondary">
