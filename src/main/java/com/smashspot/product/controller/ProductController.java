@@ -187,12 +187,13 @@ public class ProductController {
     }
     
     @GetMapping("/client/memProductList")
-	public String memProductList(Model model,  HttpSession session) {
-    	MemberVO mem = (MemberVO) session.getAttribute("login");
-        List<ProductVO> list = proSvc.findMem(mem.getMemid());
-    	model.addAttribute("memProductListData",list);
-		return "back-end/client/product/memProductList";
-	}
+    public String memProductList(Model model, HttpSession session) {
+        MemberVO mem = (MemberVO) session.getAttribute("login");
+        
+        List<ProductVO> list = proSvc.findMemUnsoldProducts(mem.getMemid());
+        model.addAttribute("memProductListData", list);
+        return "back-end/client/product/memProductList";
+    }
 	
 	@GetMapping("/client/addProduct")
 	public String addProduct(ModelMap model, HttpSession session) {

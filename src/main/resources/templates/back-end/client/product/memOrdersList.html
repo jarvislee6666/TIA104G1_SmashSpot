@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>賣家訂單管理</title>
+<th:block th:replace="back-end/client/Header :: headContent" />
+<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+
+<style>
+
+	main {
+	  margin-top: 9rem;
+	  flex: 1 0 auto;
+	}
+	
+	.table img {
+    object-fit: cover;
+    }
+
+
+	.delivery-info {
+    font-size: 0.875rem;
+    color: #6c757d;
+    }
+
+    .delivery-info-item {
+     display: flex;
+     margin-bottom: 0.5rem;
+    }
+
+    .delivery-info-label {
+      width: 70px;
+      color: #6c757d;
+    }
+
+    .delivery-info-value {
+      flex: 1;
+    }
+
+    .badge {
+      font-weight: 500;
+      padding: 0.5em 0.8em;
+    }
+	
+
+</style>
+
+</head>
+<body class="bg-light">
+
+<div th:replace="back-end/client/Header :: header"></div>
+
+    <main class="mb-3">
+      <div class="container position-relative mb-3">
+        <div class="row">
+          <!-- Sidebar -->
+			<div class="col-md-3">
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">賣家專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/client/memProductList}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-list-ul"></i>
+			          <span>競標商品列表</span>
+			        </a>
+			        
+			        <a th:href="@{/client/memOrdersList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-clipboard"></i>
+			          <span>商品訂單管理</span>
+			        </a>
+			        
+			        <a href="#" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-graph-up-arrow"></i>
+			          <span>營業成效統計</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+          <!-- Main Content -->
+          <div class="col-md-9">
+            <!-- Search -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="mb-3" style="font-size: 24px">商品訂單列表</h5>
+                <div class="d-flex gap-2">
+				  <input type="search" 
+				         class="form-control" 
+				         placeholder="搜尋商品..." 
+				         style="max-width: 250px" 
+				         id="productSearch"/>
+				  <select class="form-select" 
+				          style="max-width: 150px" 
+				          id="statusFilter">
+				    <option value="">全部商品</option>
+				    <option value="2">付款完成</option>
+				    <option value="3">已出貨</option>
+				    <option value="4">訂單完成</option>
+				    <option value="5">訂單取消</option>
+				  </select>
+				</div>
+              </div>
+            </div>
+            <!-- Table Content -->
+            <div class="table-responsive">
+			  <table class="table table-hover align-middle bg-white shadow-sm rounded">
+			    <thead class="bg-light">
+			      <tr>
+			        <th style="width: 15%">商品圖片</th>
+			        <th style="width: 25%">商品名稱</th>
+			        <th style="width: 15%">訂單金額</th>
+			        <th style="width: 25%">收件資訊</th>
+			        <th style="width: 10%">訂單狀態</th>
+			        <th style="width: 10%">操作</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr th:each="orderVO : ${ordersListData}">
+			        <td>
+			          <div style="width: 100px; height: 100px;" class="rounded overflow-hidden bg-light">
+			            <img th:src="${'/product/image/' + orderVO.productVO.proid}"
+			                 th:alt="${orderVO.productVO.proname}"
+			                 class="w-100 h-100"
+			                 style="object-fit: cover;">
+			          </div>
+			        </td>
+			        <td>
+			          <div class="mb-2">
+                        <span class="fw-medium" th:text="${orderVO.productVO.proname}"></span>
+                      </div>
+			          <div class="text-secondary small mb-1">
+			            訂單編號: #<span th:text="${orderVO.ordid}"></span>
+			          </div>
+			          <div class="text-secondary small">
+			            下單時間: <span th:text="${#dates.format(orderVO.proordtime, 'yyyy-MM-dd HH:mm')}"></span>
+			          </div>
+			        </td>
+			        <td class="fw-medium text-primary">
+			          NT$ <span th:text="${#numbers.formatDecimal(orderVO.afterdis, 1, 'COMMA', 0, 'POINT')}"></span>
+			        </td>
+			        <td>
+                      <div class="delivery-info" th:with="sendInfoParts=${#strings.arraySplit(orderVO.sendinfo, '，')}">
+                        <div class="delivery-info-item" th:each="part : ${sendInfoParts}">
+                          <span class="delivery-info-label" th:text="${#strings.substring(part, 0, #strings.indexOf(part, '：') + 1)}"></span>
+                          <span class="delivery-info-value" th:text="${#strings.substring(part, #strings.indexOf(part, '：') + 1)}"></span>
+                        </div>
+                      </div>
+                    </td>
+			        <td>
+			          <span th:switch="${orderVO.ordstaid}">
+			            <span th:case="2" class="badge bg-warning">付款完成</span>
+			            <span th:case="3" class="badge bg-info">已出貨</span>
+			            <span th:case="4" class="badge bg-success">完成</span>
+			            <span th:case="5" class="badge bg-danger">已取消</span>
+			          </span>
+			        </td>
+			        <td>
+			          <!-- 根據訂單狀態顯示不同的操作按鈕 -->
+			          <div th:if="${orderVO.ordstaid == 2}" class="d-grid gap-2">
+			            <button class="btn btn-sm btn-primary ship-order"
+			                    th:data-order-id="${orderVO.ordid}">
+			              出貨
+			            </button>
+			          </div>
+			        </td>
+			      </tr>
+			    </tbody>
+			  </table>
+			</div>
+            <nav class="mt-2">
+              <ul class="pagination justify-content-center">
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+<div th:replace="back-end/client/Footer :: footer"></div>
+<script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 處理出貨按鈕點擊
+    document.querySelectorAll('.ship-order').forEach(button => {
+        button.addEventListener('click', async function() {
+            const orderId = this.getAttribute('data-order-id');
+            if (confirm('確定要將此訂單標記為已出貨？')) {
+                try {
+                    const response = await fetch(`/client/shipOrder/${orderId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('訂單已更新為已出貨狀態');
+                        location.reload();
+                    } else {
+                        alert(result.message || '操作失敗');
+                    }
+                } catch (error) {
+                    alert('系統錯誤，請稍後再試');
+                }
+            }
+        });
+    });
+
+    // 搜尋和狀態篩選功能
+    const searchInput = document.getElementById('productSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const tableBody = document.querySelector('tbody');
+    const allRows = Array.from(tableBody.getElementsByTagName('tr'));
+
+    function filterOrders() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+
+        allRows.forEach(row => {
+            const productName = row.querySelector('.link-text').textContent.toLowerCase();
+            const orderStatus = row.querySelector('.badge').parentElement.getAttribute('data-status');
+            
+            const matchesSearch = productName.includes(searchTerm);
+            const matchesStatus = statusValue === '' || orderStatus === statusValue;
+
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterOrders);
+    statusFilter.addEventListener('change', filterOrders);
+});
+</script>
+</body>
+</html>

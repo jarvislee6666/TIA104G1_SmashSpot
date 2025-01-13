@@ -353,6 +353,38 @@
 	        font-size: 20px;
 	    }
 	}
+	
+	.favorite-btn {
+        transition: transform 0.2s ease, background-color 0.2s ease;
+	}
+	
+	.favorite-btn:hover {
+	    transform: scale(1.1);
+	    background-color: #fff;
+	}
+	
+	.favorite-btn.active {
+	    background-color: #fff;
+	}
+	
+	.favorite-btn.active i {
+	    color: #dc3545;
+	}
+	
+	/* Toast 樣式 */
+	.toast-container {
+	    z-index: 1056;
+	}
+	
+	.toast {
+	    background: white;
+	    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+	
+	.toast-header {
+	    padding: 0.75rem 1rem;
+	}
+
 </style>
 
 </head>
@@ -390,9 +422,10 @@
 				        </span>
 				        
 				        <!-- 收藏按鈕 -->
-				        <button class="position-absolute top-0 end-0 m-3 btn btn-light rounded-circle shadow-sm" 
+						<button class="position-absolute top-0 end-0 m-3 btn btn-light rounded-circle shadow-sm favorite-btn" 
+						        th:data-product-id="${productVO.proid}"
 						        style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-						    <i class="bi bi-heart-fill fs-4 text-danger"></i>
+						    <i class="bi bi-heart fs-4"></i>
 						</button>
 				    </div>
 				</div>
@@ -884,6 +917,64 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+ 	// 初始化收藏按鈕狀態
+    const favoriteBtn = document.querySelector('.favorite-btn');
+    if (favoriteBtn) {
+        const productId = favoriteBtn.getAttribute('data-product-id');
+        
+        // 檢查收藏狀態
+        fetch(`/client/favorite/check/${productId}`)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isFavorite) {
+                    favoriteBtn.classList.add('active');
+                    favoriteBtn.querySelector('i').classList.add('bi-heart-fill', 'text-danger');
+                    favoriteBtn.querySelector('i').classList.remove('bi-heart');
+                }
+            })
+            .catch(error => console.error('Error checking favorite status:', error));
+        
+        // 處理收藏按鈕點擊
+        favoriteBtn.addEventListener('click', async function(e) {
+            const isActive = this.classList.contains('active');
+            
+            try {
+                const response = await fetch(`/client/favorite/${isActive ? 'remove' : 'add'}/${productId}`, {
+                    method: isActive ? 'DELETE' : 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const icon = this.querySelector('i');
+                    if (isActive) {
+                        this.classList.remove('active');
+                        icon.classList.remove('bi-heart-fill', 'text-danger');
+                        icon.classList.add('bi-heart');
+                    } else {
+                        this.classList.add('active');
+                        icon.classList.add('bi-heart-fill', 'text-danger');
+                        icon.classList.remove('bi-heart');
+                    }
+                    showToast(result.message, true);
+                } else {
+                    if (response.status === 401) {
+                        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = '/member/login';
+                        return;
+                    }
+                    showToast(result.message || '操作失敗', false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('發生錯誤，請稍後再試', false);
+            }
+        });
+    }
 });
 
 // 初始化競標歷史顯示函數
@@ -943,7 +1034,7 @@ function showToast(message, isSuccess = true) {
             <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header ${isSuccess ? 'bg-success text-white' : 'bg-danger text-white'}">
                     <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2"></i>
-                    <strong class="me-auto">${isSuccess ? '出價成功' : '出價失敗'}</strong>
+                    <strong class="me-auto">${isSuccess ? ' 操作成功' : '操作失敗'}</strong>
                     <button type="button" class="btn-close ${isSuccess ? 'btn-close-white' : ''}" data-bs-dismiss="toast"></button>
                 </div>
                 <div class="toast-body">

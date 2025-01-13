@@ -252,11 +252,48 @@
 	.product_card {
 	  cursor: pointer;
 	  transition: transform 0.2s ease, box-shadow 0.2s ease;
+	  position: relative;
 	}
 	
 	.product_card:hover {
 	  transform: translateY(-4px);
 	  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+	}
+	
+	.favorite-btn {
+	  position: absolute;
+	  right: 1rem;
+	  top: 1rem;
+	  background: rgba(255, 255, 255, 0.9);
+	  border: none; 
+	  border-radius: 50%;
+	  width: 2.5rem;
+	  height: 2.5rem;
+	  display: flex;
+	  align-items: center;
+      justify-content: center;
+	  cursor: pointer;
+	  transition: all 0.2s;
+	  z-index: 1;
+	}
+	
+	.favorite-btn:hover {
+	  transform: scale(1.1);
+	  background: rgba(255, 255, 255, 1);
+	}
+	
+	.favorite-btn.active {
+	  color: #dc3545;
+	}
+	
+	/* Toast 提示樣式 */
+	.toast-container {
+	  z-index: 1056;
+	}
+	
+	.toast {
+	  background: white;
+	  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 
 </style>
@@ -310,13 +347,11 @@
 						        </th:block>
 						    </div>
 						</div>
-				
-				        <a href=".#" class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
-				          <i class="bi bi-cash-coin"></i>
-				          <span>參加中競標</span>
-				        </a>
-				        
 				        <a href="#" class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+                            <i class="bi bi-cash-coin"></i>
+                            <span>參加中競標</span>
+                        </a>
+				        <a th:href="@{/client/favorite/list}" class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
 				          <i class="bi bi-bag-heart"></i>
 				          <span>收藏清單</span>
 				        </a>
@@ -378,12 +413,14 @@
 				        class="rounded-top"
 				      />
 				      <!-- Category Badge -->
-				      <span class="category-badge small fw-medium text-dark">
+				      <span class="category-badge small fw-medium text-dark" 
+				            th:text="${productVO.productClassVO.catename}">
 				        球拍
 				      </span>
 				      <!-- Favorite Button -->
-				      <button class="favorite-btn shadow-sm">
-				        <i class="bi bi-heart"></i>
+				      <button class="favorite-btn shadow-sm"
+				              th:data-product-id="${productVO.proid}">
+				           <i class="bi bi-heart"></i>
 				      </button>
 				    </div>
 				
@@ -496,7 +533,112 @@ document.addEventListener("DOMContentLoaded", function () {
     	    });
     	    bootstrapCollapse.show();
     	}
+    
+ // 初始化收藏按鈕狀態
+    const favoriteButtons = document.querySelectorAll('.favorite-btn');
+    favoriteButtons.forEach(async button => {
+        const productId = button.getAttribute('data-product-id');
+        try {
+            const response = await fetch(`/client/favorite/check/${productId}`);
+            const result = await response.json();
+            if (result.isFavorite) {
+                button.classList.add('active');
+                button.querySelector('i').classList.add('bi-heart-fill', 'text-danger');
+                button.querySelector('i').classList.remove('bi-heart');
+            }
+        } catch (error) {
+            console.error('Error checking favorite status:', error);
+        }
+    });
+
+    // 處理收藏按鈕點擊
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', async function(e) {
+            e.stopPropagation(); // 防止觸發卡片點擊事件
+            
+            const productId = this.getAttribute('data-product-id');
+            const isActive = this.classList.contains('active');
+            
+            try {
+                const response = await fetch(`/client/favorite/${isActive ? 'remove' : 'add'}/${productId}`, {
+                    method: isActive ? 'DELETE' : 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const icon = this.querySelector('i');
+                    if (isActive) {
+                        this.classList.remove('active');
+                        icon.classList.remove('bi-heart-fill', 'text-danger');
+                        icon.classList.add('bi-heart');
+                    } else {
+                        this.classList.add('active');
+                        icon.classList.add('bi-heart-fill', 'text-danger');
+                        icon.classList.remove('bi-heart');
+                    }
+                    showToast(result.message, true);
+                } else {
+                    if (response.status === 401) {
+                        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = '/member/login';
+                        return;
+                    }
+                    showToast(result.message || '操作失敗', false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('發生錯誤，請稍後再試', false);
+            }
+        });
+    });
+
+    // 商品卡片點擊處理
+    cards.forEach(card => {
+        card.addEventListener("click", function(e) {
+            // 如果點擊的不是收藏按鈕,才導向商品頁面
+            if (!e.target.closest('.favorite-btn')) {
+                const btn = this.querySelector(".btn_getOneProduct");
+                if (btn) {
+                    btn.click();
+                }
+            }
+        });
+    });
   });
+  
+//顯示 Toast 提示訊息
+function showToast(message, isSuccess = true) {
+    const existingToasts = document.querySelectorAll('.toast-container');
+    existingToasts.forEach(toast => toast.remove());
+
+    const toastHTML = `
+        <div class="toast-container position-fixed top-0 end-0 p-3 mt-5">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header ${isSuccess ? 'bg-success' : 'bg-danger'} text-white">
+                    <i class="bi ${isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2"></i>
+                    <strong class="me-auto">${isSuccess ? '成功' : '失敗'}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', toastHTML);
+
+    setTimeout(() => {
+        const toast = document.querySelector('.toast-container');
+        if (toast) {
+            toast.remove();
+        }
+    }, 3000);
+}
 </script>
 </body>
 </html>

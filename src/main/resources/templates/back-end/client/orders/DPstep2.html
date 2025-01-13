@@ -209,9 +209,9 @@
 
                             <!-- Navigation Buttons -->
                             <div class="d-flex justify-content-between">
-                                <a th:href="@{/client/DPstep1}" class="btn btn-outline-dark">
-                                    <i class="bi bi-arrow-left me-2"></i>返回上一步
-                                </a>
+                                <a href="javascript:void(0)" onclick="goBack()" class="btn btn-outline-dark">
+							        <i class="bi bi-arrow-left me-2"></i>返回上一步
+							    </a>
                                 <button type="submit" class="btn btn-dark">
                                     下一步<i class="bi bi-arrow-right ms-2"></i>
                                 </button>
@@ -228,6 +228,22 @@
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
+/*<![CDATA[*/
+
+// 獲取 orderData 中的商品ID
+const productId = /*[[${orderData.productId}]]*/ null;
+
+// 返回功能
+function goBack() {
+    if (productId) {
+        window.location.href = '/client/orders/DPstep1/' + productId;
+    } else {
+        // 如果沒有商品ID，返回商品列表
+        window.location.href = '/client/listAllProductING';
+    }
+}
+	
+	
 // Form validation
 (function () {
     'use strict'
@@ -404,6 +420,7 @@ document.querySelector('input[name="phone"]').addEventListener('input', function
         e.target.setCustomValidity('');
     }
 });
+/*]]>*/
 </script>
 </body>
 </html>
