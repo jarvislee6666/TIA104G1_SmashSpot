@@ -1,5 +1,7 @@
 package com.smashspot.coupon.model;
 
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,4 +48,10 @@ public class CouponService {
 		return repository.findAll();
 	}
 
+	public List<CouponVO> searchCoupons(String copcode, Date startDate, Date endDate) {
+        if (copcode != null && copcode.trim().isEmpty()) {
+            copcode = null;
+        }
+        return repository.findByCopcodeAndDateRange(copcode, startDate, endDate);
+    }
 }
