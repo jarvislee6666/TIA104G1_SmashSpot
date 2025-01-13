@@ -49,9 +49,6 @@
 		                              } ? 'active' : ''">場地預約</a>
 		          </li>
 		          <li class="nav-item">
-		            <a href="#" class="nav-link px-3 py-2 rounded-2">球友論壇</a>
-		          </li>
-		          <li class="nav-item">
 		            <a href="#" class="nav-link px-3 py-2 rounded-2">客服中心</a>
 		          </li>
 		          <li class="nav-item">
@@ -61,32 +58,31 @@
 		                            }? 'active' : ''"
 		            >賣家專區</a>
 		          </li>
-					<!-- 修改後的版本 -->
-					<li class="nav-item">
-					  <a
-					    th:if="${session.login == null}"
-					    th:href="@{/member/login}"
-					    class="nav-link px-3 py-2 rounded-2"
-					  >
-					    <i class="bi bi-person"></i>
-					    <span>Account</span>
-					  </a>
-					  <a
-					    th:if="${session.login != null}"
-					    th:href="@{/member/basic-info}"
-					    class="nav-link px-3 py-2 rounded-2"
-					    th:classappend="${#httpServletRequest.getRequestURI().contains('/member/basic-info')}? 'active' : ''"
-					  >
-					    <i class="bi bi-person"></i>
-					    <span th:text="${session.login.name}"></span>
-					  </a>
-					</li>
-					<li class="nav-item">
-					  <form th:action="@{/member/logout}" method="post" style="margin: 0; padding: 0;">
-					    <button type="submit" class="nav-link px-3 py-2 rounded-2 w-100 text-start" style="border: none; background: none;">
-					      登出
-					    </button>
-					  </form>
+					<!-- 登入/會員資訊 -->
+                        <li class="nav-item" th:if="${session.login == null}">
+                            <a th:href="@{/member/login}" class="nav-link px-3 py-2 rounded-2">
+                                <i class="bi bi-person"></i>
+                                <span>登入</span>
+                            </a>
+                        </li>
+                        <!-- 登入後顯示會員名稱和登出按鈕 -->
+                        <li class="nav-item" th:if="${session.login != null}">
+                            <a th:href="@{/member/basic-info}" 
+                               class="nav-link px-3 py-2 rounded-2"
+                               th:classappend="${#httpServletRequest.getRequestURI().contains('/member/basic-info')}? 'active' : ''">
+                                <i class="bi bi-person"></i>
+                                <span th:text="${session.login.name}"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item" th:if="${session.login != null}">
+                            <form th:action="@{/member/logout}" method="post" style="margin: 0; padding: 0;">
+                                <button type="submit" 
+                                        class="nav-link px-3 py-2 rounded-2 w-100 text-start" 
+                                        style="border: none; background: none;">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>登出</span>
+                                </button>
+                            </form>
 					</li>
 		        </ul>
 		      </div>

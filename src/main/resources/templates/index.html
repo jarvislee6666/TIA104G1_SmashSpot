@@ -103,63 +103,113 @@
 
       /* Product Slider Styles */
       .product-section {
-        position: relative;
-        padding: 0 2rem;
-        margin: 2rem 0;
-      }
-
-      .product-container {
-        overflow: hidden;
-      }
-
-      .product-carousel {
-        display: flex;
-        transition: transform 0.3s ease;
-        gap: 1rem;
-      }
-
-      .product-card {
-        flex: 0 0 250px;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 1rem;
-        background: white;
-      }
-
-      .product-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 4px;
-        margin-bottom: 1rem;
-      }
-
-      .slider-control {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 2;
-      }
-
-      .slider-prev {
-        margin-top: 1rem;
-        left: 6rem;
-      }
-
-      .slider-next {
-        margin-top: 1rem;
-        right: 6rem;
-      }
+		    padding: 2rem 0;
+		    position: relative;
+		}
+		
+		.product-container {
+		    overflow: hidden;
+		    padding: 0 3rem;
+		}
+		
+		.product-carousel {
+		    display: flex;
+		    gap: 1.5rem;
+		    transition: transform 0.3s ease;
+		}
+		
+		.product-card {
+		    border: 1px solid #e0e0e0;
+		    border-radius: 8px;
+		    padding: 1rem;
+		    background: white;
+		    flex: 0 0 300px; /* 固定卡片寬度 */
+		    margin: 0 10px;
+		    transition: transform 0.2s ease, box-shadow 0.2s ease;
+		}
+		
+		.product-card:hover {
+		    transform: translateY(-5px);
+		    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+		}
+		
+		.product-img-container {
+		    width: 100%;
+		    height: 250px; /* 調整圖片容器高度 */
+		    overflow: hidden;
+		    border-radius: 4px;
+		    margin-bottom: 1rem;
+		}
+		
+		.product-img-container img {
+		    width: 100%;
+		    height: 100%;
+		    object-fit: contain; /* 改為 contain 以保持圖片比例 */
+		    background-color: #f8f9fa;
+		}
+		
+		.product-name {
+		    font-size: 1.1rem;
+		    color: #333;
+		    margin: 0.5rem 0;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		}
+		
+		.product-link {
+		    display: block;
+		    text-decoration: none !important;  
+		    color: inherit;
+		    padding: 1rem;
+		}
+		
+		.product-link:hover {
+		    text-decoration: none !important;  
+		    color: inherit;
+		}
+		
+		/* Slider Controls */
+		.product-container {
+		    overflow: hidden;
+		    position: relative;
+		    padding: 1rem;
+		}
+		
+		.product-carousel {
+		    display: flex;
+		    transition: transform 0.3s ease;
+		}
+		
+		.slider-control {
+		    position: absolute;
+		    top: 45%;
+		    transform: translateY(-50%);
+		    background: rgba(0, 0, 0, 0.5);
+		    color: white;
+		    border: none;
+		    width: 40px;
+		    height: 40px;
+		    border-radius: 50%;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    cursor: pointer;
+		    z-index: 2;
+		    transition: background 0.2s;
+		}
+		
+		.slider-control:hover {
+		    background: rgba(0, 0, 0, 0.7);
+		}
+		
+		.slider-prev {
+		    left: 10px;
+		}
+		
+		.slider-next {
+		    right: 10px;
+		}
       
             /* Responsive Styles */
       @media (max-width: 992px) {
@@ -229,110 +279,67 @@
     <main>
       <!-- Carousel -->
       <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img
-              src="./img/歡迎.png"
-              alt="歡迎"
-              class="object-fit-scale h-100"
-            />
-            <div class="carousel-caption">
-              <h1>歡迎！</h1>
-              <p class="display-6">王小明</p>
+    <div class="carousel-inner">
+        <!-- 第一張輪播圖 - 根據登入狀態顯示不同內容 -->
+        <div class="carousel-item active">
+            <img th:src="@{/images/carousel/welcome.png}" alt="首頁圖片" />
+            <!-- 只在登入時顯示歡迎訊息 -->
+            <div class="carousel-caption" th:if="${session.login != null}">
+                <h1>歡迎！</h1>
+                <p class="display-6" th:text="${session.login.name}">會員名稱</p>
             </div>
-          </div>
-          <div class="carousel-item">
-            <img
-              src="./img/優惠.png"
-              alt="雙11活動"
-              class="object-fit-scale h-100"
-            />
-            <div class="carousel-caption">
-              <h2>羽你同在 雙十一加碼送！</h2>
-              <p>11/4-11/13 結帳輸入"1111"即享優惠</p>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="./img/男女.png" alt="新品上市" class="object-fit-scale" />
-            <div class="carousel-caption">
-              <h2>春季新品上市</h2>
-              <p>現在預購即享優惠</p>
-            </div>
-          </div>
         </div>
-        <button
-          class="carousel-control-prev"
-          type="button"
-          data-bs-target="#mainCarousel"
-          data-bs-slide="prev"
-        >
-          <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button
-          class="carousel-control-next"
-          type="button"
-          data-bs-target="#mainCarousel"
-          data-bs-slide="next"
-        >
-          <span class="carousel-control-next-icon"></span>
-        </button>
-      </div>
+</div>
 
-      <!-- Product Slider -->
-      <div class="product-section">
-        <h2 class="mb-4 text-center">熱門競標商品</h2>
-        <button class="slider-control slider-prev" onclick="slideProducts(-1)">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-        <div class="product-container">
-          <div class="product-carousel d-flex justify-content-center">
-            <div class="product-card">
-              <img src="./img/球拍.jpg" alt="羽球拍" />
-              <h5>專業比賽羽球拍</h5>
-              <p class="text-danger fw-bold">NT$ 2,500</p>
+<!-- Product Slider -->
+<div class="product-section">
+    <h2 class="mb-4 text-center">熱門競標商品</h2>
+    <button class="slider-control slider-prev" onclick="slideProducts(-1)">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+    <div class="product-container">
+        <div class="product-carousel d-flex justify-content-center">
+            <div class="product-card" th:each="product : ${auctionProducts}">
+                <!-- 修正連結路徑 -->
+                <a th:href="@{/client/getOneProduct/{proid}(proid=${product.proid})}" class="product-link">
+                    <div class="product-img-container">
+                        <img th:if="${product.propic != null}" 
+                             th:src="@{'/product/showPic/' + ${product.proid}}" 
+                             th:alt="${product.proname}" 
+                             class="product-img" />
+                        <img th:unless="${product.propic != null}" 
+                             th:src="@{/images/default-product.jpg}" 
+                             alt="預設商品圖片" 
+                             class="product-img" />
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name" th:text="${product.proname}">商品名稱</h5>
+                        <p class="price-info text-danger fw-bold mb-0" th:if="${product.maxprice != null}">
+                            目前最高價：NT$ <span th:text="${#numbers.formatDecimal(product.maxprice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                        </p>
+                        <p class="price-info text-danger fw-bold mb-0" th:if="${product.maxprice == null}">
+                            起標價：NT$ <span th:text="${#numbers.formatDecimal(product.baseprice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                        </p>
+                    </div>
+                </a>
             </div>
-            <div class="product-card">
-              <img src="./img/球鞋.jpg" alt="球鞋" />
-              <h5>專業羽球鞋</h5>
-              <p class="text-danger fw-bold">NT$ 1,800</p>
-            </div>
-            <div class="product-card">
-              <img src="./img/衣服.png" alt="運動服" />
-              <h5>運動套裝</h5>
-              <p class="text-danger fw-bold">NT$ 1,200</p>
-            </div>
-            <div class="product-card">
-              <img src="./img/羽球.png" alt="羽毛球" />
-              <h5>羽毛球</h5>
-              <p class="text-danger fw-bold">NT$ 500</p>
-            </div>
-            <div class="product-card">
-              <img src="./img/手機殼.png" alt="其他周邊" />
-              <h5>限定手機殼</h5>
-              <p class="text-danger fw-bold">NT$ 350</p>
-            </div>
-            <div class="product-card">
-              <img src="./img/後背包.png" alt="其他周邊" />
-              <h5>運動後背包</h5>
-              <p class="text-danger fw-bold">NT$ 1,350</p>
-            </div>
-          </div>
         </div>
-        <button class="slider-control slider-next" onclick="slideProducts(1)">
-          <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
+    </div>
+    <button class="slider-control slider-next" onclick="slideProducts(1)">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+</div>
 
-      <div class="container">
-        <!-- Location Booking -->
-        <div class="location-booking">
-          <img src="./img/場地.jpg" alt="球場" />
-          <div class="location-booking-text">
+<!-- Location Booking -->
+<div class="container">
+    <div class="location-booking">
+        <img th:src="@{/images/venue/court.jpg}" alt="球場" />
+        <div class="location-booking-text">
             <h2>前往場地預約</h2>
-            <button class="btn btn-primary btn-lg">立即預約</button>
-          </div>
+            <a th:href="@{/stadium/listAllStadium}" class="btn btn-primary btn-lg">立即預約</a>
         </div>
-      </div>
+    </div>
+</div>
 
       <!-- News Section -->
       <div class="news-section">
@@ -370,24 +377,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
 //Product slider functionality
-let currentPosition = 0;
-const wrapper = document.querySelector(".product-wrapper");
-const cards = document.querySelectorAll(".product-card");
-const cardWidth = 270; // card width + margin
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.product-carousel');
+    const cards = document.querySelectorAll('.product-card');
+    let currentPosition = 0;
+    const cardWidth = 320; // 卡片寬度 + margin
 
-function slideProducts(direction) {
-  const maxPosition = -(
-    cards.length * cardWidth -
-    wrapper.parentElement.offsetWidth
-  );
-  currentPosition += direction * cardWidth;
+    function slideProducts(direction) {
+        const maxScroll = -(cardWidth * (cards.length - 3)); // 顯示 3 張卡片
+        
+        currentPosition += direction * cardWidth;
+        
+        // 邊界檢查
+        if (currentPosition > 0) currentPosition = 0;
+        if (currentPosition < maxScroll) currentPosition = maxScroll;
+        
+        container.style.transform = `translateX(${currentPosition}px)`;
+    }
 
-  // Enforce boundaries
-  if (currentPosition > 0) currentPosition = 0;
-  if (currentPosition < maxPosition) currentPosition = maxPosition;
-
-  wrapper.style.transform = `translateX(${currentPosition}px)`;
-}
+    // 註冊按鈕事件
+    document.querySelector('.slider-prev').addEventListener('click', () => slideProducts(1));
+    document.querySelector('.slider-next').addEventListener('click', () => slideProducts(-1));
+});
 </script>
 </body>
 </html>
