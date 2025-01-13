@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smashspot.courtorder.model.CourtOrderService;
 import com.smashspot.courtorder.model.CourtOrderVO;
+import com.smashspot.member.model.MemberVO;
+import com.smashspot.member.model.MemberService;
 
 @RestController
 @RequestMapping("/court-order")
@@ -25,6 +31,9 @@ public class CourtOrderController {
 
 	@Autowired
 	private CourtOrderService courtOrderSvc;
+	
+	@Autowired
+	private MemberService memberSvc;
 
 	/**
 	 * 新增訂單
@@ -165,5 +174,22 @@ public class CourtOrderController {
         }
         return result;
     }
+    
+    @GetMapping("/avatar/{memid}")
+    public ResponseEntity<byte[]> getAvatar(@PathVariable Integer memid) {
+        MemberVO memberVO = memberSvc.getOneMember(memid);
+        if (memberVO != null && memberVO.getMempic() != null) {
+            byte[] avatarBytes = memberVO.getMempic();
+
+            // 檢查圖片格式 (假設都存 JPEG，就直接用 image/jpeg)
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            
+            return new ResponseEntity<>(avatarBytes, headers, HttpStatus.OK);
+        }
+        // 如果找不到，回傳 404
+        return ResponseEntity.notFound().build();
+    }
+
     
 }

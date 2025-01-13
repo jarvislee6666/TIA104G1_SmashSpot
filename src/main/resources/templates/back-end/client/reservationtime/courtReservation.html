@@ -253,6 +253,7 @@ body {
 	<div class="main-container">
 		<div id="stadiumInfo" th:data-stdmId="${stdmId}"
 			style="display: none;"></div>
+
 		<!-- 外層 container 來控制整體寬度和邊距 -->
 		<div class="container-fluid px-3">
 			<!-- 第一個 row：週曆導覽卡片 -->
@@ -480,7 +481,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -511,7 +514,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -542,7 +547,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -573,7 +580,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -604,7 +613,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -635,7 +646,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -718,9 +731,28 @@ body {
 										<small class="text-muted"
 											th:text="${#dates.format(review.ordcrttime, 'yyyy/MM/dd HH:mm')}">2024/03/15</small>
 									</div>
-									<div class="mt-2 fs-6">
-										<strong th:text="${review.member.name}">撂月亭</strong>
-										<p class="mb-0 small  fs-6" th:text="${review.message}">羽毛滿天飛。</p>
+									<!-- 顯示會員頭貼 + 評價內容 -->
+									<div class="mt-2 fs-6 d-flex align-items-start">
+
+										<!-- 若該會員有上傳 mempic，就顯示 /member/avatar/{id} -->
+										<img th:if="${review.member.mempic != null}"
+											th:src="@{/court-order/avatar/{memid}(memid=${review.member.memid})}"
+											alt="會員頭貼" class="rounded-circle me-2"
+											style="width: 45px; height: 45px; object-fit: cover;" />
+
+
+										<!-- 若沒有 mempic，顯示預設圖片 (這裡可以用 @{} 也沒問題) -->
+										<img th:if="${review.member.mempic == null}"
+											th:src="@{/images/default-avatar.png}" alt="頭貼"
+											class="rounded-circle me-2"
+											style="width: 45px; height: 45px; object-fit: cover;" />
+
+
+										<div>
+											<strong th:text="${review.member.name}">撂月亭</strong>
+											<p class="mb-0 small fs-6" th:text="${review.message}">
+												羽毛滿天飛</p>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -740,7 +772,7 @@ body {
 						<div class="card-body">
 							<h5
 								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">地圖</h5>
-							<div id="map" class="rounded" style="height: 300px;">
+							<div id="map" class="rounded" style="height: 390px;">
 								<!-- 後續可用 Google Maps 或 Leaflet JS 在此初始化地圖 -->
 							</div>
 						</div>
@@ -1271,6 +1303,7 @@ body {
             infowindow.open(map, marker);
         });
     }
+
 </script>
 	<!-- 請記得替換 YOUR_API_KEY 為您的 Google Maps API 金鑰 -->
 	<script

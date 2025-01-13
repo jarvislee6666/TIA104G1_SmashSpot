@@ -7,17 +7,20 @@
 <title>場館一覽 - listAllStdmFront.html</title>
 <th:block th:replace="back-end/client/Header :: headContent" />
 <head th:insert="~{/back-end/stdm/included-fragment}"></head>
-<link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
-<link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
-<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+<link rel="stylesheet" th:href="@{/css/client/Header.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Footer.css}" />
+<link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <body>
-<div th:replace="back-end/client/Header :: header"></div>
+	<div th:replace="back-end/client/Header :: header"></div>
 
 	<main>
 		<div class="container">
+			<div th:if="${error}" class="alert alert-warning" role="alert">
+				<span th:text="${error}"></span>
+			</div>
 			<div class="row">
 				<!-- 左側選單 -->
 				<div class="col-md-3">

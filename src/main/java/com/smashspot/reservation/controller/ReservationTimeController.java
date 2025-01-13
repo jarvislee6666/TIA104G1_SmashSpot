@@ -1,6 +1,7 @@
 package com.smashspot.reservation.controller;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,11 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.member.model.MemberService;
 import com.smashspot.reservationtime.model.ReservationTimeService;
 import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.stadium.model.StdmService;
@@ -35,6 +39,9 @@ public class ReservationTimeController {
     
 	@Autowired
 	private CourtOrderService courtOrderSvc;
+	
+	@Autowired
+	private MemberService memberSvc;
 
     @GetMapping("/week")
     public String getWeeklyReservation(
@@ -42,6 +49,20 @@ public class ReservationTimeController {
         @RequestParam(value = "week", defaultValue = "0") Integer week,
         Model model, HttpSession session
     ) {
+
+    	
+        // 1) 查詢對應的場館資料
+        StadiumVO stadium = stdmService.getOneStdm(stdmId);
+        
+     // 檢查場館是否存在 + 是否啟用 (oprSta == true)
+        if (stadium == null || !Boolean.TRUE.equals(stadium.getOprSta())) {
+            model.addAttribute("error", "該場館不存在或目前不開放營運，訂單問題請洽詢客服");
+            return "back-end/client/reservationtime/courtReservationError";
+        }
+
+        
+        model.addAttribute("stadiumVO", stadium);
+        
         // 濾器/攔截器已確保使用者必須登入才能進到這裡
         MemberVO member = (MemberVO) session.getAttribute("login");
         if (member == null) {
@@ -50,10 +71,6 @@ public class ReservationTimeController {
 
         // 也可以直接放到 model
         model.addAttribute("member", member);
-    	
-        // 1) 查詢對應的場館資料
-        StadiumVO stadium = stdmService.getOneStdm(stdmId);
-        model.addAttribute("stadiumVO", stadium);
         
         // 檢查 week 範圍
         if (week < 0) week = 0;
@@ -149,7 +166,7 @@ public class ReservationTimeController {
         
 
 
-        return "back-end/client/reservationtime/court-reservation";
+        return "back-end/client/reservationtime/courtReservation";
     }
 
     private Object[] findMatchingRow(List<Object[]> rawList, Date targetDate) {
@@ -198,4 +215,5 @@ public class ReservationTimeController {
         }
         return sb.toString();
     }
+    
 }
