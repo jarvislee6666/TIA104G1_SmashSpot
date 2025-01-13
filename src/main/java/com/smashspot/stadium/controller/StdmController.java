@@ -167,46 +167,46 @@ public class StdmController {
 	}
 
 	
-	@PostMapping("getOne_For_Update")
-	public String getOne_For_Update(@RequestParam("stdmId") String stdmId, ModelMap model) {
-		StadiumVO stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmId));
-		model.addAttribute("stadiumVO", stdmVO);
-		return "back-end/adm/update_stdm_input"; // 查詢完成後轉交update_stdm_input.html
-	}
-
-	
-	/*
-	 * This method will be called on update_stdm_input.html form submission, handling POST request It also validates the user input
-	 */
-	@PostMapping("updateStdm")
-	public String update(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
-			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
-
-		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
-		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
-		result = removeFieldError(stdmVO, result, "stdmPic");
-
-		if (parts[0].isEmpty()) { // 使用者未選擇要上傳的新圖片時
-			byte[] upFiles = stdmSvc.getOneStdm(stdmVO.getStdmId()).getStdmPic();
-			stdmVO.setStdmPic(upFiles);
-		} else {
-			for (MultipartFile multipartFile : parts) {
-				byte[] upFiles = multipartFile.getBytes();
-				stdmVO.setStdmPic(upFiles);
-			}
-		}
-		if (result.hasErrors()) {
-			return "back-end/adm/update_stdm_input";
-		}
-		/*************************** 2.開始修改資料 *****************************************/
-		stdmSvc.updateStdm(stdmVO);
-
-		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
-		model.addAttribute("success", "- (修改成功)");
-		stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmVO.getStdmId()));
-		model.addAttribute("stadiumVO", stdmVO);
-		return "back-end/adm/listOneStdm"; // 修改成功後轉交listOneStdm.html
-	}
+//	@PostMapping("getOne_For_Update")
+//	public String getOne_For_Update(@RequestParam("stdmId") String stdmId, ModelMap model) {
+//		StadiumVO stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmId));
+//		model.addAttribute("stadiumVO", stdmVO);
+//		return "back-end/adm/update_stdm_input"; // 查詢完成後轉交update_stdm_input.html
+//	}
+//
+//	
+//	/*
+//	 * This method will be called on update_stdm_input.html form submission, handling POST request It also validates the user input
+//	 */
+//	@PostMapping("updateStdm")
+//	public String update(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
+//			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
+//
+//		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
+//		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
+//		result = removeFieldError(stdmVO, result, "stdmPic");
+//
+//		if (parts[0].isEmpty()) { // 使用者未選擇要上傳的新圖片時
+//			byte[] upFiles = stdmSvc.getOneStdm(stdmVO.getStdmId()).getStdmPic();
+//			stdmVO.setStdmPic(upFiles);
+//		} else {
+//			for (MultipartFile multipartFile : parts) {
+//				byte[] upFiles = multipartFile.getBytes();
+//				stdmVO.setStdmPic(upFiles);
+//			}
+//		}
+//		if (result.hasErrors()) {
+//			return "back-end/adm/update_stdm_input";
+//		}
+//		/*************************** 2.開始修改資料 *****************************************/
+//		stdmSvc.updateStdm(stdmVO);
+//
+//		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
+//		model.addAttribute("success", "- (修改成功)");
+//		stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmVO.getStdmId()));
+//		model.addAttribute("stadiumVO", stdmVO);
+//		return "back-end/adm/listOneStdm"; // 修改成功後轉交listOneStdm.html
+//	}
 
 
 
@@ -219,33 +219,47 @@ public class StdmController {
 //		return list;
 //	}
 	
-	@ModelAttribute("locMapData") //
+	@ModelAttribute("locMapData")
 	protected Map<Integer, String> referenceMapData() {
-		Map<Integer, String> map = new LinkedHashMap<Integer, String>();
-		map.put(1, "台北市");
-		map.put(2, "新北市");
-		map.put(3, "桃園市");
-		map.put(4, "台中市");
-		map.put(5, "高雄市");
-		map.put(6, "台南市");
-		map.put(7, "基隆市");
-		map.put(8, "新竹市");
-		map.put(9, "嘉義市");
-		return map;
+	    Map<Integer, String> map = new LinkedHashMap<Integer, String>();
+	    map.put(1,  "台北市");
+	    map.put(2,  "新北市");
+	    map.put(3,  "桃園市");
+	    map.put(4,  "台中市");
+	    map.put(5,  "台南市");
+	    map.put(6,  "高雄市");
+	    map.put(7,  "基隆市");
+	    map.put(8,  "新竹市");
+	    map.put(9,  "嘉義市");
+	    map.put(10, "宜蘭縣");
+	    map.put(11, "新竹縣");
+	    map.put(12, "苗栗縣");
+	    map.put(13, "彰化縣");
+	    map.put(14, "南投縣");
+	    map.put(15, "雲林縣");
+	    map.put(16, "嘉義縣");
+	    map.put(17, "屏東縣");
+	    map.put(18, "台東縣");
+	    map.put(19, "花蓮縣");
+	    map.put(20, "澎湖縣");
+	    map.put(21, "金門縣");
+	    map.put(22, "連江縣");
+	    return map;
 	}
+
 
 
 	// 去除BindingResult中某個欄位的FieldError紀錄
-	public BindingResult removeFieldError(StadiumVO stdmVO, BindingResult result, String removedFieldname) {
-		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()
-				.filter(fieldname -> !fieldname.getField().equals(removedFieldname))
-				.collect(Collectors.toList());
-		result = new BeanPropertyBindingResult(stdmVO, "stadiumVO");
-		for (FieldError fieldError : errorsListToKeep) {
-			result.addError(fieldError);
-		}
-		return result;
-	}
+//	public BindingResult removeFieldError(StadiumVO stdmVO, BindingResult result, String removedFieldname) {
+//		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()
+//				.filter(fieldname -> !fieldname.getField().equals(removedFieldname))
+//				.collect(Collectors.toList());
+//		result = new BeanPropertyBindingResult(stdmVO, "stadiumVO");
+//		for (FieldError fieldError : errorsListToKeep) {
+//			result.addError(fieldError);
+//		}
+//		return result;
+//	}
 	
 	/*
 	 * This method will be called on select_page.html form submission, handling POST request
@@ -257,5 +271,85 @@ public class StdmController {
 //		model.addAttribute("empListData", list); // for listAllStdm.html 第85行用
 //		return "back-end/emp/listAllEmp";
 //	}
+	
+	@GetMapping("/updateStdm")
+	public String updateStdmForm(@RequestParam("stdmId") Integer stdmId, ModelMap model) {
+	    // 1. 查詢指定場館資料
+	    StadiumVO stdmVO = stdmSvc.getOneStdm(stdmId);
+	    if (stdmVO == null) {
+	        model.addAttribute("errorMessage", "查無此場館資料");
+	        return "redirect:/adm/listAllStdm";
+	    }
+
+	    // 2. 如果需要顯示舊圖片，可在這裡轉成 Base64 (若 StadiumVO 有 imageBase64 屬性)
+	    /*
+	    if (stdmVO.getStdmPic() != null) {
+	        String base64Str = Base64.getEncoder().encodeToString(stdmVO.getStdmPic());
+	        stdmVO.setImageBase64(base64Str);
+	    }
+	    */
+
+	    // 3. 放進 model
+	    model.addAttribute("stadiumVO", stdmVO);
+
+	    // 4. 回傳到「編輯表單」的 Thymeleaf 頁面 (您想用哪個都行)
+	    return "back-end/adm/updateStdm";
+	}
+
+	@PostMapping("/updateStdm")
+	public String updateStdmProcess(
+	        @Valid @ModelAttribute("stadiumVO") StadiumVO stdmVO, 
+	        BindingResult result, 
+	        ModelMap model,
+	        @RequestParam("stdmPic") MultipartFile[] parts
+	) throws IOException {
+
+	    /*************************** 1.移除圖片欄位的驗證錯誤(若有) ***************************/
+	    result = removeFieldError(stdmVO, result, "stdmPic");
+
+	    /*************************** 2.處理圖片上傳與舊圖保留 ***************************/
+	    if (parts == null || parts.length == 0 || parts[0].isEmpty()) {
+	        // 沒有上傳新圖 -> 保留舊圖
+	        byte[] oldPic = stdmSvc.getOneStdm(stdmVO.getStdmId()).getStdmPic();
+	        stdmVO.setStdmPic(oldPic);
+	    } else {
+	        // 有上傳新圖 -> 取第一張(或多張)
+	        for (MultipartFile multipartFile : parts) {
+	            byte[] upFiles = multipartFile.getBytes();
+	            stdmVO.setStdmPic(upFiles);
+	        }
+	    }
+
+	    /*************************** 3.若有其他欄位驗證錯誤，回到表單 ***************************/
+	    if (result.hasErrors()) {
+	        return "back-end/adm/updateStdm";
+	    }
+
+	    /*************************** 4.進行更新 ***************************/
+	    stdmVO.setOprSta(true);
+	    stdmSvc.updateStdm(stdmVO);
+
+	    /*************************** 5.更新完成，導向或轉交到成功頁面 ***************************/
+	    model.addAttribute("success", "- (修改成功)");
+	    StadiumVO updatedVO = stdmSvc.getOneStdm(stdmVO.getStdmId());
+	    model.addAttribute("stadiumVO", updatedVO);
+
+	    // 您可以選擇回「顯示單筆資料」或「列表頁」等
+	    return "redirect:/adm/listAllStdm";
+	}
+
+	/** 移除指定欄位錯誤的工具方法 **/
+	private BindingResult removeFieldError(StadiumVO stdmVO, BindingResult result, String removedField) {
+	    List<FieldError> errorsToKeep = result.getFieldErrors().stream()
+	            .filter(fieldError -> !fieldError.getField().equals(removedField))
+	            .collect(Collectors.toList());
+	    BindingResult newResult = new BeanPropertyBindingResult(stdmVO, "stadiumVO");
+	    for (FieldError err : errorsToKeep) {
+	        newResult.addError(err);
+	    }
+	    return newResult;
+	}
+
+	
 
 }

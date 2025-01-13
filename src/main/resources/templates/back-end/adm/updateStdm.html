@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>編輯場館資料 - editStdm.html</title>
+
+<!-- Google Maps API 金鑰 -->
+<script
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpeKJsYqFNvxDjFzALran62W4aP-PmJs">
+    </script>
+
+<th:block th:replace="back-end/adm/Header :: headContent" />
+<head th:insert="~{/back-end/adm/included-fragment}"></head>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+<style>
+/* 自訂樣式放這裡 */
+</style>
+</head>
+<body>
+	<!-- Loading overlay -->
+	<div class="loading-overlay">
+		<div class="loading-spinner"></div>
+	</div>
+
+	<!-- Navbar -->
+	<header th:replace="back-end/adm/Header :: header"></header>
+
+	<div class="container-fluid">
+		<div class="row">
+			<!-- 側邊欄 -->
+			<div class="col-md-2 mb-4">
+				<div class="card">
+					<div class="card-body p-0">
+						<div class="nav flex-column nav-pills">
+							<a class="nav-link" th:href="@{/adm/addStdm}"> <i
+								class="fas fa-plus-circle me-2"></i>場館刊登
+							</a> <a class="nav-link" th:href="@{/adm/listAllStdm}"> <i
+								class="fas fa-list me-2"></i>場館刊登列表
+							</a> <a class="nav-link" th:href="@{/adm/listAllCourtOrders}"> <i
+								class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> <a class="nav-link" th:href="@{/adm/listAllChart}"> <i
+								class="fas fa-chart-line me-2"></i>場館成效統計
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 主要內容區 -->
+			<div class="col-md-10">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title mb-4">編輯場館資訊</h5>
+
+						<!-- 成功 / 錯誤 / 警告訊息顯示 (依需求) -->
+						<div th:if="${message}" class="alert alert-warning" role="alert"
+							th:text="${message}"></div>
+						<div th:if="${success}" class="alert alert-success" role="alert"
+							th:text="${success}"></div>
+						<div th:if="${error}" class="alert alert-danger" role="alert"
+							th:text="${error}"></div>
+
+						<!-- 
+                      將 action 改為「更新」的 URL，假設後端 Controller 路徑 /adm/updateStdm
+                      th:object="${stadiumVO}" 代表已有的場館資料
+                      在後端進入此頁面前，會先載入stadiumVO => Model.addAttribute("stadiumVO", ...) 
+                    -->
+						<form id="venue-form" class="venue-form"
+							th:action="@{/adm/updateStdm}" method="post"
+							th:object="${stadiumVO}" enctype="multipart/form-data">
+
+							<!-- 隱藏欄位存放場館ID -->
+							<input type="hidden" th:field="*{stdmId}" />
+
+							<div class="mb-4">
+								<label class="form-label">場館名稱</label> <input type="text"
+									th:field="*{stdmName}" class="form-control"
+									th:class="${#fields.hasErrors('stdmName')} ? 'form-control is-invalid' : 'form-control'">
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('stdmName')}"
+									th:errors="*{stdmName}"></div>
+							</div>
+
+							<div class="mb-4">
+								<label class="form-label">場館地址</label> <input type="text"
+									th:id="stdmAddr" th:field="*{stdmAddr}" class="form-control"
+									th:class="${#fields.hasErrors('stdmAddr')} ? 'form-control is-invalid' : 'form-control'">
+
+								<!-- 依地址抓取經緯度 -->
+								<button type="button" class="btn btn-outline-primary"
+									onclick="getLatLngFromAddress()">取得經緯度</button>
+
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('stdmAddr')}"
+									th:errors="*{stdmAddr}"></div>
+							</div>
+
+							<div class="mb-4">
+								<label class="form-label">場館簡介</label> <input type="text"
+									th:field="*{stdmIntro}" class="form-control"
+									th:class="${#fields.hasErrors('stdmIntro')} ? 'form-control is-invalid' : 'form-control'">
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('stdmIntro')}"
+									th:errors="*{stdmIntro}"></div>
+							</div>
+
+							<div class="mb-4">
+								<label class="form-label">場地數量</label> <select
+									th:field="*{courtCount}" class="form-control"
+									th:class="${#fields.hasErrors('courtCount')} ? 'form-control is-invalid' : 'form-control'">
+									<option th:each="i : ${#numbers.sequence(1,9)}" th:value="${i}"
+										th:text="${i}"></option>
+								</select>
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('courtCount')}"
+									th:errors="*{courtCount}"></div>
+							</div>
+
+							<div class="mb-4">
+								<label class="form-label">場租費</label>
+								<div class="input-group">
+									<input type="number" th:field="*{courtPrice}"
+										class="form-control"
+										th:class="${#fields.hasErrors('courtPrice')} ? 'form-control is-invalid' : 'form-control'">
+									<span class="input-group-text">元/小時</span>
+									<div class="invalid-feedback"
+										th:if="${#fields.hasErrors('courtPrice')}"
+										th:errors="*{courtPrice}"></div>
+								</div>
+							</div>
+
+							<!-- 舊圖片顯示: 如果要顯示原本上傳過的圖片，可在後端將圖片轉為Base64或有網址可顯示 -->
+							<!--                         <div class="mb-4" th:if="${stadiumVO.imageBase64}"> -->
+							<!--                             <label class="form-label">原本圖片預覽</label> -->
+							<!--                             <div> -->
+							<!--                                 <img th:src="@{|data:image/jpeg;base64,${stadiumVO.imageBase64}|}" -->
+							<!--                                      alt="舊圖片" -->
+							<!--                                      style="width:150px; height:auto;"> -->
+							<!--                             </div> -->
+							<!--                         </div> -->
+
+							<!-- 新的球館圖片上傳(可選擇覆蓋) -->
+							<div class="mb-4">
+								<label class="form-label">更換球館圖片</label>
+								<div class="input-group">
+									<input type="file" id="upFiles" name="stdmPic"
+										class="form-control"
+										th:class="${(#fields.hasErrors('stdmPic')) ? 'form-control is-invalid' : 'form-control'}"
+										accept="image/png,image/jpeg,image/gif" multiple="multiple"
+										onchange="hideContent('upFiles.errors'); previewImage();">
+
+									<div id="blob_holder" class="mt-2"></div>
+								</div>
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('stdmPic')}" th:errors="*{stdmPic}">
+								</div>
+								<!-- JS錯誤訊息容器 -->
+								<div class="invalid-feedback" id="upFiles.errors"
+									th:if="${#fields.hasErrors('stdmPic')}"
+									th:utext="${errorMessage}"></div>
+							</div>
+
+							<!-- 其他欄位 (營業時間等) -->
+							<input type="hidden" name="openTime"
+								th:value="${stadiumVO.openTime ?: 8}" /> <input type="hidden"
+								name="closeTime" th:value="${stadiumVO.closeTime ?: 22}" />
+
+							<!-- 測試用經緯度欄位 -->
+							<div class="row mb-4">
+								<div class="col-6">
+									<label>經度</label> <input type="text" id="longitude"
+										th:field="*{longitude}"
+										th:class="${(
+										   #fields.hasErrors('longitude') 
+										   ? 'form-control is-invalid' 
+										   : 'form-control'
+										)}" />
+
+									<!-- 經度錯誤訊息 -->
+									<div class="invalid-feedback"
+										th:if="${#fields.hasErrors('longitude')}"
+										th:errors="*{longitude}"></div>
+								</div>
+								<div class="col-6">
+									<label>緯度</label> <input type="text" id="latitude"
+										th:field="*{latitude}"
+										th:class="${(
+										   #fields.hasErrors('latitude') 
+										   ? 'form-control is-invalid' 
+										   : 'form-control'
+										)}" />
+
+									<!-- 緯度錯誤訊息 -->
+									<div class="invalid-feedback"
+										th:if="${#fields.hasErrors('latitude')}"
+										th:errors="*{latitude}"></div>
+								</div>
+							</div>
+
+							<!-- 地點選擇(與 addStdm 相同) -->
+							<div class="mb-4">
+								<label class="form-label">地點編號</label> <select
+									th:field="*{locationVO.locId}" class="form-control">
+									<option value="">請選擇地點</option>
+									<option th:each="location : ${locMapData}"
+										th:value="${location.key}" th:text="${location.value}">
+									</option>
+								</select>
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('locationVO')}"
+									th:errors="*{locationVO}"></div>
+							</div>
+
+							<!-- 管理員選擇(與 addStdm 相同) -->
+							<div class="mb-4">
+								<label class="form-label">管理員編號</label> <select
+									th:field="*{admVO.admid}" class="form-control">
+									<option th:each="admVO : ${admListData}"
+										th:value="${admVO.admid}" th:text="${admVO.admname}">
+									</option>
+								</select>
+								<div class="invalid-feedback"
+									th:if="${#fields.hasErrors('admVO.admid')}"
+									th:errors="*{admVO.admid}"></div>
+							</div>
+
+							<!-- 送出 -->
+							<div class="text-end">
+								<a th:href="@{/adm/listAllStdm}" class="btn btn-secondary">
+									取消 </a>
+								<button id="submit" type="submit" class="btn btn-primary">
+									確認更新</button>
+							</div>
+						</form>
+						<!-- /form -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+    // 與 addStdm 類似的 JS
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('venue-form');
+        const loadingOverlay = document.querySelector('.loading-overlay');
+
+        // 隱藏錯誤訊息函數
+        function hideContent(d) {
+            const el = document.getElementById(d);
+            if (el) { el.style.display = "none"; }
+        }
+
+        // 檢查瀏覽器是否支援 FileReader
+        var filereader_support = (typeof FileReader !== 'undefined');
+
+        // 定義允許的圖片類型
+        const acceptedTypes = {
+            'image/png': true,
+            'image/jpeg': true
+        };
+
+        // 圖片預覽功能
+        function previewImage() {
+            var upfile1 = document.getElementById("upFiles");
+            if(!upfile1) return;
+
+            var files = upfile1.files || [];
+            // 預覽區先清空
+            var blob_holder = document.getElementById('blob_holder');
+            blob_holder.innerHTML = '';
+
+            for (var i = 0; i < files.length; i++) {
+                previewfile(files[i]);
+            }
+        }
+
+        // 處理預覽
+        function previewfile(file) {
+            if (filereader_support === true && acceptedTypes[file.type] === true) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var image = new Image();
+                    image.src = event.target.result;
+                    image.width = 100;
+                    image.height = 75;
+                    image.style.border = "2px solid #555";
+                    document.getElementById('blob_holder').appendChild(image);
+                };
+                reader.readAsDataURL(file);
+                document.getElementById('submit').disabled = false;
+            } else {
+                // 檔案類型不正確時
+                document.getElementById('blob_holder').innerHTML =
+                    "<div style='text-align: left;'>" +
+                    "● 檔案名稱: " + file.name + "<br>" +
+                    "● 檔案類型: " + file.type + "<br>" +
+                    "● 檔案大小: " + file.size + " bytes<br>" +
+                    "● 限制格式: <b><font color=red>PNG、JPEG</font></b></div>";
+                document.getElementById('submit').disabled = true;
+            }
+        }
+
+        // 表單提交時顯示 loading
+        form.addEventListener('submit', function(e) {
+            showLoading();
+        });
+
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+
+        // 預設先跑一次預覽(若使用者已有檔案)
+        previewImage();
+    });
+</script>
+
+	<!-- Google Map Geocoding -->
+	<script>
+    // 與 addStdm 一樣的 function
+    function getLatLngFromAddress() {
+        const addressEl = document.getElementById('stdmAddr');
+        if (!addressEl) {
+            alert("無法取得地址欄位");
+            return;
+        }
+        const address = addressEl.value;
+        if (!address) {
+            alert("請先輸入地址");
+            return;
+        }
+
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: address }, (results, status) => {
+            if (status === 'OK') {
+                const location = results[0].geometry.location;
+                const lat = location.lat();
+                const lng = location.lng();
+
+                // 寫入表單的經緯度欄位
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+                console.log('lat:', lat, 'lng:', lng);
+            } else {
+                alert('Geocode 錯誤原因: ' + status);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
