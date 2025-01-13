@@ -698,19 +698,18 @@ body {
 					<div class="card custom-shadow">
 						<div class="card-body">
 							<h5
-								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">場地評價</h5>
+								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">場地評價
 							<!-- 平均評分顯示 (可依照後端計算出的平均分數來套) -->
-							<div class="mb-3">
-								<small>平均評分：</small> <i class="fas fa-star text-warning"></i> <span
+								<small></small> <i class="fas fa-star text-warning"></i> <span
 									th:text="${averageRating}">4.5</span> <span
 									class="ms-1 text-muted" th:if="${totalReviews != null}"
 									th:text="'(共 ' + ${totalReviews} + ' 則評價)'"> (共 15 則評價)
 								</span>
-							</div>
+							</h5>
 
 							<!-- 評價列表 (使用 th:each 動態渲染) -->
 							<div class="review-list"
-								style="max-height: 300px; overflow-y: auto;">
+								style="max-height: 400px; overflow-y: auto;">
 								<div class="review-item mb-3 pb-3 border-bottom"
 									th:each="review : ${reviewList}"
 									th:if="${review.starrank != null or (review.message != null and review.message != '')}">
@@ -772,7 +771,7 @@ body {
 						<div class="card-body">
 							<h5
 								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">地圖</h5>
-							<div id="map" class="rounded" style="height: 390px;">
+							<div id="map" class="rounded" style="height: 455px;">
 								<!-- 後續可用 Google Maps 或 Leaflet JS 在此初始化地圖 -->
 							</div>
 						</div>
