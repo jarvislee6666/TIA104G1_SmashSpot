@@ -31,7 +31,8 @@
 								class="fas fa-plus-circle me-2"></i>場館刊登
 							</a> <a class="nav-link active" th:href="@{/adm/listAllStdm}"> <i
 								class="fas fa-list me-2"></i>場館刊登列表
-							</a> <a class="nav-link" th:href="@{/adm/listAllCourtOrders}"> <i class="fas fa-history me-2"></i>預約訂單紀錄
+							</a> <a class="nav-link" th:href="@{/adm/listAllCourtOrders}"> <i
+								class="fas fa-history me-2"></i>預約訂單紀錄
 							</a> <a class="nav-link" th:href="@{/adm/listAllChart}"> <i
 								class="fas fa-chart-line me-2"></i>場館成效統計
 							</a>
@@ -44,20 +45,22 @@
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
-						<div class="d-flex justify-content-between align-items-center mb-4">
-						<h5 class="card-title mb-4">場地刊登列表</h5>
-						<form th:action="@{/adm/listAllStdm}" method="get">
+						<div
+							class="d-flex justify-content-between align-items-center mb-4">
+							<h5 class="card-title mb-4">場地刊登列表</h5>
+							<form th:action="@{/adm/listAllStdm}" method="get">
 
-							<div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
+								<div
+									style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
 
-								<div class="search-item">
-									<label for="stdmName" style="margin-right: 5px;">場館名稱：</label>
-									<input type="search" id="stdmName" name="stdmName"
-										th:value="${param.stdmName}"
-										style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
-								</div>
+									<div class="search-item">
+										<label for="stdmName" style="margin-right: 5px;">場館名稱：</label>
+										<input type="search" id="stdmName" name="stdmName"
+											th:value="${param.stdmName}"
+											style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
+									</div>
 
-								<!--<div class="search-item">
+									<!--<div class="search-item">
 							<label for="locationVO" style="margin-right: 5px;">場館地點：</label> 
 							<select
 								id="locationVO" name="locationVO"
@@ -69,31 +72,32 @@
 							</select>
 						</div> -->
 
-								<div class="search-item">
-									<label for="oprSta" style="margin-right: 5px;">場館狀態：</label> <select
-										id="oprSta" name="oprSta"
-										style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
-										<option value="">請選擇狀態</option>
-										<option value="true" th:selected="${param.oprSta == 'true'}">正常</option>
-										<option value="false" th:selected="${param.oprSta == 'false'}">已下架</option>
-									</select>
-								</div>
+									<div class="search-item">
+										<label for="oprSta" style="margin-right: 5px;">場館狀態：</label> <select
+											id="oprSta" name="oprSta"
+											style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
+											<option value="">請選擇狀態</option>
+											<option value="true" th:selected="${param.oprSta == 'true'}">正常</option>
+											<option value="false"
+												th:selected="${param.oprSta == 'false'}">已下架</option>
+										</select>
+									</div>
 
-								<div class="search-item">
-									<label for="admname" style="margin-right: 5px;">管理員ID：</label>
-									<select id="admname" name="admname"
-										style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
-										<option value="">請選擇ID</option>
-										<option th:each="admVO : ${admListData}"
-											th:value="${admVO.admname}" th:text="${admVO.admname}" />
-									</select>
+									<div class="search-item">
+										<label for="admname" style="margin-right: 5px;">管理員ID：</label>
+										<select id="admname" name="admname"
+											style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; min-width: 120px;">
+											<option value="">請選擇ID</option>
+											<option th:each="admVO : ${admListData}"
+												th:value="${admVO.admname}" th:text="${admVO.admname}" />
+										</select>
+									</div>
+									<button type="submit" class="btn btn-primary"
+										style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">
+										查詢</button>
 								</div>
-								<button type="submit" class="btn btn-primary"
-									style="padding: 6px 16px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">
-									查詢</button>
-							</div>
-						</form>
-					</div>
+							</form>
+						</div>
 						<div class="table-responsive">
 							<table class="table table-hover">
 								<thead>
@@ -106,6 +110,7 @@
 										<th>管理員ID</th>
 										<th>場館狀態</th>
 										<th>設定公休日</th>
+										<th>編輯場館資訊</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -121,31 +126,32 @@
 											th:class="${stadiumVO.oprSta ? 'status-badge status-active' : 'status-badge status-inactive'}"
 											th:text="${stadiumVO.oprSta ? '正常' : '已下架'}"> </span></td>
 										<td>
-											<!-- 另一種寫法 -->
 											<button class="btn btn-sm btn-outline-primary"
 												th:attr="data-stdm-id=${stadiumVO.stdmId}"
 												data-bs-toggle="modal" data-bs-target="#editHolidayModal">
 												編輯</button>
-		
-		
 										</td>
+										<td><a class="btn btn-sm btn-outline-primary"
+											th:href="@{/adm/updateStdm(stdmId=${stadiumVO.stdmId})}">
+												編輯 </a></td>
 									</tr>
 								</tbody>
 							</table>
-					<div class="d-flex justify-content-center mt-4">
-						<nav>
-							<ul class="pagination">
-								<li class="page-item"><a class="page-link" href="#">&laquo;</a>
-								</li>
-								<li class="page-item active"><a class="page-link" href="#">1</a></li>
-								<li class="page-item"><a class="page-link" href="#">2</a></li>
-								<li class="page-item"><a class="page-link" href="#">3</a></li>
-								<li class="page-item"><a class="page-link" href="#">&raquo;</a>
-								</li>
-							</ul>
-						</nav>
-					</div>
-					<!--<div class="d-flex justify-content-center mt-4"
+							<div class="d-flex justify-content-center mt-4">
+								<nav>
+									<ul class="pagination">
+										<li class="page-item"><a class="page-link" href="#">&laquo;</a>
+										</li>
+										<li class="page-item active"><a class="page-link"
+											href="#">1</a></li>
+										<li class="page-item"><a class="page-link" href="#">2</a></li>
+										<li class="page-item"><a class="page-link" href="#">3</a></li>
+										<li class="page-item"><a class="page-link" href="#">&raquo;</a>
+										</li>
+									</ul>
+								</nav>
+							</div>
+							<!--<div class="d-flex justify-content-center mt-4"
 								th:if="${totalPages > 1}">
 								<nav>
 									<ul class="pagination">
@@ -168,7 +174,7 @@
 									</ul>
 								</nav>
 							</div>-->
-				</div>
+						</div>
 					</div>
 				</div>
 			</div>

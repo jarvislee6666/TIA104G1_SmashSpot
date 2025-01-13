@@ -141,6 +141,9 @@ public class StadiumVO implements java.io.Serializable {
 		this.locationVO = locationVO;
 	}
 
+	@NotNull(message = "經度不能空白")
+	@DecimalMin(value = "-180.0", message = "經度不能小於 -180")
+	@DecimalMax(value = "180.0",  message = "經度不能大於 180")
 	@Column(name = "longitude")
 	public Double getLongitude() {
 		return longitude;
@@ -149,7 +152,9 @@ public class StadiumVO implements java.io.Serializable {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-
+	@NotNull(message = "緯度不能空白")
+	@DecimalMin(value = "-90.0", message = "緯度不能小於 -90")
+	@DecimalMax(value = "90.0",  message = "緯度不能大於 90")
 	@Column(name = "latitude")
 	public Double getLatitude() {
 		return latitude;

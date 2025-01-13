@@ -447,7 +447,9 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div
+														th:if="${!isExpired && (isFuture or available == 'x')}"
+														class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -478,7 +480,7 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -509,7 +511,7 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -540,7 +542,7 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -571,7 +573,7 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -602,7 +604,7 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -633,7 +635,7 @@ body {
                                               (available > '0' ? 'status-limited' : 'status-full')))))}">
 													<div th:if="${isExpired}" class="fw-bold">已過期</div>
 													<!-- <div th:if="${isFuture}" class="fw-bold">尚未開放</div> -->
-													<div th:if="${available == 'x'}" class="fw-bold">尚未開放</div>
+													<div th:if="${!isExpired && (isFuture or available == 'x')}" class="fw-bold">尚未開放</div>
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
@@ -836,7 +838,7 @@ body {
 	</script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<script  th:inline="javascript">
+	<script th:inline="javascript">
 	function goNextStep() {
 	    // 1. 關閉 bookingModal
 	    const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
@@ -1270,7 +1272,8 @@ body {
         });
     }
 </script>
-    <!-- 請記得替換 YOUR_API_KEY 為您的 Google Maps API 金鑰 -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpeKJsYqFNvxDjFzALran62W4aP-PmJs&callback=initMap"></script>
+	<!-- 請記得替換 YOUR_API_KEY 為您的 Google Maps API 金鑰 -->
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpeKJsYqFNvxDjFzALran62W4aP-PmJs&callback=initMap"></script>
 </body>
 </html>
