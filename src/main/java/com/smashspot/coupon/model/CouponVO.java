@@ -68,17 +68,16 @@ public class CouponVO implements java.io.Serializable {
 	
 	// 用於驗證結束日期是否在兩個月內的方法
 	@AssertTrue(message = "結束日期不得超過兩個月")
-	private boolean isEndDateValid() {
-		if (enddate == null) {
-			return true;
-		}
-
-		Calendar now = Calendar.getInstance();
-		Calendar twoMonthsLater = Calendar.getInstance();
-		twoMonthsLater.add(Calendar.MONTH, 2);
-
-		return enddate.after(now.getTime()) && enddate.before(twoMonthsLater.getTime());
-	}
+    public boolean isEndDateValid() {
+        if (this.enddate == null) {
+            return true;
+        }
+        
+        Calendar twoMonthsLater = Calendar.getInstance();
+        twoMonthsLater.add(Calendar.MONTH, 2);
+        
+        return !this.enddate.after(twoMonthsLater.getTime());
+    }
 
 	public CouponVO() { // 必需有一個不傳參數建構子(JavaBean基本知識)
 	}

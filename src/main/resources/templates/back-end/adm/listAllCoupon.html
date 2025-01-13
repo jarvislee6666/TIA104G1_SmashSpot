@@ -22,8 +22,8 @@
 				<div class="card">
 					<div class="card-body p-0">
 						<div class="nav flex-column nav-pills">
-							<a class="nav-link active" href="#"> 
-								<i class="fas fa-list me-2"></i>優惠券管理
+							<a class="nav-link active" th:href="@{/adm/listAllCoupon}"> 
+								<i class="fas fa-list me-2"></i>優惠券列表
 							</a>
 						</div>
 					</div>
@@ -36,29 +36,47 @@
 					<div class="card-body">
 						<div class="d-flex justify-content-between align-items-center mb-4">
 							<h5 class="card-title mb-0">優惠券管理</h5>
-							<form>
-								<div style="display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 8px;">
-									<div class="search-item">
-										<label style="margin-right: 5px;">關鍵字搜尋: </label>
-										<input
-											type="text"
-											style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;"
-											placeholder="請輸入關鍵字">
-									</div>
-
-									<div class="search-item d-flex flex-row align-items-center">
-										<label style="margin-right: 5px; width: 100px;">日期範圍: </label>
-										<div class="input-group" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
-											<input type="date" class="form-control">
-											<span class="input-group-text">至</span> 
-											<input type="date" class="form-control">
-										</div>
-									</div>
-									<button type="submit" class="btn btn-primary"
-										style="padding: 6px 16px; background-color: #0d6efd; color: white; 
-										border: none; border-radius: 4px; cursor: pointer;">搜尋
-									</button>
-								</div>
+							<form th:action="@{/adm/listAllCoupon}" method="get" class="mb-4">
+							    <div class="card">
+							        <div class="card-body">
+							            <div class="row g-3">
+							                <!-- 優惠碼搜尋 -->
+							                <div class="col-md-4">
+							                    <div class="input-group">
+							                        <span class="input-group-text">優惠碼</span>
+							                        <input type="text" 
+							                               class="form-control" 
+							                               name="keyword" 
+							                               th:value="${keyword}" 
+							                               placeholder="請輸入優惠碼">
+							                    </div>
+							                </div>
+							                
+							                <!-- 日期範圍 -->
+							                <div class="col-md-6">
+							                    <div class="input-group">
+							                        <span class="input-group-text">日期範圍</span>
+							                        <input type="date" 
+							                               class="form-control" 
+							                               name="startDate" 
+							                               th:value="${startDate}">
+							                        <span class="input-group-text">至</span>
+							                        <input type="date" 
+							                               class="form-control" 
+							                               name="endDate" 
+							                               th:value="${endDate}">
+							                    </div>
+							                </div>
+							                
+							                <!-- 按鈕群組 -->
+							                <div class="col-md-2">
+							                    <button type="submit" class="btn btn-primary me-2">
+							                        <i class="fas fa-search"></i> 搜尋
+							                    </button>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
 							</form>
 							<a class="btn btn-add" th:href="@{addCoupon}">
 				   				 <i class="fas fa-plus me-2"></i>新增優惠券
@@ -73,8 +91,7 @@
 										<th>開始日期</th>
 										<th>結束日期</th>
 										<th>折抵金額</th>
-										<th></th>
-										<th></th>
+										<th>操作</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -93,14 +110,7 @@
 												</form>
 
 											</td>
-											<td>
-												<form method="post" th:action="@{deleteCoupon}"
-													style="margin-bottom: 0px;">
-													<button type="submit" value="刪除" class="btn btn-sm btn-outline-danger">刪除</button>
-													<input type="hidden" name="copid" th:value="${couponVO.copid}">
-												</form>
-
-											</td>
+											
 										</tr>
 									</th:block>
 								</tbody>

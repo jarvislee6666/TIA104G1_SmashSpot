@@ -36,9 +36,40 @@ public class CouponController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
-    @GetMapping("listAllCoupon")
-	public String listAllCoupon(Model model) {
-		return "back-end/adm/listAllCoupon";
+	@GetMapping("listAllCoupon")
+	public String listAllCoupon(
+	        @RequestParam(required = false) String keyword,
+	        @RequestParam(required = false) String startDate,
+	        @RequestParam(required = false) String endDate,
+	        Model model) {
+	    
+	    try {
+	        List<CouponVO> coupons;
+	        
+	        if ((keyword == null || keyword.trim().isEmpty()) && 
+	            (startDate == null || startDate.trim().isEmpty()) && 
+	            (endDate == null || endDate.trim().isEmpty())) {
+	            
+	            coupons = copSvc.getAll();
+	        } else {
+	            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	            Date start = (startDate != null && !startDate.trim().isEmpty()) ? dateFormat.parse(startDate) : null;
+	            Date end = (endDate != null && !endDate.trim().isEmpty()) ? dateFormat.parse(endDate) : null;
+	            
+	            coupons = copSvc.searchCoupons(keyword, start, end);
+	        }
+	        
+	        model.addAttribute("couponListData", coupons);
+	        model.addAttribute("keyword", keyword);
+	        model.addAttribute("startDate", startDate);
+	        model.addAttribute("endDate", endDate);
+	        
+	    } catch (Exception e) {
+	        model.addAttribute("errorMessage", "查詢發生錯誤");
+	        model.addAttribute("couponListData", copSvc.getAll());
+	    }
+	    
+	    return "back-end/adm/listAllCoupon";
 	}
     
     @ModelAttribute("couponListData")  // for listAllCoupon.html 迴圈顯示資料用
@@ -56,25 +87,17 @@ public class CouponController {
 	}
 
 	@PostMapping("insertCoupon")
-	public String insert(@Valid CouponVO couponVO, BindingResult result,ModelMap model) throws IOException {
-		
-		if (copSvc.findByCopcode(couponVO.getCopcode()) != null) {
-	        result.rejectValue("copcode", "error.couponVO", "此 優惠碼 已存在");
-	    }
-	    
-		if (result.hasErrors()) {
+	public String insert(@Valid CouponVO couponVO, BindingResult result, ModelMap model) {
+	    if (result.hasErrors()) {
 	        return "back-end/adm/addCoupon";
 	    }
 	    
 	    try {
-	    	copSvc.addCoupon(couponVO);
-	    	List<CouponVO> list = copSvc.getAll();
-			model.addAttribute("couponListData", list);
-	        model.addAttribute("success", "新增成功");
+	        copSvc.addCoupon(couponVO);
 	        return "redirect:/adm/listAllCoupon";
 	    } catch (Exception e) {
-	        model.addAttribute("error", "新增失敗: " + e.getMessage());
-	        return "back-end/adm/addCoupon"; 
+	        model.addAttribute("message", "新增失敗: " + e.getMessage());
+	        return "back-end/adm/addCoupon";
 	    }
 	}
 
@@ -89,38 +112,22 @@ public class CouponController {
 	}
 
 	@PostMapping("updateCoupon")
-	public String update(@Valid CouponVO couponVO, ModelMap model) throws IOException {
+	public String update(@Valid CouponVO couponVO, BindingResult result, ModelMap model) throws IOException {
+	    if (result.hasErrors()) {
+	        return "back-end/adm/updateCoupon";
+	    }
 
-		/*************************** 2.開始修改資料 *****************************************/
-		copSvc.updateCoupon(couponVO);
-
-		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
-		model.addAttribute("success", "- (修改成功)");
-		
-		return "back-end/adm/listAllCoupon";
-	}
-
-	public BindingResult removeFieldError(CouponVO couponVO, BindingResult result, String removedFieldname) {
-		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()
-				.filter(fieldname -> !fieldname.getField().equals(removedFieldname))
-				.collect(Collectors.toList());
-		result = new BeanPropertyBindingResult(couponVO, "couponVO");
-		for (FieldError fieldError : errorsListToKeep) {
-			result.addError(fieldError);
-		}
-		return result;
+	    try {
+	        copSvc.updateCoupon(couponVO);
+	        model.addAttribute("success", "修改成功");
+	        return "redirect:/adm/listAllCoupon";
+	    } catch (Exception e) {
+	        model.addAttribute("error", "修改失敗: " + e.getMessage());
+	        return "back-end/adm/updateCoupon";
+	    }
 	}
 	
-	@PostMapping("deleteCoupon")
-	public String delete(@RequestParam("copid") String copid, ModelMap model) {
-		/*************************** 2.開始刪除資料 *****************************************/
-		copSvc.deleteCoupon(Integer.valueOf(copid));
-		/*************************** 3.刪除完成,準備轉交(Send the Success view) **************/
-		List<CouponVO> list = copSvc.getAll();
-		model.addAttribute("couponListData", list);
-		model.addAttribute("success", "- (刪除成功)");
-		return "back-end/adm/listAllCoupon";
-	}
+	
 	
 	//結帳時驗證優惠碼
 	@PostMapping("/validateCoupon")
