@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.smashspot.coupon.model.CouponService;
+import com.smashspot.coupon.model.CouponVO;
 import com.smashspot.product.model.ProductService;
 import com.smashspot.product.model.ProductVO;
 
@@ -17,10 +19,18 @@ public class IndexController_inSpringBoot {
 	@Autowired
 	ProductService productService;
 	
+	@Autowired
+    CouponService couponService;
+	
 	@GetMapping("/")
     public String showIndex(Model model) {
         List<ProductVO> auctionProducts = productService.getHotAuctionProducts();
         model.addAttribute("auctionProducts", auctionProducts);
+        
+        List<CouponVO> coupons = couponService.getAll();
+        coupons.sort((c1, c2) -> c2.getCrtdate().compareTo(c1.getCrtdate()));
+        model.addAttribute("coupons", coupons);
+        
         return "index";
     }
 }

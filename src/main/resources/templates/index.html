@@ -341,34 +341,36 @@
     </div>
 </div>
 
-      <!-- News Section -->
-      <div class="news-section">
-        <h2>最新消息</h2>
-        <ul class="news-list">
-          <li class="news-item">
-            <span class="news-date">2024.11.14</span>
-            <a href="#" class="news-title">彰化場地開幕優惠</a>
-            <span class="badge bg-primary rounded-pill">New</span>
-          </li>
-          <li class="news-item">
-            <span class="news-date">2024.09.26</span>
-            <a href="#" class="news-title">歡樂盃羽球賽開放報名</a>
-          </li>
-          <li class="news-item">
-            <span class="news-date">2024.09.25</span>
-            <a href="#" class="news-title">會員積分兌換活動</a>
-          </li>
-          <li class="news-item">
-            <span class="news-date">2023.12.12</span>
-            <a href="#" class="news-title">新北港湖女神公開賽</a>
-          </li>
-          <li class="news-item">
-            <span class="news-date">2023.09.21</span>
-            <a href="#" class="news-title">北屯菜雞車輪戰</a>
-          </li>
-        </ul>
-      </div>
-    </main>
+      <!-- Coupon Section -->
+<div class="news-section">
+    <h2>優惠券消息</h2>
+    <ul class="news-list">
+        <li class="news-item" th:each="coupon : ${coupons}">
+            <div class="d-flex align-items-baseline justify-content-between w-100">
+                <div class="d-flex align-items-baseline">
+                    <span class="news-date" th:text="${#dates.format(coupon.crtdate, 'yyyy.MM.dd')}">2024.01.13</span>
+                    <span class="coupon-code" th:text="'優惠碼: ' + ${coupon.copcode}">優惠碼</span>
+                    <span class="discount ms-2 text-danger" th:text="'  折抵金額: ' + 'NT$ ' + ${coupon.discount}">折抵金額</span>
+                </div>
+                <div class="d-flex align-items-baseline">
+                    <span class="end-date text-muted" 
+                          th:text="'使用期限：' + ${#dates.format(coupon.enddate, 'yyyy.MM.dd')}">
+                        使用期限
+                    </span>
+                </div>
+            </div>
+        </li>
+        <!-- 如果沒有優惠券時顯示 -->
+        <li class="news-item" th:if="${#lists.isEmpty(coupons)}">
+            <p class="text-muted text-center">目前沒有可用的優惠券</p>
+        </li>
+    </ul>
+    <p class="text-muted mt-3 note-text">
+        <i class="bi bi-info-circle me-1"></i>
+        每組優惠碼限使用乙次
+    </p>
+</div>
+</main>
 
 
 	<div th:replace="back-end/client/Footer :: footer"></div>

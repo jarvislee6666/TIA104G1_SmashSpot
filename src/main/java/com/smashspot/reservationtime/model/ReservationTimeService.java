@@ -68,9 +68,8 @@ public class ReservationTimeService {
     public Map<String, Integer> calculateTimeSlotStats(List<ReservationTimeVO> reservations) {
         Map<String, Integer> slotStats = new LinkedHashMap<>();
         String[] slots = {
-            "00:00-02:00", "02:00-04:00", "04:00-06:00", "06:00-08:00", 
             "08:00-10:00", "10:00-12:00", "12:00-14:00", "14:00-16:00",
-            "16:00-18:00", "18:00-20:00", "20:00-22:00", "22:00-24:00"
+            "16:00-18:00", "18:00-20:00", "20:00-22:00"
         };
         
         // 初始化每個時段的計數為0
@@ -80,15 +79,15 @@ public class ReservationTimeService {
         
         // 計算每個時段的預約數
         for (ReservationTimeVO rsv : reservations) {
-            String booked = rsv.getBooked(); // 例如 "xxxx330000x"
-            for (int i = 0; i < booked.length() - 1; i++) { // 最後一個x不計算
+            String booked = rsv.getBooked();
+            // 從第4個字符開始（8:00）到第11個字符（22:00）
+            for (int i = 4; i < 11; i++) {
                 char c = booked.charAt(i);
                 if (Character.isDigit(c)) {
                     int count = Character.getNumericValue(c);
-                    String slot = slots[i];
+                    String slot = slots[i - 4];  // 調整索引以匹配新的時段數組
                     slotStats.put(slot, slotStats.get(slot) + count);
                 }
-                // x代表該時段沒有預約，不需要特別處理，因為已經初始化為0
             }
         }
         
