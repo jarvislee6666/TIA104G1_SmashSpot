@@ -1,5 +1,6 @@
 package com.smashspot.orders.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,20 @@ public class OrdersController {
 	}
 	
 	@GetMapping("/client/orders/DPstep2")
-	public String DPstep2(Model model) {
+	public String DPstep2(@ModelAttribute("orderData") Map<String, Object> orderData, 
+				            Model model, HttpSession session) {
+		
+		// 檢查是否已完成步驟一
+	    if (!orderData.containsKey("productId") || !orderData.containsKey("payment")) {
+	        // 如果沒有必要的數據，重定向到商品列表
+	        return "redirect:/client/listAllProductING";
+	    }
+
+	    // 檢查用戶是否登入
+	    MemberVO loginMember = (MemberVO) session.getAttribute("login");
+	    if (loginMember == null) {
+	        return "redirect:/member/login";
+	    }
 
 	    return "back-end/client/orders/DPstep2";
 	}
@@ -374,6 +388,55 @@ public class OrdersController {
             
             // 更新訂單狀態為完成(4)
             order.setOrdstaid(4);
+            odrsvc.updateOrder(order);
+            
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+    
+    @GetMapping("/client/memOrdersList")
+    public String listMemOrdersList(Model model, HttpSession session) {
+        // 從 session 獲取當前登入會員
+        MemberVO loginMember = (MemberVO) session.getAttribute("login");
+        if (loginMember == null) {
+            return "redirect:/login";
+        }
+        
+        // 獲取該賣家的所有商品的訂單
+        List<ProductVO> sellerProducts = proSvc.findMem(loginMember.getMemid());
+        List<OrdersVO> allSellerOrders = new ArrayList<>();
+        
+        for (ProductVO product : sellerProducts) {
+            List<OrdersVO> productOrders = odrsvc.findByProduct(product.getProid());
+            allSellerOrders.addAll(productOrders);
+        }
+        
+        model.addAttribute("ordersListData", allSellerOrders);
+        
+        return "back-end/client/product/memOrdersList";
+    }
+    
+    @PostMapping("/client/shipOrder/{ordId}")
+    @ResponseBody
+    public ResponseEntity<?> shipOrder(@PathVariable Integer ordId, HttpSession session) {
+        try {
+            MemberVO loginMember = (MemberVO) session.getAttribute("login");
+            if (loginMember == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "請先登入"));
+            }
+            
+            OrdersVO order = odrsvc.getOneOrder(ordId);
+            if (order == null || !order.getProductVO().getMemberVO().getMemid().equals(loginMember.getMemid())) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "訂單不存在或無權限"));
+            }
+            
+            // 更新訂單狀態為已出貨(3)
+            order.setOrdstaid(3);
             odrsvc.updateOrder(order);
             
             return ResponseEntity.ok(Map.of("success", true));

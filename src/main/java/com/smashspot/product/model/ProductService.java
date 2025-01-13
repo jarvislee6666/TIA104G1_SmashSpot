@@ -2,6 +2,7 @@ package com.smashspot.product.model;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,14 @@ public class ProductService {
 
 	public List<ProductVO> findMem(Integer memid) {
 		return repository.findByMemberVO_Memid(memid);
+	}
+	
+	public List<ProductVO> findMemUnsoldProducts(Integer memid) {
+	    List<ProductVO> allProducts = repository.findByMemberVO_Memid(memid);
+	    // 過濾掉已有訂單的商品
+	    return allProducts.stream()
+	            .filter(product -> product.getOrders().isEmpty())
+	            .collect(Collectors.toList());
 	}
 
 	public List<ProductVO> findByBidstaAndProclass(Integer bidstaid, Integer proclassid) {

@@ -48,6 +48,22 @@
 	  opacity: 0.7;
 	}
 	
+	.btn-sm {
+      font-size: 0.875rem;
+      padding: 0.4rem 0.8rem;
+      white-space: nowrap;
+      width: 100%;
+    }
+  
+    .table td {
+      vertical-align: middle;
+    }
+  
+    .d-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
 
 </style>
 
@@ -133,10 +149,10 @@
 			      <tr>
 			        <th style="width: 5%"></th>
 			        <th style="width: 15%">商品圖片</th>
-			        <th style="width: 40%">訂單資訊</th>
+			        <th style="width: 35%">訂單資訊</th>
 			        <th style="width: 15%">訂單狀態</th>
 			        <th style="width: 15%">訂單明細</th>
-			        <th style="width: 10%">訂單操作</th>
+			        <th style="width: 35%">訂單操作</th>
 			      </tr>
 			    </thead>
 			    <tbody>
@@ -197,16 +213,18 @@
 						</td>
 				    <td>
 				      <!-- 訂單操作 -->
-				      <div th:if="${ordersVO.ordstaid == 3}">
+				      <div th:if="${ordersVO.ordstaid == 3}" class="d-grid">
 				        <button type="button" 
-				                class="btn btn-sm btn-success"
-				                th:onclick="'confirmReceipt(' + ${ordersVO.ordid} + ')'">
+				                class="btn btn-sm btn-success text-nowrap"
+				                th:onclick="'confirmReceipt(' + ${ordersVO.ordid} + ')'"
+				                style="min-width: 90px;">
 				          <i class="bi bi-check2-circle me-1"></i>確認收貨
 				        </button>
 				      </div>
-				      <div th:if="${ordersVO.ordstaid == 1}">
+				      <div th:if="${ordersVO.ordstaid == 1}" class="d-grid">
 				        <a th:href="@{/client/payment/{ordid}(ordid=${ordersVO.ordid})}" 
-				           class="btn btn-sm btn-primary">
+				           class="btn btn-sm btn-primary text-nowrap"
+				           style="min-width: 90px;">
 				          <i class="bi bi-credit-card me-1"></i>前去付款
 				        </a>
 				      </div>
