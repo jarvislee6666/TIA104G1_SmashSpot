@@ -49,4 +49,8 @@ public class ProductService {
         String searchName = (proname != null && !proname.trim().isEmpty()) ? proname.trim() : null;
         return repository.findWithFilters(searchName, sellerId, bidstaid);
     }
+    
+    public List<ProductVO> getHotAuctionProducts() {
+        return repository.findHotAuctionProducts();
+    }
 }

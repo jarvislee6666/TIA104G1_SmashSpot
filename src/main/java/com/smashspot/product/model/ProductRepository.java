@@ -28,4 +28,11 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer>{
         @Param("sellerId") Integer sellerId,
         @Param("bidstaid") Integer bidstaid
     );
+    
+ // 查詢熱門競標商品，根據最高出價排序
+    @Query(value = "SELECT * FROM product " +
+           "WHERE bid_sta_id = 1 " +  // 1代表競標中
+           "ORDER BY max_price DESC " +
+           "LIMIT 6", nativeQuery = true)
+    List<ProductVO> findHotAuctionProducts();
 }

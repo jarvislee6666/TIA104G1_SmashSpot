@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -325,6 +327,20 @@ public class ProductController {
 	    return ResponseEntity.notFound().build();
 	}
 	
+	@GetMapping("/product/showPic/{proid}")
+	@ResponseBody
+	public ResponseEntity<byte[]> showPic(@PathVariable Integer proid) {
+	    ProductVO product = proSvc.getOneProduct(proid);
+	    byte[] pic = product.getPropic();
+	    
+	    if (pic != null) {
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.IMAGE_JPEG); // 或根據實際圖片類型設置
+	        return new ResponseEntity<>(pic, headers, HttpStatus.OK);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	} 
 	
 
 }
