@@ -36,7 +36,7 @@ public class OrdersVO implements java.io.Serializable {
 
     @Column(name = "send_info", nullable = false)
     @NotBlank(message = "寄送資訊不能為空")
-    @Size(max = 50, message = "寄送資訊最大長度為50個字符")
+    @Size(max = 255, message = "寄送資訊最大長度為255個字符")
     private String sendinfo;
 
     @Column(name = "mem_id", nullable = false)
