@@ -326,7 +326,7 @@ CREATE TABLE orders(
     pro_ord_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     before_dis INT NOT NULL,
     after_dis INT NOT NULL,
-    send_info varchar(50) not null,
+    send_info varchar(255) not null,
     cop_id INT,
     mem_id	INT not null,
     pro_id	INT NOT NULL,

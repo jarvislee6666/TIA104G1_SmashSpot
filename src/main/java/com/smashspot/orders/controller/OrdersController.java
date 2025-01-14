@@ -326,7 +326,7 @@ public class OrdersController {
             
         } catch (Exception e) {
         	e.printStackTrace();
-            return "redirect:/client/orders/DPstep1";
+            return "redirect:/client/orders/DPstep2";
         }
     }
     
