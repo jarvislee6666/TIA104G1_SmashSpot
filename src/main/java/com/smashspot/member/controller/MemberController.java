@@ -188,6 +188,111 @@ public class MemberController {
         return "back-end/member/VerificationPage";
     }
     
+    
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam("email") String email, 
+                               RedirectAttributes redirectAttributes) {
+        try {
+            // 檢查email是否存在
+            MemberVO member = memberService.findByEmail(email);
+            if (member == null) {
+                // 如果找不到對應的email，添加錯誤消息
+                redirectAttributes.addFlashAttribute("error", "找不到此電子郵件地址的帳號");
+                return "redirect:/member/login";  // 返回登入頁面
+            }
+
+            // 生成重設密碼的token
+            String resetToken = redisService.generatePasswordResetToken(member);
+            String resetLink = redisService.getPasswordResetLink(resetToken);
+
+            // 發送重設密碼郵件
+            emailService.sendPasswordResetEmail(email, resetLink);
+
+            // 添加成功消息
+            redirectAttributes.addFlashAttribute("success", 
+                "重設密碼連結已發送到您的信箱，請在30分鐘內完成密碼重設");
+            
+        } catch (Exception e) {
+            logger.error("密碼重設過程發生錯誤", e);
+            redirectAttributes.addFlashAttribute("error", 
+                "發送重設密碼郵件時發生錯誤，請稍後再試");
+        }
+        
+        return "redirect:/member/login";  // 重定向回登入頁面
+    }
+    
+    /**
+     * 顯示密碼重設頁面
+     * 當用戶從郵件中點擊重設連結時，會先到達這個頁面
+     */
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(@RequestParam String token, Model model) {
+        // 檢查 token 是否有效
+        if (!redisService.isPasswordResetTokenValid(token)) {
+            model.addAttribute("error", "密碼重設連結已失效或不正確，請重新申請");
+            return "back-end/member/login";
+        }
+        
+        // 如果 token 有效，將其傳遞給重設密碼表單
+        model.addAttribute("token", token);
+        return "back-end/member/resetPassword";
+    }
+
+    /**
+     * 處理密碼重設請求
+     * 當用戶提交新密碼時處理更新邏輯
+     */
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String token,
+                              @RequestParam String newPassword,
+                              @RequestParam String confirmPassword,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            // 再次驗證 token
+            if (!redisService.isPasswordResetTokenValid(token)) {
+                redirectAttributes.addFlashAttribute("error", "密碼重設連結已失效，請重新申請");
+                return "redirect:/member/login";
+            }
+            
+            // 驗證密碼
+            if (!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("error", "兩次輸入的密碼不相同");
+                return "redirect:/member/reset-password?token=" + token;
+            }
+            
+            // 密碼長度驗證
+            if (newPassword.length() < 6 || newPassword.length() > 20) {
+                redirectAttributes.addFlashAttribute("error", "密碼長度必須在6到20個字元之間");
+                return "redirect:/member/reset-password?token=" + token;
+            }
+            
+            // 從 Redis 中獲取對應的會員信息
+            MemberVO member = redisService.getMemberFromPasswordResetToken(token);
+            if (member == null) {
+                redirectAttributes.addFlashAttribute("error", "無法找到會員資訊，請重新申請密碼重設");
+                return "redirect:/member/login";
+            }
+            
+            // 更新密碼
+            member.setPassword(newPassword);
+            memberService.updateMember(member);
+            
+            // 清除 Redis 中的重設 token
+            redisService.clearPasswordResetToken(token);
+            
+            // 設置成功消息
+            redirectAttributes.addFlashAttribute("success", "密碼已成功重設，請使用新密碼登入");
+            
+            return "redirect:/member/login";
+            
+        } catch (Exception e) {
+            logger.error("密碼重設過程發生錯誤", e);
+            redirectAttributes.addFlashAttribute("error", "密碼重設失敗，請稍後再試");
+            return "redirect:/member/login";
+        }
+    }
+    
+    
     /**
      * 發送歡迎信的私有方法
      */
