@@ -52,4 +52,20 @@ public class ChatMessage {
     public void setRead(boolean read) {
         this.read = read;
     }
+    
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "id='" + id + '\'' +
+                ", chatId='" + chatId + '\'' +
+                ", sender={" +
+                "memid=" + (sender != null ? sender.getMemid() : "null") +
+                ", name='" + (sender != null ? sender.getName() : "null") + '\'' +
+                '}' +
+                ", recipientId='" + recipientId + '\'' +
+                ", content='" + content + '\'' +
+                ", timestamp=" + timestamp +
+                ", read=" + read +
+                '}';
+    }
 }

@@ -2,8 +2,8 @@ package com.smashspot.websocketchat.chatroom;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smashspot.member.model.MemberVO;
@@ -19,7 +19,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@Entity
+@RedisHash("Chatroom")
 public class Chatroom implements Serializable {
 
     @Id
@@ -31,7 +31,7 @@ public class Chatroom implements Serializable {
     private MemberVO sender; // 從 MemberVO 中獲取相關資訊
     
     @JsonProperty
-    private String senderName; // 明確定義 senderName 屬性
+    private String senderName; // 明確定義 senderName 屬性，確保其可以被正常序列化
     
     @Builder.Default
     private String recipientId = "Adm"; // 固定值 "Adm"
@@ -46,5 +46,18 @@ public class Chatroom implements Serializable {
     }
     public void setSenderName(String senderName) {
         this.senderName = senderName;
+    }
+    
+    
+    @Override
+    public String toString() {
+        return "Chatroom{" +
+                "id='" + id + '\'' +
+                ", chatId='" + chatId + '\'' +
+                ", senderName='" + getSenderName() + '\'' +
+                ", recipientId='" + recipientId + '\'' +
+                ", lastMessage='" + lastMessage + '\'' +
+                ", unreadCount=" + unreadCount +
+                '}';
     }
 }

@@ -2,11 +2,13 @@ package com.smashspot.websocketchat.model;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import com.smashspot.interceptor.AdmLoginInterceptor;
 import com.smashspot.interceptor.LoginInterceptor;
 
 @Configuration
+@EnableWebSocket
 public class WebConfig2 implements WebMvcConfigurer {
 
     private final LoginInterceptor loginInterceptor;
