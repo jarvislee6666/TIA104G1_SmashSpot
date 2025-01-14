@@ -117,8 +117,8 @@
 											</td>
 											<td>
 												<form method="post" th:action="@{updateProductSta}"
-													style="margin-bottom: 0px;">
-													<button type="submit" value="下架" class="btn btn-sm btn-outline-secondary">下架</button> 
+													style="margin-bottom: 0px;" class="takedown-form">
+													<button type="submit" value="下架" class="btn btn-sm btn-outline-secondary takedown-btn">下架</button> 
 													<input type="hidden" name="proid" th:value="${productVO.proid}">
 													<input type="hidden" name="bidstaid" value="3">
 												</form>
@@ -147,8 +147,65 @@
 	</div>
 	
 	<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
+	
+		document.addEventListener('DOMContentLoaded', function() {
+		    // 找到所有下架表單
+		    const takedownForms = document.querySelectorAll('form[action$="updateProductSta"]');
+		    
+		    // 為每個表單添加提交事件監聽器
+		    takedownForms.forEach(form => {
+		        form.addEventListener('submit', function(e) {
+		            // 阻止表單預設提交行為
+		            e.preventDefault();
+		            
+		            // 獲取表單資料
+		            const formData = new FormData(form);
+		            const proid = formData.get('proid');
+		            
+		            try {
+		                // 顯示確認對話框
+		                if (confirm('確定要下架此商品嗎？')) {
+		                    // 使用 fetch API 發送 POST 請求
+		                    fetch(form.action, {
+		                        method: 'POST',
+		                        body: formData
+		                    })
+		                    .then(response => {
+		                        if (response.ok) {
+		                            // 下架成功，找到對應的 tr 元素並移除該列，或更新狀態
+		                            const row = form.closest('tr');
+		                            // 修改狀態顯示
+		                            const statusCell = row.querySelector('td:nth-last-child(2)'); // 倒數第二個 td（狀態欄）
+		                            const statusBadge = statusCell.querySelector('.badge');
+		                            statusBadge.className = 'badge bg-secondary';
+		                            statusBadge.textContent = '已下架';
+		                            
+		                            // 隱藏或禁用下架按鈕
+		                            const button = form.querySelector('button');
+		                            button.disabled = true;
+		                            button.style.display = 'none';
+		                            
+		                            // 顯示成功訊息
+		                            alert('商品已成功下架！');
+		                        } else {
+		                            throw new Error('下架失敗');
+		                        }
+		                    })
+		                    .catch(error => {
+		                        console.error('下架過程發生錯誤:', error);
+		                        alert('系統發生錯誤，請稍後再試');
+		                    });
+		                }
+		            } catch (error) {
+		                console.error('下架確認過程發生錯誤:', error);
+		                alert('系統發生錯誤，請稍後再試');
+		            }
+		        });
+		    });
+		});
+		
     </script>
 </body>
 </html>

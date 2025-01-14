@@ -20,68 +20,68 @@ main {
 }
 
 /* 導航欄樣式 */
-.nav-container {
-	display: flex;
-	border-bottom: 1px solid #e6e6e6;
-	padding: 15px 0;
-	background: #fff;
-	margin-bottom: 20px;
-}
+/* .nav-container { */
+/* 	display: flex; */
+/* 	border-bottom: 1px solid #e6e6e6; */
+/* 	padding: 15px 0; */
+/* 	background: #fff; */
+/* 	margin-bottom: 20px; */
+/* } */
 
-.navbar-brand img {
-	height: 6rem;
-	width: 6rem;
-}
+/* .navbar-brand img { */
+/* 	height: 6rem; */
+/* 	width: 6rem; */
+/* } */
 
-.nav-list {
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	max-width: 1200px;
-	margin: 0 auto;
-}
+/* .nav-list { */
+/* 	display: flex; */
+/* 	justify-content: flex-start; */
+/* 	align-items: center; */
+/* 	list-style: none; */
+/* 	margin: 0; */
+/* 	padding: 0; */
+/* 	max-width: 1200px; */
+/* 	margin: 0 auto; */
+/* } */
 
-.nav-item {
-	padding: 0 20px;
-}
+/* .nav-item { */
+/* 	padding: 0 20px; */
+/* } */
 
-.nav-link {
-	color: #333;
-	text-decoration: none;
-	font-size: 16px;
-}
+/* .nav-link { */
+/* 	color: #333; */
+/* 	text-decoration: none; */
+/* 	font-size: 16px; */
+/* } */
 
-.nav-link:hover {
-	color: #0066cc;
-}
+/* .nav-link:hover { */
+/* 	color: #0066cc; */
+/* } */
 
 /* 頁尾樣式 */
-footer {
-	background-color: #7d7d7d;
-	padding: 30px 0;
-	flex-shrink: 0;
-}
+/* footer { */
+/* 	background-color: #7d7d7d; */
+/* 	padding: 30px 0; */
+/* 	flex-shrink: 0; */
+/* } */
 
-.footer-container {
-	max-width: 1200px;
-	margin: 0 auto;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
+/* .footer-container { */
+/* 	max-width: 1200px; */
+/* 	margin: 0 auto; */
+/* 	display: flex; */
+/* 	justify-content: space-between; */
+/* 	align-items: center; */
+/* } */
 
-.footer-logo {
-	height: 6rem;
-	width: 6rem;
-}
+/* .footer-logo { */
+/* 	height: 6rem; */
+/* 	width: 6rem; */
+/* } */
 
-.footer-text {
-	color: #e0e0e0;
-	font-size: 14px;
-}
+/* .footer-text { */
+/* 	color: #e0e0e0; */
+/* 	font-size: 14px; */
+/* } */
 
 /* 場館卡片樣式 */
 .venue-card {

@@ -700,6 +700,7 @@
 		                                NT$ <span th:text="${productVO.minincr}"></span>
 		                            </span>
 		                        </div>
+		                        <input type="hidden" id="purPrice" th:value="${productVO.purprice}">
 		                    </div>
 		
 		                    <!-- 出價按鈕 -->
@@ -840,10 +841,22 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             
             const bidAmount = document.getElementById('bidAmount');
+            const purPrice = parseInt(document.getElementById('purPrice').value);
             const minBidAmount = parseInt(bidAmount.getAttribute('min'));
+            const currentBidValue = parseInt(bidAmount.value);
             
             if (!bidAmount.value || parseInt(bidAmount.value) < minBidAmount) {
                 bidAmount.classList.add('is-invalid');
+                return;
+            }
+            
+         	// 檢查是否大於等於直購價
+            if (currentBidValue >= purPrice) {
+                bidAmount.classList.add('is-invalid');
+                showToast('出價金額過高，請直接購買', false);
+                // 關閉競標 Modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('biddingModal'));
+                modal.hide();
                 return;
             }
             
