@@ -51,7 +51,7 @@
       </div>
 
       <!-- 忘記密碼 Modal -->
-      <div
+      <!--  <div
         class="modal fade"
         id="forgotPasswordModal"
         tabindex="-1"
@@ -102,7 +102,50 @@
             </div>
           </div>
         </div>
-      </div>
+      </div>-->
+      
+      <!-- 忘記密碼 Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" 
+     aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="forgotPasswordModalLabel">
+                    忘記密碼
+                </h5>
+                <button type="button" class="btn-close" 
+                        data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <form th:action="@{/member/forgot-password}" method="post">
+                <div class="modal-body">
+                    <div th:if="${error}" class="alert alert-danger">
+                        <span th:text="${error}"></span>
+                    </div>
+                    <div th:if="${success}" class="alert alert-success">
+                        <span th:text="${success}"></span>
+                    </div>
+                    <p>請輸入您的會員註冊信箱，系統將發送重設密碼連結至該信箱</p>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" 
+                               id="email" name="email" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                            data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        發送重設連結
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+      
+      
+      
     </main>
 
 

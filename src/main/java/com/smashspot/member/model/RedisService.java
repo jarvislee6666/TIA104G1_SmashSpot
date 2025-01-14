@@ -31,6 +31,8 @@ public class RedisService {
     private static final String MEMBER_TEMP_PREFIX = "member:temp:";
     // 定義資料的預設過期時間為 30 分鐘
     private static final long EXPIRE_MINUTES = 1;
+    // 添加密碼重設相關的 Redis key 前綴
+    private static final String PASSWORD_RESET_PREFIX = "password:reset:";
     
     /**
      * 生成驗證 token 並存儲臨時會員資料的方法
@@ -122,4 +124,32 @@ public class RedisService {
         return redisTemplate.hasKey(VERIFY_PREFIX + token) &&
                redisTemplate.hasKey(MEMBER_TEMP_PREFIX + token);
     }
+
+	public String generatePasswordResetToken(MemberVO member) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getPasswordResetLink(String resetToken) {
+		// TODO Auto-generated method stub
+		return "http://localhost:8080/member/basic-info";
+	}
+
+	public MemberVO getMemberFromPasswordResetToken(String token) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isPasswordResetTokenValid(String token) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void clearPasswordResetToken(String token) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
 }
