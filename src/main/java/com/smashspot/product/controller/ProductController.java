@@ -276,23 +276,47 @@ public class ProductController {
 	    return response;
 	}
 
-	@PostMapping("/adm/updateProductSta")  // 更改商品狀態，1.後臺下架 2.前台結標
-	public String update(@RequestParam("proid") String proid, @RequestParam("bidstaid") Integer bidstaid, ModelMap model) throws IOException {
-
-		/*************************** 2.開始修改資料 *****************************************/
-		ProductVO productVO = proSvc.getOneProduct(Integer.valueOf(proid));
-		productVO.setBidstaid(bidstaid);
-		proSvc.updateProduct(productVO);
-
-		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
-		if(bidstaid == 2) { //模擬前台結標時間到
-			model.addAttribute("success", "- (商品已結標)");
-			
-			return "back-end/product/listAllProductING";
-		}
-		
-		model.addAttribute("success", "- (下架成功)");
-		return "back-end/adm/listAllProduct"; //後台手動下架
+//	@PostMapping("/adm/updateProductSta")  // 更改商品狀態，1.後臺下架 2.前台結標
+//	public String update(@RequestParam("proid") String proid, @RequestParam("bidstaid") Integer bidstaid, ModelMap model) throws IOException {
+//
+//		/*************************** 2.開始修改資料 *****************************************/
+//		ProductVO productVO = proSvc.getOneProduct(Integer.valueOf(proid));
+//		productVO.setBidstaid(bidstaid);
+//		proSvc.updateProduct(productVO);
+//
+//		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
+//		if(bidstaid == 2) { //模擬前台結標時間到
+//			model.addAttribute("success", "- (商品已結標)");
+//			
+//			return "back-end/product/listAllProductING";
+//		}
+//		
+//		model.addAttribute("success", "- (下架成功)");
+//		return "back-end/adm/listAllProduct"; //後台手動下架
+//	}
+	
+	@PostMapping("/adm/updateProductSta")
+	@ResponseBody  // 添加這個註解
+	public ResponseEntity<Map<String, Object>> update(
+	        @RequestParam("proid") String proid, 
+	        @RequestParam("bidstaid") Integer bidstaid) {
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    try {
+	        ProductVO productVO = proSvc.getOneProduct(Integer.valueOf(proid));
+	        productVO.setBidstaid(bidstaid);
+	        proSvc.updateProduct(productVO);
+	        
+	        response.put("success", true);
+	        response.put("message", bidstaid == 2 ? "商品已結標" : "下架成功");
+	        
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        response.put("message", "操作失敗：" + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
 	
 	@GetMapping("/client/listProductByClass/{proclassid}")

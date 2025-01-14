@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>場館一覽 - listAllStdmFront.html</title>
 <th:block th:replace="back-end/client/Header :: headContent" />
-<head th:insert="~{/back-end/stdm/included-fragment}"></head>
+<link rel="stylesheet" th:href="@{/css/stdm/listAllStdmFront.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Header.css}" />
 <link rel="stylesheet" th:href="@{/css/client/Footer.css}" />
 <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
@@ -123,26 +120,7 @@
 
 	</main>
 
-	<footer>
-		<div class="footer-container">
-			<div class="d-flex align-items-center">
-				<img src="/api/placeholder/96/96" alt="網站logo" class="footer-logo" />
-				<div class="footer-contact">
-					<p class="footer-text">連絡電話: (02) 1234-5678</p>
-					<p>
-						<a href="#" class="text-decoration-none footer-text">客服專區</a>
-					</p>
-				</div>
-			</div>
-			<div class="social-icons">
-				<div class="social-icons-row">
-					<a href="#" class="bi bi-facebook"></a> <a href="#"
-						class="bi bi-instagram"></a> <a href="#" class="bi bi-youtube"></a>
-				</div>
-				<p class="footer-text">追蹤我們的社群平台以取得最新資訊</p>
-			</div>
-		</div>
-	</footer>
+	<div th:replace="back-end/client/Footer :: footer"></div>
 
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
