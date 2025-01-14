@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>客服中心 - 聊天室列表</title>
+<th:block th:replace="back-end/adm/Header :: headContent" />
+	<head th:insert="~{/back-end/adm/included-fragment}"></head>
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Font Awesome -->
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	rel="stylesheet">
+<!-- Custom CSS -->
+<style>
+:root {
+	--primary: #2563eb;
+	--primary-hover: #1d4ed8;
+	--secondary: #64748b;
+	--danger: #ef4444;
+	--success: #22c55e;
+	--background: #f8fafc;
+	--surface: #ffffff;
+	--text: #0f172a;
+	--border: #e2e8f0;
+}
+
+body {
+	background-color: var(--background);
+	min-height: 100vh;
+}
+
+.navbar {
+	padding: 0.75rem 1.5rem;
+	background-color: var(--surface);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-content {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: 2rem;
+}
+
+.navbar .navbar-brand {
+	font-size: 1.5rem;
+	font-weight: 600;
+	padding: 0;
+	margin: 0;
+	white-space: nowrap;
+}
+
+.nav-buttons {
+	display: flex;
+	gap: 1rem;
+	flex-grow: 1;
+	justify-content: flex-end;
+}
+
+.nav-buttons .nav-link {
+	color: var(--text);
+	padding: 0.5rem 1rem;
+	border-radius: 0.375rem;
+	transition: all 0.2s;
+	white-space: nowrap;
+	font-size: 1rem;
+}
+
+.nav-buttons .nav-link:hover {
+	background-color: var(--background);
+	color: var(--primary);
+}
+
+.nav-pills .nav-link {
+	color: var(--text);
+	transition: all 0.2s;
+	padding: 1rem 1.5rem;
+	font-size: 1rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.nav-pills .nav-link.active {
+	background-color: var(--primary);
+}
+
+.message-list {
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border: 1px solid #dee2e6;
+	overflow: hidden;
+}
+
+.message-list-header {
+	padding: 20px;
+	border-bottom: 2px solid #dee2e6;
+	background-color: #f8f9fa;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.message-item {
+	display: flex;
+	align-items: center;
+	padding: 15px 20px;
+	border-bottom: 1px solid #dee2e6;
+	transition: background-color 0.2s;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
+}
+
+.message-item:hover {
+	background-color: #f8f9fa;
+}
+
+.message-item.unread {
+	background-color: #f0f7ff;
+}
+
+.user-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	margin-right: 15px;
+	background-color: var(--primary);
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 500;
+}
+
+.message-content {
+	flex: 1;
+}
+
+.message-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.message-sender {
+	font-weight: 600;
+	color: var(--text);
+}
+
+.status-badge {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: var(--primary);
+}
+
+.status-count {
+	background-color: var(--danger);
+	color: white;
+	padding: 2px 6px;
+	border-radius: 10px;
+	font-size: 0.75rem;
+}
+
+.card {
+	border: 1px solid var(--border);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+@media ( max-width : 768px) {
+	.message-item {
+		padding: 12px 15px;
+	}
+	.user-avatar {
+		width: 35px;
+		height: 35px;
+		margin-right: 10px;
+	}
+}
+</style>
+<!-- WebSocket and STOMP libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+
+<body class="bg-light">
+<header th:replace="back-end/adm/Header :: header"></header>
+<input type="hidden" id="adminName" 
+       th:value="${session.loginAdm != null ? session.loginAdm.admname : ''}" />
+
+		<div class="container-fluid">
+			<div class="row">
+				<!-- 側邊欄 -->
+				<div class="col-md-2 mb-4">
+					<div class="card">
+						<div class="card-body p-0">
+							<div class="nav flex-column nav-pills">
+								<a class="nav-link active" th:href="@{/adm/listAllChat}"> <i
+									class="fas fa-list me-2"></i>訊息列表
+								</a>
+								<!-- 可以添加更多側邊欄選項 -->
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 主要內容區 -->
+				<div class="col-md-10">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title mb-4">聊天室列表</h5>
+							<div class="message-list">
+								<!-- 聊天室列表 -->
+								<a th:each="chatroom : ${chatrooms}" th:if="${chatroom != null}"
+									 th:href="@{/adm/chat/{senderId}/Adm(senderId=${chatroom.sender.memid})}"
+									class="message-item"
+									th:classappend="${chatroom.unreadCount > 0 ? 'unread' : ''}">
+									<div class="user-avatar">
+										<span
+											th:text="${chatroom != null and chatroom.sender != null and chatroom.sender.name != null} ? 
+                                                  ${#strings.substring(chatroom.sender.name, 0, 1)} : 'U'">U</span>
+									</div>
+									<div class="message-content">
+										<div class="message-header">
+											<span class="message-sender"
+												th:text="${chatroom != null and chatroom.sender != null ? chatroom.sender.name : '匿名用戶'}">
+												用戶名稱 </span>
+											<div class="d-flex align-items-center gap-2">
+												<span
+													th:if="${chatroom != null and chatroom.unreadCount > 0}"
+													class="status-count" th:text="${chatroom.unreadCount}">2</span>
+											</div>
+										</div>
+										<p class="message-preview"
+											th:text="${chatroom != null and chatroom.lastMessage != null ? chatroom.lastMessage : '尚無訊息'}">
+											最後訊息內容...</p>
+									</div>
+								</a>
+
+								<!-- 無聊天室時顯示 -->
+								<div th:if="${#lists.isEmpty(chatrooms)}"
+									class="text-center p-5">
+									<div class="text-muted">
+										<i class="fas fa-comments fs-1"></i>
+										<p class="mt-2">目前沒有進行中的對話</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- WebSocket 連接處理 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化設置
+    let stompClient = null;
+    const adminNameElement = document.getElementById('adminName');
+    if (!adminNameElement || !adminNameElement.value) {
+        console.error('管理員名稱未設置');
+        return;
+    }
+    const admname = adminNameElement.value;
+
+    // 時間格式化函數
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        
+        // 如果是今天，返回時間 HH:mm
+        if (date.toDateString() === now.toDateString()) {
+            return date.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+        
+        // 如果是過去7天內，返回星期幾
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 7) {
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            return `週${days[date.getDay()]}`;
+        }
+        
+        // 其他返回完整日期
+        return date.toLocaleDateString();
+    }
+
+    // WebSocket 連接管理
+    function connectWebSocket() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        
+        // 連接配置
+        const connectHeaders = {
+            'adminName': admname
+        };
+
+        stompClient.connect(connectHeaders, onConnected, onError);
+    }
+
+    // 連接成功處理
+    function onConnected() {
+        console.log('WebSocket 連接已建立');
+        
+        // 訂閱個人消息頻道
+        stompClient.subscribe(`/user/${admname}/queue/messages`, onMessageReceived);
+        // 訂閱系統通知頻道
+        stompClient.subscribe('/topic/notifications', onNotificationReceived);
+        
+    }
+
+
+    // 消息接收處理
+    function onMessageReceived(payload) {
+        try {
+            const message = JSON.parse(payload.body);
+            updateChatRoomList(message);
+        } catch (error) {
+            console.error('處理消息失敗:', error);
+        }
+    }
+
+    // 系統通知處理
+    function onNotificationReceived(payload) {
+        try {
+            const notification = JSON.parse(payload.body);
+            handleSystemNotification(notification);
+        } catch (error) {
+            console.error('處理通知失敗:', error);
+        }
+    }
+
+    // 更新聊天室列表
+    function updateChatRoomList(message) {
+        const messageList = document.querySelector('.message-list');
+        const existingChatRoom = document.querySelector(
+            `.message-item[data-sender-id="${message.senderId}"]`
+        );
+
+        if (existingChatRoom) {
+            updateExistingChatRoom(existingChatRoom, message);
+        } else {
+            createNewChatRoom(messageList, message);
+        }
+    }
+
+    // 更新現有聊天室
+    function updateExistingChatRoom(chatRoomElement, message) {
+        const messagePreview = chatRoomElement.querySelector('.message-preview');
+        const timeElement = chatRoomElement.querySelector('.message-time');
+        const unreadCountElement = chatRoomElement.querySelector('.status-count');
+
+        if (messagePreview) {
+            messagePreview.textContent = message.content;
+        }
+        
+        if (timeElement) {
+            timeElement.textContent = formatTime(message.timestamp);
+        }
+
+        if (message.isNew) {
+            handleUnreadMessage(chatRoomElement, unreadCountElement);
+        }
+
+        // 移動到列表頂部
+        const parent = chatRoomElement.parentNode;
+        parent.insertBefore(chatRoomElement, parent.firstChild);
+    }
+
+    // 處理未讀消息
+    function handleUnreadMessage(chatRoomElement, countElement) {
+        if (countElement) {
+            const currentCount = parseInt(countElement.textContent) || 0;
+            countElement.textContent = currentCount + 1;
+        } else {
+            const countBadge = createUnreadBadge(1);
+            chatRoomElement.querySelector('.message-header').appendChild(countBadge);
+        }
+        chatRoomElement.classList.add('unread');
+    }
+
+    // 創建新聊天室
+    function createNewChatRoom(messageList, message) {
+        const chatRoomHtml = `
+            <a href="/adm/chat/${message.senderId}/Adm" 
+               class="message-item unread" 
+               data-sender-id="${message.senderId}">
+                <div class="user-avatar">
+                    <span>${message.senderName.charAt(0)}</span>
+                </div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">${message.senderName}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="message-time">${formatTime(message.timestamp)}</span>
+                            <span class="status-count">1</span>
+                        </div>
+                    </div>
+                    <p class="message-preview">${message.content}</p>
+                </div>
+            </a>
+        `;
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = chatRoomHtml;
+        
+        // 插入新聊天室
+        messageList.insertBefore(tempDiv.firstChild, messageList.firstChild);
+        
+        // 移除空列表提示
+        const emptyMessage = messageList.querySelector('.text-center');
+        if (emptyMessage) {
+            emptyMessage.remove();
+        }
+    }
+
+    // 錯誤處理
+    function onError(error) {
+        console.error('WebSocket 錯誤:', error);
+        // 可以添加重試邏輯
+        setTimeout(connectWebSocket, 3000);
+    }
+
+    // 系統通知處理
+    function handleSystemNotification(notification) {
+        // 根據需求處理系統通知
+        console.log('收到系統通知:', notification);
+    }
+
+    // 初始化連接
+    connectWebSocket();
+
+    // 清理工作
+    window.addEventListener('beforeunload', function() {
+        if (stompClient) {
+            sendUserStatus('OFFLINE');
+            stompClient.disconnect();
+        }
+    });
+});
+</script>
+
+		<!-- Bootstrap Bundle with Popper -->
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

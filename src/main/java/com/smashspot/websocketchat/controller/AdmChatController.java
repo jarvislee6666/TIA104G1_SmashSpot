@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@ServerEndpoint(value = "adm/websocket/chat/{admname}", configurator = HttpSessionConfigurator.class)
+@ServerEndpoint(value = "/adm/websocket/chat/{admname}", configurator = HttpSessionConfigurator.class)
 public class AdmChatController {
 
 	private final ChatMessageService chatMessageService;
@@ -38,17 +38,18 @@ public class AdmChatController {
 	 */
 	@OnOpen
 	public void onOpen(@PathParam("admname") String admname, Session session, EndpointConfig config) {
-		HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-		if (httpSession == null || httpSession.getAttribute("loginAdm") == null) {
-			try {
-				session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized admin"));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return;
-		}
+		HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSessionConfigurator.class.getName());
+//		if (httpSession == null || httpSession.getAttribute("loginAdm") == null) {
+//			try {
+//				session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized admin"));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			return;
+//		}
 
 		// 驗證成功，繼續處理
+		System.out.println("HttpSession: " + httpSession);
 		sessionsMap.put(admname, session);
 		System.out.println(admname + " connected as admin.");
 	}
