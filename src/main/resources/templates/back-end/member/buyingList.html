@@ -100,7 +100,7 @@
 			          <span>購買清單</span>
 			        </a>
 			        
-			        <a href="#" 
+			        <a th:href="@{/member/appointment-records}"
 			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
 			          <i class="bi-calendar-check"></i>
 			          <span>場地預約紀錄</span>
@@ -119,7 +119,7 @@
                 <div class="d-flex gap-2">
 				  <input type="search" 
 				         class="form-control" 
-				         placeholder="搜尋商品..." 
+				         placeholder="搜尋商品名稱..." 
 				         style="max-width: 250px" 
 				         id="productSearch"/>
 				  <select class="form-select" 
@@ -127,7 +127,6 @@
 				          id="statusFilter">
 				    <option value="">全部商品</option>
 				    <option value="0" disabled>-依訂單狀態-</option>
-				    <option value="1">尚未付款</option>
 				    <option value="2">付款完成</option>
 				    <option value="3">已出貨</option>
 				    <option value="4">訂單完成</option>
@@ -455,6 +454,49 @@ document.addEventListener("DOMContentLoaded", () => {
 	      orderDetailModal.show();
 	    });
 	  });
+	  
+	// 搜尋和狀態篩選功能
+	    const searchInput = document.getElementById('productSearch');
+	    const statusFilter = document.getElementById('statusFilter');
+	    const tableBody = document.querySelector('tbody');
+	    const allRows = Array.from(tableBody.getElementsByTagName('tr'));
+
+	    function filterOrders() {
+	        const searchTerm = searchInput.value.toLowerCase();
+	        const statusValue = statusFilter.value;
+
+	        allRows.forEach(row => {
+	            // 搜尋商品名稱 (在 fw-medium class 的 div 元素中)
+	            const productName = row.querySelector('.fw-medium').textContent.toLowerCase();
+	            // 取得訂單狀態 (在 badge class 的元素中)
+	            const statusBadge = row.querySelector('.badge');
+	            const orderStatus = statusBadge ? getOrderStatusId(statusBadge.textContent) : '';
+	            
+	            const matchesSearch = productName.includes(searchTerm);
+	            const matchesStatus = statusValue === '' || orderStatus === statusValue;
+
+	            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+	        });
+	    }
+
+	    // 根據狀態文字返回對應的狀態ID
+	    function getOrderStatusId(statusText) {
+	        const statusMap = {
+	            '尚未付款': '1',
+	            '付款完成': '2',
+	            '已出貨': '3',
+	            '訂單完成': '4',
+	            '訂單取消': '5'
+	        };
+	        return statusMap[statusText.trim()] || '';
+	    }
+
+	    // 添加事件監聽器
+	    searchInput.addEventListener('input', filterOrders);
+	    statusFilter.addEventListener('change', filterOrders);
+
+	    // 初始化過濾
+	    filterOrders();
 	});
 </script>
 </body>
