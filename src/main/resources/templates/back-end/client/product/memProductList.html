@@ -111,7 +111,7 @@
                 <div class="d-flex gap-2">
 				  <input type="search" 
 				         class="form-control" 
-				         placeholder="搜尋商品..." 
+				         placeholder="搜尋商品名稱..." 
 				         style="max-width: 250px" 
 				         id="productSearch"/>
 				  <select class="form-select" 
@@ -155,7 +155,7 @@
 						  <a th:href="@{/client/getOneProduct/{proid}(proid=${productVO.proid})}"
 						     class="product-link-underline d-inline-flex align-items-center gap-2"
 						  >
-						    <span class="link-text position-relative" th:text="${productVO.proname}"></span>
+						    <span class="link-text position-relative proname" th:text="${productVO.proname}"></span>
 						    <i class="bi bi-arrow-right small"></i>
 						  </a>
 						</div>
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
      const statusValue = statusFilter.value;
 
      allRows.forEach(row => {
-         const productName = row.querySelector('.fw-medium').textContent.toLowerCase();
+         const productName = row.querySelector('.proname').textContent.toLowerCase();
          const productStatus = row.querySelector('[data-status]').getAttribute('data-status');
          
          const matchesSearch = productName.includes(searchTerm);

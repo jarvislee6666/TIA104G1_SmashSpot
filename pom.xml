@@ -36,6 +36,10 @@
   
   <!-- ＠用途說明by念芸: 客服聊天使用websocket&mangoDB -->
   <dependency>
+    <groupId>org.springframework.boot</groupId> <!-- websocket springboot整合包 (我問claude說跟下面的應該不會有衝突==) by 岳亭 -->
+    <artifactId>spring-boot-starter-websocket</artifactId>
+  </dependency>
+  <dependency>
    <groupId>org.springframework</groupId>
    <artifactId>spring-websocket</artifactId>
   </dependency>
