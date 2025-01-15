@@ -76,9 +76,20 @@
 							查詢</button>
 					</div>
 				</form>
-						<a class="btn btn-add" th:href="@{/adm/addAdm}" method="post">
-				    <i class="fas fa-plus me-2"></i>新增管理員資料
-						</a>
+						<div>
+						    <!-- 當登入者為高級管理員時顯示按鈕 -->
+						    <a th:if="${session.loginAdm != null && session.loginAdm.supvsr == true}" 
+						       class="btn btn-add" 
+						       th:href="@{/adm/addAdm}">
+						        <i class="fas fa-plus me-2"></i>新增管理員資料
+						    </a>
+						    
+						    <!-- 當登入者為一般管理員時顯示提示訊息 -->
+						    <span th:if="${session.loginAdm != null && session.loginAdm.supvsr == false}" 
+						          class="text-muted">
+						        <i class="fas fa-lock me-1"></i>無新增權限
+						    </span>
+						</div>
 			</div>
 
 			<div class="table-responsive">
@@ -122,22 +133,7 @@
 					</tr>
 					</c:forEach>
 				</table>
-				<div class="d-flex justify-content-center mt-4">
-					<nav>
-						<ul class="pagination">
-							<li class="page-item"><a class="page-link" href="#">&laquo;</a>
-							</li>
-							<li class="page-item active"><a class="page-link"
-								href="#">1</a></li>
-							<li class="page-item"><a class="page-link" href="#">2</a>
-							</li>
-							<li class="page-item"><a class="page-link" href="#">3</a>
-							</li>
-							<li class="page-item"><a class="page-link" href="#">&raquo;</a>
-							</li>
-						</ul>
-					</nav>
-				</div>
+
 				
 <script>
 function maskPassword(password) {
