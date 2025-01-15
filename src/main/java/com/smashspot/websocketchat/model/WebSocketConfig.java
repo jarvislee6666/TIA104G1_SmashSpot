@@ -19,14 +19,16 @@ public class WebSocketConfig  implements WebSocketMessageBrokerConfigurer{
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/user");
+		registry.enableSimpleBroker("/topic","/user");
 		registry.setApplicationDestinationPrefixes("/app");
 		registry.setUserDestinationPrefix("/user");
 	}
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/ws").withSockJS();
+		registry.addEndpoint("/ws")
+				.setAllowedOrigins("http://localhost:8080") // 明確指定允許的來源
+				.withSockJS();
 	}
 	
 	@Override
