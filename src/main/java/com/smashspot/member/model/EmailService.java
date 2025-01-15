@@ -134,20 +134,9 @@ public class EmailService {
         // 發送郵件
         mailSender.send(message);
     }
-    
-    
-    
-    /**
-     * 發送密碼重設郵件
-     * @param to 收件者信箱
-     * @param resetLink 密碼重設連結
-     * @throws MessagingException 郵件發送異常
-     */
+ 
     public void sendPasswordResetEmail(String to, String resetLink) throws MessagingException {
         String subject = "SmashSpot 密碼重設";
-        
-        // 構建基本資料頁面的連結
-        String basicInfoLink = "http://localhost:8080/member/basic-info";
         
         String content = String.format(
             "<div style='font-family: 微軟正黑體, sans-serif; padding: 20px;'>" +
@@ -161,56 +150,13 @@ public class EmailService {
             "<p style='color: #666; word-break: break-all;'>%s</p>" +
             "<p>※ 此連結將在30分鐘後失效</p>" +
             "<p>※ 如果這不是您本人的操作，請忽略此信件</p>" +
-            "<div style='margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 4px;'>" +
-            "<p>密碼重設完成後，您可以：</p>" +
-            "<ul style='margin: 10px 0;'>" +
-            "<li>前往<a href='%s' style='color: #0066cc;'>會員基本資料頁面</a>查看或修改您的個人資訊</li>" +
-            "<li>立即開始使用我們的服務</li>" +
-            "</ul>" +
-            "</div>" +
             "<hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>" +
             "<p style='color: #666; font-size: 14px;'>此為系統自動發送的郵件，請勿直接回覆</p>" +
             "</div>",
-            resetLink,      // 第一個 %s：重設密碼連結（用於按鈕）
-            resetLink,      // 第二個 %s：重設密碼連結（用於文字備份）
-            basicInfoLink   // 第三個 %s：基本資料頁面連結
-        );
-        
+            resetLink,
+            resetLink
+        );        
         sendHtmlEmail(to, subject, content);
     }
-    
-    
-    
-    
-    
-//    /**
-//     * 發送密碼重設郵件
-//     * @param to 收件者信箱
-//     * @param resetLink 密碼重設連結
-//     * @throws MessagingException 郵件發送異常
-//     */
-//    public void sendPasswordResetEmail(String to, String resetLink) throws MessagingException {
-//        String subject = "SmashSpot 密碼重設";
-//        
-//        String content = String.format(
-//            "<div style='font-family: 微軟正黑體, sans-serif; padding: 20px;'>" +
-//            "<h2>密碼重設請求</h2>" +
-//            "<p>我們收到了您的密碼重設請求。請點擊下方連結重設您的密碼：</p>" +
-//            "<div style='margin: 20px 0;'>" +
-//            "<a href='%s' style='background-color: #4CAF50; color: white; padding: 12px 24px; " +
-//            "text-decoration: none; border-radius: 4px; display: inline-block;'>重設密碼</a>" +
-//            "</div>" +
-//            "<p>如果按鈕無法點擊，請複製以下連結到瀏覽器開啟：</p>" +
-//            "<p style='color: #666; word-break: break-all;'>%s</p>" +
-//            "<p>※ 此連結將在30分鐘後失效</p>" +
-//            "<p>※ 如果這不是您本人的操作，請忽略此信件</p>" +
-//            "<hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>" +
-//            "<p style='color: #666; font-size: 14px;'>此為系統自動發送的郵件，請勿直接回覆</p>" +
-//            "</div>",
-//            resetLink,
-//            resetLink
-//        );
-//        
-//        sendHtmlEmail(to, subject, content);
-//    }
+ 
 }
