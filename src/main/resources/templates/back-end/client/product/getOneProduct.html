@@ -6,6 +6,9 @@
 <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Footer.css}"/>
 <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}"/>
+<!-- WebSocket 相關庫 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
 <style>
 	main {
@@ -645,7 +648,7 @@
 		                        <div class="hint-item">
 		                            <span class="hint-label">最低出價金額</span>
 		                            <span class="hint-value">
-		                                NT$ <span th:text="${productVO.maxprice != null ? productVO.maxprice + productVO.minincr : productVO.baseprice + productVO.minincr}"></span>
+		                                NT$ <span  class="min-bid-amount" th:text="${productVO.maxprice != null ? productVO.maxprice + productVO.minincr : productVO.baseprice + productVO.minincr}"></span>
 		                            </span>
 		                        </div>
 		                        <div class="hint-item">
@@ -676,6 +679,7 @@
 <script type="text/javascript" th:src="@{/js/Header.js}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
+/*<![CDATA[*/
 //全局變數
 let countdownInterval;
 // 倒數計時相關函數
@@ -722,7 +726,75 @@ function updateCountdown() {
     }
 }
 
+let stompClient = null;
+
+function connectWebSocket() {
+    const socket = new SockJS('/ws');
+    stompClient = Stomp.over(socket);
+    
+ 	// 添加連接頭部信息
+    const headers = {};
+    
+    stompClient.connect({}, function(frame) {
+        console.log('Connected to WebSocket');
+        
+     	// 使用 Thymeleaf 變量獲取當前商品ID
+        const productId = /*[[${productVO.proid}]]*/ 0;
+        
+        // 訂閱特定商品的競標更新
+        stompClient.subscribe('/topic/product/' + productId, function(message) {
+        	console.log('Received message:', message);
+            const bidMessage = JSON.parse(message.body);
+            handleBidMessage(bidMessage);
+        });
+        
+        // 訂閱錯誤消息
+        stompClient.subscribe('/user/queue/errors', function(message) {
+            const errorMessage = JSON.parse(message.body);
+            showToast(errorMessage.message, false);
+        });
+    }, function(error) {
+        console.error('WebSocket連接失敗:', error);
+        // 可以在這裡添加重連邏輯
+        setTimeout(connectWebSocket, 5000);
+    });
+}
+
+function handleBidMessage(bidMessage) {
+	console.log('Handling bid message:', bidMessage);
+	
+    if (bidMessage.type === 'NEW_BID') {
+        // 更新最高價格顯示
+        updateHighestBid(bidMessage.currentHighestBid);
+        
+        // 更新競標歷史
+        updateBidHistory(bidMessage.bidHistory);
+        
+     	// 更新最低出價金額
+        const bidAmountInput = document.getElementById('bidAmount');
+        const minBidAmount = document.querySelector('.min-bid-amount');
+        const minIncr = /*[[${productVO.minincr}]]*/ 0;
+        const newMinBid = bidMessage.currentHighestBid + minIncr;
+
+        bidAmountInput.value = ''; // 清空輸入值
+        bidAmountInput.classList.remove('is-valid', 'is-invalid'); // 移除驗證樣式
+        bidAmountInput.setAttribute('min', newMinBid);
+        bidAmountInput.setAttribute('placeholder', '最低出價金額 ' + newMinBid);
+        minBidAmount.textContent = newMinBid;
+              
+        // 顯示新出價提示
+        showToast('有新的出價: NT$ ' + bidMessage.currentHighestBid.toLocaleString());
+        
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+	// 確保已加載必要的WebSocket客戶端庫
+    if (typeof SockJS !== 'undefined' && typeof Stomp !== 'undefined') {
+        connectWebSocket();
+    } else {
+        console.error('WebSocket客戶端庫未載入');
+    }
     // 初始化倒數計時
     updateCountdown();
     // 每秒更新一次倒數計時
@@ -733,33 +805,6 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(countdownInterval);
     });   
     
- 	// 更新競標歷史表格
-    function updateBidHistory(bidHistory) {
-	    const tableContainer = document.getElementById('bidHistoryTableContainer');
-	    const noBidMessage = document.getElementById('noBidMessage');
-	    const tbody = document.querySelector('#bidHistoryTableContainer tbody');
-	    
-	    if (Array.isArray(bidHistory) && bidHistory.length > 0) {
-	        // 有競標記錄時
-	        tableContainer.style.display = 'block';
-	        if (noBidMessage) noBidMessage.style.display = 'none';
-	        
-	        // 更新表格內容
-	        tbody.innerHTML = bidHistory.map(bid => `
-	            <tr>
-	                <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
-	                <td>${bid.bidderName || '匿名用戶'}</td>
-	                <td class="text-end">
-	                    <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
-	                </td>
-	            </tr>
-	        `).join('');
-	    } else {
-	        // 無競標記錄時
-	        tableContainer.style.display = 'none';
-	        if (noBidMessage) noBidMessage.style.display = 'block';
-	    }
-	}
 
     // 從 Thymeleaf 獲取競標歷史數據並初始化顯示
     const bidHistory = /*[[${bidHistory}]]*/ [];
@@ -775,7 +820,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (bidAmount) {
         const minBidAmount = parseInt(bidAmount.getAttribute('min'));
-        bidAmount.setAttribute('data-min-incr', bidAmount.getAttribute('data-min-incr') || '0');
         
         // 即時驗證出價金額
         bidAmount.addEventListener('input', function() {
@@ -794,7 +838,6 @@ document.addEventListener('DOMContentLoaded', function() {
         bidForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             
-            const bidAmount = document.getElementById('bidAmount');
             const purPrice = parseInt(document.getElementById('purPrice').value);
             const minBidAmount = parseInt(bidAmount.getAttribute('min'));
             const currentBidValue = parseInt(bidAmount.value);
@@ -842,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const modal = bootstrap.Modal.getInstance(document.getElementById('biddingModal'));
                     modal.hide();
                     
-                    showToast(`您已成功出價 NT$ ${parseInt(bidAmount.value).toLocaleString()}`);
+                    showToast('您已成功出價 NT$ ' + currentBidValue.toLocaleString());
                     
                     bidForm.reset();
                 } else {
@@ -876,11 +919,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const biddingModal = new bootstrap.Modal(document.getElementById('biddingModal'));
                 biddingModal.show();
+	                
                 
             } catch (error) {
-                console.error('Error checking login status:', error);
-                sessionStorage.setItem('redirectAfterLogin', window.location.href);
-                window.location.href = '/member/login';
+            	console.error('Error:', error);
+                showToast('發生錯誤，請稍後再試', false);
             }
         });
     }
@@ -958,36 +1001,39 @@ function initializeBidHistory(bidHistory) {
     }
 }
 
-// 更新競標歷史顯示函數
+// 更新競標歷史表格
 function updateBidHistory(bidHistory) {
-    const tableContainer = document.getElementById('bidHistoryTableContainer');
-    const noBidMessage = document.getElementById('noBidMessage');
-    const tbody = document.querySelector('#bidHistoryTableContainer tbody');
-    
-    if (Array.isArray(bidHistory) && bidHistory.length > 0) {
-        tableContainer.style.display = 'block';
-        noBidMessage.style.display = 'none';
-        
-        tbody.innerHTML = bidHistory.map(bid => `
-            <tr>
-                <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
-                <td>${bid.bidderName || '匿名用戶'}</td>
-                <td class="text-end">
-                    <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
-                </td>
-            </tr>
-        `).join('');
-    } else {
-        tableContainer.style.display = 'none';
-        noBidMessage.style.display = 'block';
-    }
+   const tableContainer = document.getElementById('bidHistoryTableContainer');
+   const noBidMessage = document.getElementById('noBidMessage');
+   const tbody = document.querySelector('#bidHistoryTableContainer tbody');
+   
+   if (Array.isArray(bidHistory) && bidHistory.length > 0) {
+       // 有競標記錄時
+       tableContainer.style.display = 'block';
+       if (noBidMessage) noBidMessage.style.display = 'none';
+       
+       // 更新表格內容
+       tbody.innerHTML = bidHistory.map(bid => `
+           <tr>
+               <td class="text-muted">${new Date(bid.bidtime).toLocaleString('zh-TW')}</td>
+               <td>${bid.bidderName || '匿名用戶'}</td>
+               <td class="text-end">
+                   <span class="fw-bold">NT$ ${bid.bidamt.toLocaleString()}</span>
+               </td>
+           </tr>
+       `).join('');
+   } else {
+       // 無競標記錄時
+       tableContainer.style.display = 'none';
+       if (noBidMessage) noBidMessage.style.display = 'block';
+   }
 }
 
 // 更新最高價格顯示函數
 function updateHighestBid(newPrice) {
     const priceDisplays = document.querySelectorAll('.current-price .price, .price-box .text-primary');
     priceDisplays.forEach(display => {
-        display.textContent = `NT$ ${newPrice.toLocaleString()}`;
+        display.textContent = `NT$ ${newPrice}`;
     });
 }
 
@@ -1020,6 +1066,14 @@ function showToast(message, isSuccess = true) {
         }
     }, 3000);
 }
+
+//在頁面卸載時斷開WebSocket連接
+window.addEventListener('beforeunload', function() {
+    if (stompClient !== null) {
+        stompClient.disconnect();
+    }
+});
+/*]]>*/
 </script>
 </body>
 </html>
