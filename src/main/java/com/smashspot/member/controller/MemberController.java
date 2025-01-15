@@ -235,7 +235,7 @@ public class MemberController {
         
         // 如果 token 有效，將其傳遞給重設密碼表單
         model.addAttribute("token", token);
-        return "back-end/member/resetPassword";
+        return "back-end/member/resetPasswordPage";
     }
 
     /**
