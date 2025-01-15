@@ -101,37 +101,13 @@
 										<td th:text="${orderList.ordsta ? '已預約' : '已取消'}"></td>			
 										<td th:text="${orderList.starrank != null ? orderList.starrank : '未評價'}"></td>
 										<td>
-                                            <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal" data-bs-target="#orderModal" th:attr="data-order-id=${orderList.courtordid}">>
+                                            <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal" data-bs-target="#orderModal" th:attr="data-order-id=${orderList.courtordid}">
                                                 查看詳情
                                             </button>
                                         </td>
 									</tr>
                                 </tbody>
                             </table>
-
-                            <div class="d-flex justify-content-between align-items-center mt-4">
-                                
-                                <div class="col-md-4 d-flex justify-content-center">
-                                    <nav>
-                                        <ul class="pagination mb-0">
-                                            <li class="page-item">
-                                                <a class="page-link" href="#" aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </a>
-                                            </li>
-                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#" aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                                <div class="col-md-4"></div>
-                            </div>
                         </div>
                     </div>
                 </div>
