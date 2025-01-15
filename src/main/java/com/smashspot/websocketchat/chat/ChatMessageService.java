@@ -2,16 +2,16 @@ package com.smashspot.websocketchat.chat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.smashspot.member.model.MemberVO;
 import com.smashspot.websocketchat.chatroom.ChatroomRepository;
 import com.smashspot.websocketchat.chatroom.ChatroomService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
@@ -23,41 +23,85 @@ public class ChatMessageService {
 	/**
 	 * 保存聊天訊息
 	 */
+
 	public ChatMessage save(ChatMessage chatMessage) {
-		// 確保 senderId 存在
-		Integer senderId = Optional.ofNullable(chatMessage.getSender()).map(MemberVO::getMemid) // 提取 MemberVO 的 memid
-				.orElseThrow(() -> new IllegalArgumentException("Sender ID not found"));
+		try {
+			log.info("Saving chat message: {}", chatMessage);
 
-		// 獲取或創建聊天室 ID
-		var chatId = chatroomService.getChatroomId(senderId, true)
-				.orElseThrow(() -> new IllegalStateException("Failed to create or retrieve chatroom"));
+			// 檢查是否為管理員消息
+			boolean isAdmin = "Adm".equals(chatMessage.getSenderName());
+			log.info("Message is from admin: {}", isAdmin);
 
-		// 設置 ChatMessage 的 ChatId 並保存
-		chatMessage.setChatId(chatId);
-		repository.save(chatMessage);
+			String userId;
+			if (isAdmin) {
+				// 管理員發送的消息，使用接收者ID
+				userId = chatMessage.getRecipientId();
+				log.info("Admin sending to user ID: {}", userId);
+			} else {
+				// 會員發送的消息，使用發送者ID
+				userId = String.valueOf(chatMessage.getSender().getMemid());
+				log.info("Member sending message, user ID: {}", userId);
+			}
 
-		return chatMessage;
+			// 確保 userId 不為空且為有效數字
+			if (userId == null || userId.trim().isEmpty()) {
+				throw new IllegalArgumentException("User ID cannot be null or empty");
+			}
+
+			try {
+				Integer userIdInt = Integer.parseInt(userId);
+				log.info("Parsed user ID: {}", userIdInt);
+
+				// 獲取或創建聊天室
+				String chatId = chatroomService.getChatroomId(userIdInt, isAdmin, true).orElseThrow(() -> {
+					log.error("Failed to create or get chatroom for user ID: {}", userIdInt);
+					return new IllegalStateException("Failed to create or retrieve chatroom for user: " + userIdInt);
+				});
+
+				log.info("Retrieved chat ID: {}", chatId);
+				chatMessage.setChatId(chatId);
+
+				// 保存消息
+
+				repository.save(chatMessage);
+
+				return chatMessage;
+
+			} catch (NumberFormatException e) {
+				log.error("Invalid user ID format: {}", userId, e);
+				throw new IllegalArgumentException("Invalid user ID format: " + userId);
+			}
+
+		} catch (Exception e) {
+			log.error("Error saving chat message", e);
+			throw e;
+		}
 	}
 
 	/**
 	 * 獲取聊天訊息列表
 	 */
-	public List<ChatMessage> findChatMessages(Integer senderId, String recipientId) {
-		// 查詢聊天室 ID
-		var chatId = chatroomService.getChatroomId(senderId, false);
-
-		// 如果聊天室存在，查詢訊息；否則返回空列表
-		return chatId.map(repository::findByChatId).orElse(new ArrayList<>());
-	}
-	
-	public void markAsRead(String chatId) {
-	    List<ChatMessage> messages = repository.findByChatId(chatId);
-	    for (ChatMessage message : messages) {
-	        if (!message.isRead()) {
-	        	message.setRead(true);
-	        	repository.save(message);
+	 public List<ChatMessage> findChatMessages(Integer senderId, String recipientId) {
+	        if (senderId == null) {
+	            return new ArrayList<>();
 	        }
+	        // 取得聊天室ID
+	        var chatId = chatroomService.getChatroomId(senderId, false);
+	        
+	        // 查詢訊息並過濾排序
+	        return chatId.map(id -> repository.findByChatId(id))
+	                    .orElse(new ArrayList<>());
 	    }
-	}
+	    
+	    // 標記訊息已讀
+	    public void markAsRead(String chatId) {
+	        List<ChatMessage> messages = repository.findByChatId(chatId);
+	        messages.stream()
+	               .filter(msg -> !msg.isRead())
+	               .forEach(msg -> {
+	                   msg.setRead(true);
+	                   repository.save(msg);
+	               });
+	    }
 
 }
