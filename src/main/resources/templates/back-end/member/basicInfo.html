@@ -1,17 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>會員基本資料</title>
-      <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-        rel="stylesheet"
-      />
-      <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-        rel="stylesheet"
-      />
+    <th:block th:replace="back-end/client/Header :: headContent" />
     <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/client/basicInfo.css}" />
     <link rel="stylesheet" th:href="@{/css/client/Header.css}"/>
@@ -23,30 +14,40 @@
 
     <main>
         <div class="container position-relative mb-3">
-    <div class="row">
-        <!-- Sidebar (左側選單區塊) -->
-        <div class="col-md-3 d-flex justify-content-center">
-            <div style="width: 80%">
-                <!-- 標題 -->
-                <h5 class="mb-3" style="font-size: 24px">會員專區</h5>
-                <!-- 會員專區功能選單 -->
-                <a th:href="@{/member/basic-info}" class="action-button">
-                    <i class="bi bi-info-circle"></i>基本資料
-                </a>
-                <a th:href="@{/member/my-activities}" class="action-button">
-                    <i class="bi bi-calendar2-event"></i>我的活動
-                </a>
-                <a th:href="@{/member/biddingList}" class="action-button">
-                    <i class="bi bi-cash-coin"></i>參加中競標
-                </a>
-                <a th:href="@{/member/buyingList}" class="action-button">
-                            <i class="bi bi-bag-check"></i>購買清單
-                </a>
-                <a th:href="@{/member/appointment-records}" class="action-button">
-                    <i class="bi bi-journal-check"></i>場地預約紀錄
-                </a>
-            </div>
-        </div>
+    	  <div class="row">
+			<div class="col-md-3">
+			  <div class="card border-0 shadow-sm">
+			    <div class="card-body p-4">
+			      <h5 class="fw-bold mb-4">會員專區</h5>
+			      
+			      <div class="d-flex flex-column gap-2">
+			        <a th:href="@{/member/basic-info}" 
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-person-circle"></i>
+			          <span>基本資料</span>
+			        </a>
+			        
+			        <a th:href="@{/member/biddingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-hammer"></i>
+			          <span>參加中競標</span>
+			        </a>
+			        
+			        <a th:href="@{/member/buyingList}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi bi-bag-check"></i>
+			          <span>購買清單</span>
+			        </a>
+			        
+			        <a th:href="@{/member/appointment-records}"
+			           class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
+			          <i class="bi-calendar-check"></i>
+			          <span>場地預約紀錄</span>
+			        </a>
+			      </div>
+			    </div>
+			  </div>
+			</div>
         
         <!-- Main Content (主要內容區塊) -->
         <div class="col-md-9">
