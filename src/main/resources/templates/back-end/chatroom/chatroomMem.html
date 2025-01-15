@@ -119,10 +119,10 @@
     <div th:replace="back-end/client/Header :: header"></div>
       <!-- 添加隱藏欄位存放會員資訊 -->
 <!-- 修改隱藏欄位 -->
-<input type="hidden" id="memberName" 
-       th:value="${session.login != null ? session.login.name : ''}" />
-<input type="hidden" id="currentUserId" 
+<input type="hidden" id="memId" 
        th:value="${session.login != null ? session.login.memid : ''}" />
+<input type="hidden" id="memName" 
+       th:value="${session.login != null ? session.login.name : ''}" />
 
     <main>
         <div class="container">
@@ -168,196 +168,152 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
         // 初始化變數
         let stompClient = null;
-        let reconnectAttempts = 0;
-        const MAX_RECONNECT_ATTEMPTS = 5;
-        const RECONNECT_INTERVAL = 3000;
+        const MAX_RECONNECT_ATTEMPTS = 5; // 最大重連次數
+        let reconnectAttempts = 0; // 當前重連次數
 
         // 檢查會員登入資訊
-        function checkMemberAuth() {
-            const memberNameElement = document.getElementById('memberName');
-            const memberName = memberNameElement?.value;
-            
-            if (!memberName) {
-                console.error('會員名稱未設置');
-                return false;
+        const checkMemberAuth = () => {
+            const memberId = document.getElementById('memId')?.value;
+            if (!memberId) {
+                console.error('會員 ID 未設置'); // 如果會員 ID 未設置，則打印錯誤
+                return null;
             }
-            return memberName;
-        }
-
-        // 時間格式化函數
-        function formatTime(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            
-            if (date.toDateString() === now.toDateString()) {
-                return date.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-            }
-            
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            if (diffDays < 7) {
-                const days = ['日', '一', '二', '三', '四', '五', '六'];
-                return `週${days[date.getDay()]}`;
-            }
-            
-            return date.toLocaleDateString();
-        }
+            return memberId;
+        };
 
         // WebSocket 連接管理
-        function connectWebSocket(memberName) {
-        	const socket = new SockJS(`/mem/websocket/chat/${memberName}`);
+        const connectWebSocket = (memberId) => {
+            if (!memberId) {
+                console.error('無法建立 WebSocket，memberId 未定義'); // 檢查 memberId 是否為空
+                return;
+            }
+            const socket = new SockJS('/websocket');
+
             stompClient = Stomp.over(socket);
-            
+            stompClient.debug = null; // 關閉調試模式
+
             // 設置 STOMP 連接標頭
-            const connectHeaders = {
-                'memberName': memberName
-            };
-
-            // Debug 模式
-            stompClient.debug = function(str) {
-                console.log(str);
-            };
-            
-
-            stompClient.connect(connectHeaders, onConnected, onError);
-        }
-
-        // 連接成功處理
-        function onConnected() {
-            const memberName = checkMemberAuth();
-            console.log('WebSocket 連接已建立，會員:', memberName);
-            
-            // 重置重連計數
-            reconnectAttempts = 0;
-            
-            // 訂閱個人消息頻道
-            stompClient.subscribe(`/user/queue/chat/${memberName}`, onMessageReceived);
-            // 訂閱管理員消息頻道
-            stompClient.subscribe('/topic/chat.public', onMessageReceived);
-        }
+            stompClient.connect({ memberId }, () => {
+                console.log(`WebSocket 已連接，會員 ID: ${memberId}`);
+                // 訂閱個人消息頻道
+                stompClient.subscribe(`/user/${memberId}/queue/messages`, onMessageReceived);
+                // 訂閱管理員消息頻道
+                stompClient.subscribe('/topic/chat.public', onMessageReceived);
+                reconnectAttempts = 0; // 重置重連計數
+            }, onError);
+        };
 
         // 消息接收處理
-        function onMessageReceived(payload) {
+        const onMessageReceived = (payload) => {
             try {
-                const message = JSON.parse(payload.body);
-                appendMessage(message);
-                scrollToBottom();
-            } catch (error) {
-                console.error('處理消息失敗:', error);
+                const message = JSON.parse(payload.body); // 將消息內容解析為 JSON
+                appendMessage(message); // 將消息添加到聊天窗口
+                scrollToBottom(); // 滾動到最新消息
+            } catch (err) {
+                console.error('處理訊息失敗:', err); // 錯誤處理
             }
-        }
+        };
 
         // 添加消息到聊天窗口
-        function appendMessage(message) {
+        const appendMessage = (message) => {
             const chatMessages = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            
+
             // 判斷訊息方向
             messageDiv.className = message.senderName === 'Adm' ? 'message received' : 'message sent';
-            
+
             // 創建訊息 HTML
             messageDiv.innerHTML = `
                 <div class="message-content">
                     <span class="message-text">${message.content}</span>
-                    <span class="message-time">${formatTime(message.timestamp)}</span>
-                </div>
-            `;
-            
+                    <span class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</span>
+                </div>`;
             chatMessages.appendChild(messageDiv);
-        }
+        };
 
         // 發送消息
-        function sendMessage() {
+        const sendMessage = () => {
             const messageInput = document.getElementById('messageInput');
             const content = messageInput.value.trim();
-            const memberName = checkMemberAuth();
-            
-            if (content && stompClient && memberName) {
-                const chatMessage = {
-                    content: content,
-                    senderName: memberName,
-                    recipientId: 'Adm',  // 固定發送給管理員
+            const memId = checkMemberAuth();
+
+            if (content && stompClient && memId) {
+                // 前端發送消息格式
+                const message = {
+                    content,
+                    senderName: document.getElementById('memName')?.value, // 發送者名稱
+                    sender: {                    // 改用 sender 物件
+                    	 memid: memId
+                    }, // 發送者 ID
+                    recipientId: 'Adm', // 接收者
                     timestamp: new Date().getTime(),
-                    type: 'CHAT'
+                    type: 'CHAT' // 消息類型
                 };
 
-                stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
-                
+                stompClient.send('/app/chat', {}, JSON.stringify(message)); // 發送消息
+
                 // 本地添加消息
-                appendMessage({
-                    ...chatMessage,
-                    sent: true
-                });
-                
+                appendMessage({ ...message, sent: true });
+
+                // 清空輸入框
                 messageInput.value = '';
-                scrollToBottom();
+                scrollToBottom(); // 滾動到最新消息
             }
-        }
+        };
 
         // 滾動到最新消息
-        function scrollToBottom() {
+        const scrollToBottom = () => {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        };
 
         // 錯誤處理
-        function onError(error) {
+        const onError = (error) => {
             console.error('WebSocket 錯誤:', error);
-            
             if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                // 在設定時間後嘗試重新連接
                 setTimeout(() => {
                     reconnectAttempts++;
                     console.log(`嘗試重新連接 (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
-                    const memberName = checkMemberAuth();
-                    if (memberName) {
-                        connectWebSocket(memberName);
-                    }
-                }, RECONNECT_INTERVAL);
+                    const memberId = checkMemberAuth();
+                    if (memberId) connectWebSocket(memberId);
+                }, 3000); // 3 秒間隔
             } else {
-                console.error('達到最大重連次數');
-                alert('聊天室連接失敗，請重新整理頁面');
+                alert('聊天室連接失敗，請重新整理頁面'); // 提示用戶
             }
-        }
+        };
 
         // 初始化
-        function initChat() {
-            const memberName = checkMemberAuth();
-            if (!memberName) {
-                return;
-            }
+        const initChat = () => {
+            const memberId = checkMemberAuth();
+            console.log('正在連接 WebSocket，memberId:', memberId);
+
+            if (!memberId) return;
 
             // 綁定事件
             document.getElementById('sendButton').addEventListener('click', sendMessage);
-            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    sendMessage();
+                    sendMessage(); // 在按下 Enter 鍵時發送消息
                 }
             });
 
-            // 建立連接
-            connectWebSocket(memberName);
-            
-            // 初始滾動
-            scrollToBottom();
-        }
+            connectWebSocket(memberId); // 建立 WebSocket 連接
+            scrollToBottom(); // 初始滾動
+        };
 
         // 清理工作
-        window.addEventListener('beforeunload', function() {
-            if (stompClient) {
-                stompClient.disconnect();
-            }
+        window.addEventListener('beforeunload', () => {
+            if (stompClient) stompClient.disconnect(); // 在頁面卸載前斷開連接
         });
 
-        // 啟動聊天室
-        initChat();
+        initChat(); // 啟動聊天室
     });
+
     </script>
 </body>
 </html>
