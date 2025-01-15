@@ -123,33 +123,58 @@ public class RedisService {
         // 檢查驗證信息和會員暫存資料是否都存在
         return redisTemplate.hasKey(VERIFY_PREFIX + token) &&
                redisTemplate.hasKey(MEMBER_TEMP_PREFIX + token);
+    }    
+    
+    public String generatePasswordResetToken(MemberVO member) {
+        try {
+            // 生成唯一的 token
+            String token = UUID.randomUUID().toString();
+            
+            // 將會員資料轉換為 JSON
+            ObjectMapper mapper = new ObjectMapper();
+            String memberJson = mapper.writeValueAsString(member);
+            
+            // 存儲到 Redis，設定 30 分鐘過期
+            redisTemplate.opsForValue().set(
+                PASSWORD_RESET_PREFIX + token,
+                memberJson,
+                30,
+                TimeUnit.MINUTES
+            );
+            
+            return token;
+        } catch (Exception e) {
+            throw new RuntimeException("生成密碼重設 token 失敗", e);
+        }
     }
 
-	public String generatePasswordResetToken(MemberVO member) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getPasswordResetLink(String token) {
+        // 返回密碼重設頁面的 URL
+        return "http://localhost:8080/member/reset-password?token=" + token;
+    }
 
-	public String getPasswordResetLink(String resetToken) {
-		// TODO Auto-generated method stub
-		return "http://localhost:8080/member/basic-info";
-	}
+    public boolean isPasswordResetTokenValid(String token) {
+        // 檢查 token 是否存在且未過期
+        return redisTemplate.hasKey(PASSWORD_RESET_PREFIX + token);
+    }
 
-	public MemberVO getMemberFromPasswordResetToken(String token) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public MemberVO getMemberFromPasswordResetToken(String token) {
+        try {
+            // 從 Redis 獲取會員資料
+            String memberJson = redisTemplate.opsForValue().get(PASSWORD_RESET_PREFIX + token);
+            if (memberJson != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(memberJson, MemberVO.class);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("獲取會員資料失敗", e);
+        }
+    }
 
-	public boolean isPasswordResetTokenValid(String token) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public void clearPasswordResetToken(String token) {
+        // 清除 Redis 中的 token
+        redisTemplate.delete(PASSWORD_RESET_PREFIX + token);
+    }
 
-	public void clearPasswordResetToken(String token) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-	
 }

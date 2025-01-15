@@ -1,7 +1,5 @@
 package com.smashspot.websocketchat.controller;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@ServerEndpoint(value = "/mem/websocket/chat/{memname}", configurator = HttpSessionConfigurator.class)
+@ServerEndpoint(value = "/mem/websocket/chat/{memid}", configurator = HttpSessionConfigurator.class)
 public class MemChatController {
 
 	private final ChatMessageService chatMessageService;
@@ -39,53 +37,55 @@ public class MemChatController {
 	 * WebSocket 連接建立時的回調
 	 */
 	@OnOpen
-	public void onOpen(@PathParam("memname") String memname, Session session, EndpointConfig config) {
-		HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-		 try {
-		        // 解碼中文字符
-		        String decodedName = URLDecoder.decode(memname, StandardCharsets.UTF_8.name());
-		        System.out.println("Decoded member name: " + decodedName);
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
-//		if (httpSession == null || httpSession.getAttribute("login") == null) {
-//			try {
-//				session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized member"));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			return;
-//		}
+    public void onOpen(@PathParam("memid") String memid, Session session, EndpointConfig config) {
+        HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSessionConfigurator.class.getName());
+        System.out.println("Received memid: " + memid);
+        // Verify member session and extract member details
+        if (httpSession == null || httpSession.getAttribute("login") == null) {
+            try {
+                session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized member"));
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
-		// 驗證成功，繼續處理
-		System.out.println("HttpSession: " + httpSession);
-		sessionsMap.put(memname, session);
-		System.out.println(memname + " connected as member.");
-	}
+        Integer memId = (Integer) httpSession.getAttribute("memId");
+        String memName = (String) httpSession.getAttribute("memName");
+        
+        if (memId == null || !memid.equals(memId.toString())) {
+            try {
+                session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Invalid member ID"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
+        sessionsMap.put(memid, session);
+        
+        System.out.println("Member " + memName + " (ID: " + memid + ") connected");
+    }
 	/**
 	 * WebSocket 接收到訊息時的回調
 	 */
-	@OnMessage
-	public void onMessage(String message, Session session) {
-		try {
-			ChatMessage chatMessage = gson.fromJson(message, ChatMessage.class);
-			chatMessageService.save(chatMessage);
-
-			// 發送給接收者
-			String receiver = chatMessage.getRecipientId();
-			Session receiverSession = sessionsMap.get(receiver);
-			if (receiverSession != null && receiverSession.isOpen()) {
-				receiverSession.getBasicRemote().sendText(message);
-			} else {
-				// 保存為離線訊息
-				System.out.println("Receiver " + receiver + " is offline. Storing message.");
-				chatMessageService.save(chatMessage);
-			}
-		} catch (Exception e) {
-			System.err.println("Error processing message: " + e.getMessage());
-		}
-	}
+	  @OnMessage
+	    public void onMessage(String message, Session session, @PathParam("memid") String memberId) {
+		  try {
+		        ChatMessage chatMessage = gson.fromJson(message, ChatMessage.class);
+		        chatMessageService.save(chatMessage);
+		        
+		        // 修改：發送給管理員
+		        Session adminSession = sessionsMap.get("Adm"); // 使用固定的管理員 ID
+		        if (adminSession != null && adminSession.isOpen()) {
+		            adminSession.getBasicRemote().sendText(message);
+		        }
+		    } catch (Exception e) {
+		        System.err.println("Error processing message from member: " + memberId);
+		        e.printStackTrace();
+		    }
+	    }
 
 	/**
 	 * WebSocket 錯誤處理
