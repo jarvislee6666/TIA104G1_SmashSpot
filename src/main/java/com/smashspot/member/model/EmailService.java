@@ -123,6 +123,7 @@ public class EmailService {
         // - true: 表示這是一個multipart訊息，支援附件等多媒體內容
         // - "UTF-8": 指定字符編碼，確保中文等字符能正確顯示
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom("tiasmashspot@gmail.com");
         
         // 設定收件人地址
         helper.setTo(to);
