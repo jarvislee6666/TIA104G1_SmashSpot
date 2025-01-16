@@ -122,9 +122,8 @@ public class EmailService {
         // - message: 要設定的MimeMessage實例
         // - true: 表示這是一個multipart訊息，支援附件等多媒體內容
         // - "UTF-8": 指定字符編碼，確保中文等字符能正確顯示
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");     
         helper.setFrom("tiasmashspot@gmail.com");
-        
         // 設定收件人地址
         helper.setTo(to);
         // 設定郵件主旨
@@ -133,7 +132,8 @@ public class EmailService {
         helper.setText(htmlContent, true);
         
         // 發送郵件
-        mailSender.send(message);
+//        mailSender.send(message);
+        new Thread(()->mailSender.send(message)).start();
     }
  
     public void sendPasswordResetEmail(String to, String resetLink) throws MessagingException {
