@@ -62,6 +62,9 @@ public class ChatroomRepository {
      * 儲存 Chatroom 資料到 Redis
      */
     public void save(Chatroom chatroom) {
+    	 if (chatroom.getSender() == null || chatroom.getSender().getName() == null) {
+    	        throw new IllegalArgumentException("Chatroom sender or senderName is missing.");
+    	    }
         String key = generateKey(chatroom.getSenderName(), chatroom.getRecipientId());
         hashOperations.put(HASH_KEY, key, chatroom);
     }

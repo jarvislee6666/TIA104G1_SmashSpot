@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
+
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,11 +89,14 @@ public class ChatroomService {
 
         // 創建聊天室
         Chatroom chatroom = Chatroom.builder()
-                .chatId(chatId)
-                .sender(member)
-                .senderName(memberName)
-                .recipientId("Adm")
-                .build();
+        		 .id(UUID.randomUUID().toString()) // 添加 id 字段
+                 .chatId(chatId)
+                 .sender(member)
+                 .senderName(memberName)  
+                 .recipientId("Adm")
+                 .lastMessage("")         // 初始化 lastMessage
+                 .unreadCount(0)          // 初始化 unreadCount
+                 .build();
 
         log.info("Saving new chatroom: {}", chatroom);
         chatroomRepository.save(chatroom);
