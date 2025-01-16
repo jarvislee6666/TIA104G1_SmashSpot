@@ -1,11 +1,12 @@
 package com.smashspot.websocketchat.chat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.smashspot.websocketchat.chatroom.ChatroomRepository;
 import com.smashspot.websocketchat.chatroom.ChatroomService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatMessageService {
 
 	private final ChatMessageRepository repository;
-	private final ChatroomRepository roomRepository;
 	private final ChatroomService chatroomService;
 
 	/**
@@ -25,6 +25,7 @@ public class ChatMessageService {
 	 */
 
 	public ChatMessage save(ChatMessage chatMessage) {
+		
 		try {
 			log.info("Saving chat message: {}", chatMessage);
 
@@ -32,44 +33,59 @@ public class ChatMessageService {
 			boolean isAdmin = "Adm".equals(chatMessage.getSenderName());
 			log.info("Message is from admin: {}", isAdmin);
 
-			String userId;
+			String senderId;
+			String senderName;
 			if (isAdmin) {
 				// 管理員發送的消息，使用接收者ID
-				userId = chatMessage.getRecipientId();
-				log.info("Admin sending to user ID: {}", userId);
+				senderId = chatMessage.getRecipientId();
+				senderName = "Adm";
+				log.info("Admin sending to mem ID: {}", senderId);
+				log.info("Admin sending to mem NAME: {}", senderName);
 			} else {
 				// 會員發送的消息，使用發送者ID
-				userId = String.valueOf(chatMessage.getSender().getMemid());
-				log.info("Member sending message, user ID: {}", userId);
+				senderId = String.valueOf(chatMessage.getSender().getMemid());
+				senderName = chatMessage.getSender().getName();
+				log.info("Member sending message, mem ID: {}", senderId);
+				log.info("Member sending message, mem NAME: {}", senderName);
 			}
 
-			// 確保 userId 不為空且為有效數字
-			if (userId == null || userId.trim().isEmpty()) {
-				throw new IllegalArgumentException("User ID cannot be null or empty");
+			// 確保 senderId 不為空且為有效數字
+			if (senderId == null || senderId.trim().isEmpty()) {
+				throw new IllegalArgumentException("mem ID cannot be null or empty");
 			}
 
 			try {
-				Integer userIdInt = Integer.parseInt(userId);
-				log.info("Parsed user ID: {}", userIdInt);
+				Integer userIdInt = Integer.parseInt(senderId);
+				log.info("Parsed mem ID: {}", userIdInt);
 
 				// 獲取或創建聊天室
 				String chatId = chatroomService.getChatroomId(userIdInt, isAdmin, true).orElseThrow(() -> {
-					log.error("Failed to create or get chatroom for user ID: {}", userIdInt);
-					return new IllegalStateException("Failed to create or retrieve chatroom for user: " + userIdInt);
+					log.error("Failed to create or get chatroom for mem ID: {}", userIdInt);
+					return new IllegalStateException("Failed to create or retrieve chatroom for mem: " + userIdInt);
 				});
 
 				log.info("Retrieved chat ID: {}", chatId);
-				chatMessage.setChatId(chatId);
+				
+                ChatMessage newMessage = ChatMessage.builder()
+                    .id(UUID.randomUUID().toString())
+                    .chatId(chatId)
+                    .sender(chatMessage.getSender())
+                    .senderName(senderName)
+                    .recipientId(isAdmin ? senderId : "Adm")
+                    .content(chatMessage.getContent())
+                    .timestamp(new Date())
+                    .read(false)
+                    .build();
 
 				// 保存消息
 
-				repository.save(chatMessage);
+				repository.save(newMessage);
 
 				return chatMessage;
 
 			} catch (NumberFormatException e) {
-				log.error("Invalid user ID format: {}", userId, e);
-				throw new IllegalArgumentException("Invalid user ID format: " + userId);
+				log.error("Invalid mem ID format: {}", senderId, e);
+				throw new IllegalArgumentException("Invalid mem ID format: " + senderId);
 			}
 
 		} catch (Exception e) {

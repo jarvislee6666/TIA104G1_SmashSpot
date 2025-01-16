@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@RedisHash("Chatroom")
+//@RedisHash("Chatroom")
 public class Chatroom implements Serializable {
 
     @Id
@@ -28,7 +28,6 @@ public class Chatroom implements Serializable {
 
     private String chatId;
 
-//    @Transient
     private MemberVO sender; // 從 MemberVO 中獲取相關資訊
     
     @JsonProperty
@@ -57,7 +56,7 @@ public class Chatroom implements Serializable {
                 ", chatId='" + chatId + '\'' +
                 ", sender={" +
                 "memid=" + (sender != null ? sender.getMemid() : "null") +
-                ", name='" + (sender != null ? sender.getName() : "null") + '\'' +
+                ", name='" + (sender != null ? sender.getName() : "Unknown") + '\'' +
                 '}' +
                 ", recipientId='" + recipientId + '\'' +
                 ", lastMessage='" + lastMessage + '\'' +

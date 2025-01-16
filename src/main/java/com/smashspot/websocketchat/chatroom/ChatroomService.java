@@ -28,6 +28,7 @@ public class ChatroomService {
         Collection<Chatroom> chatrooms = chatroomRepository.findAll();
         return new ArrayList<>(chatrooms);
     }
+    
 
     /**
      * 根據用戶ID獲取或創建聊天室

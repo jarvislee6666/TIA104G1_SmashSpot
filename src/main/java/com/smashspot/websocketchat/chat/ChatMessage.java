@@ -20,7 +20,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
 @JsonIgnoreProperties(ignoreUnknown = true)  
 public class ChatMessage {
 
@@ -61,7 +60,7 @@ public class ChatMessage {
                 ", chatId='" + chatId + '\'' +
                 ", sender={" +
                 "memid=" + (sender != null ? sender.getMemid() : "null") +
-                ", name='" + (sender != null ? sender.getName() : "null") + '\'' +
+                ", name='" + (sender != null ? sender.getName() : "Unknown") + '\'' +
                 '}' +
                 ", recipientId='" + recipientId + '\'' +
                 ", content='" + content + '\'' +

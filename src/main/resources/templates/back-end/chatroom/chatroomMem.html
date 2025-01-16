@@ -183,6 +183,17 @@
             }
             return memberId;
         };
+        
+
+        // 檢查會員登入資訊
+        const checkMemberName = () => {
+            const memberName = document.getElementById('memName')?.value;
+            if (!memberName) {
+                console.error('會員 ID 未設置'); // 如果會員 ID 未設置，則打印錯誤
+                return null;
+            }
+            return memberName;
+        };
 
         // WebSocket 連接管理
         const connectWebSocket = (memberId) => {
@@ -239,14 +250,15 @@
             const messageInput = document.getElementById('messageInput');
             const content = messageInput.value.trim();
             const memId = checkMemberAuth();
+            const memName = checkMemberName();
 
-            if (content && stompClient && memId) {
+            if (content && stompClient && memId && memName) {
                 // 前端發送消息格式
                 const message = {
                     content,
-                    senderName: document.getElementById('memName')?.value, // 發送者名稱
                     sender: {                    // 改用 sender 物件
-                    	 memid: memId
+                    	 memid: memId,
+                    	 name: memName
                     }, // 發送者 ID
                     recipientId: 'Adm', // 接收者
                     timestamp: new Date().getTime(),
