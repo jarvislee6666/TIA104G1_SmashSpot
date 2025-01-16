@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smashspot.member.model.MemberVO;
 
@@ -54,7 +55,10 @@ public class Chatroom implements Serializable {
         return "Chatroom{" +
                 "id='" + id + '\'' +
                 ", chatId='" + chatId + '\'' +
-                ", senderName='" + getSenderName() + '\'' +
+                ", sender={" +
+                "memid=" + (sender != null ? sender.getMemid() : "null") +
+                ", name='" + (sender != null ? sender.getName() : "null") + '\'' +
+                '}' +
                 ", recipientId='" + recipientId + '\'' +
                 ", lastMessage='" + lastMessage + '\'' +
                 ", unreadCount=" + unreadCount +
