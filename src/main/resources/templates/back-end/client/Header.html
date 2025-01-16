@@ -73,7 +73,8 @@
                                class="nav-link px-3 py-2 rounded-2"
                                th:classappend="${#httpServletRequest.getRequestURI().contains('/member/basic-info')or 
 								     			 #httpServletRequest.getRequestURI().contains('/member/biddingList')or 
-								     			 #httpServletRequest.getRequestURI().contains('/member/buyingList')
+								     			 #httpServletRequest.getRequestURI().contains('/member/buyingList')or 
+								     			 #httpServletRequest.getRequestURI().contains('/member/appointment-records')
 								     			 }? 'active' : ''">
                                 <i class="bi bi-person"></i>
                                 <span th:text="${session.login.name}"></span>
