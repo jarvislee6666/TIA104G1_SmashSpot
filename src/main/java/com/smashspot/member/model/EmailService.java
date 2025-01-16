@@ -26,8 +26,11 @@ public class EmailService {
      * @param verificationLink 驗證連結URL
      * @throws MessagingException 當郵件發送過程中發生錯誤時拋出
      */
-    public void sendVerificationEmail(String to, String verificationLink) throws MessagingException {
-        // 設定郵件主旨
+        public void sendVerificationEmail(String to, String token) throws MessagingException {
+    	
+    	String baseUrl = "https://your-new-domain.com/verify";  // 基礎網址
+        String verificationLink = baseUrl + "?token=" + token;  // 完整驗證連結
+    	// 設定郵件主旨
         String subject = "請驗證您的會員帳號";
         
         // 使用String.format構建HTML格式的郵件內容
