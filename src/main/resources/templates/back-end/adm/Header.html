@@ -40,7 +40,7 @@
 							   					 #httpServletRequest.getRequestURI().contains('listAllCourtOrders')or
 							   					 #httpServletRequest.getRequestURI().contains('listAllChart')} ? 'active' : ''">
 							<i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
-							<a class="nav-link" href="#"><i class="fas fa-headset me-2"></i>客服中心</a> 
+							<a class="nav-link" th:href="@{listAllChat}"><i class="fas fa-headset me-2"></i>客服中心</a> 
 							<a class="nav-link" th:href="@{listAllMember}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllMember')} ? 'active' : ''">
 							<i class="fas fa-user-circle me-2"></i>會員帳號管理</a>
