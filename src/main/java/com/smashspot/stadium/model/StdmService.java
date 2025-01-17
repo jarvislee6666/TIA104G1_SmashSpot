@@ -143,12 +143,10 @@ public class StdmService {
 	public void deleteStdm(Integer stdmId) {
 		if (repository.existsById(stdmId))
 			repository.deleteByStdmId(stdmId);
-//		    repository.deleteById(stdmId);
 	}
 
 	public StadiumVO getOneStdm(Integer stdmId) {
 		Optional<StadiumVO> optional = repository.findById(stdmId);
-//		return optional.get();
 		return optional.orElse(null); // public T orElse(T other) : 如果值存在就回傳其值，否則回傳other的值
 	}
 
@@ -159,5 +157,5 @@ public class StdmService {
 	public List<StadiumVO> getAll(Map<String, String[]> map) {
 		return HibernateUtil_CompositeQuery_Stdm.getAllC(map, sessionFactory.openSession());
 	}
-
+	
 }

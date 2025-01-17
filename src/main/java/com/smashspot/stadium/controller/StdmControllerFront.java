@@ -56,9 +56,9 @@ public class StdmControllerFront {
     }
     
     
-    stdmList = stdmList.stream()
-    	    .filter(stdm -> stdm.getOprSta())
-    	    .collect(Collectors.toList());
+//    stdmList = stdmList.stream()
+//    	    .filter(stdm -> stdm.getOprSta())
+//    	    .collect(Collectors.toList());
     
     
     model.addAttribute("stadiumVO", new StadiumVO());

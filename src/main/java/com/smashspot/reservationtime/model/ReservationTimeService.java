@@ -1,7 +1,9 @@
 package com.smashspot.reservationtime.model;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import com.smashspot.reservationtime.model.ReservationTimeVO;
 
 import util.HibernateUtil_CompositeQuery_Adm;
 
+@Transactional
 @Service("ReservationTimeService")
 public class ReservationTimeService {
 	
@@ -62,6 +65,38 @@ public class ReservationTimeService {
         
         // 4. 傳進 repository，插入「today + 28 天」的資料
         repository.insertTodayReservationDynamicIfNotExists(futureDate);
+    }
+    
+    public Map<Integer, LocalDate> getLastDatesForEachStadium() {
+        // 假設原本是 List<Object[]> results = ...
+        List<Object[]> results = repository.findLastDatesForEachStadium();
+        Map<Integer, LocalDate> map = new HashMap<>();
+
+        for (Object[] row : results) {
+            Integer stadiumId = (Integer) row[0];
+            java.sql.Date sqlDate = (java.sql.Date) row[1]; // 可能是 SQL Date
+
+            // (1) 若不為 null，轉成 LocalDate
+            LocalDate localDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+            map.put(stadiumId, localDate);
+        }
+        return map; // 直接回傳 Map<Integer, LocalDate>
+    }
+    
+    public Map<Integer, LocalDate> getLastDatesForEachStadium1() {
+        List<Object[]> results = repository.findLastDatesForEachStadium();
+        // 例如: SELECT r.stadium.stdmId, MAX(r.dates) FROM ...
+
+        Map<Integer, LocalDate> map = new HashMap<>();
+        for (Object[] row : results) {
+            Integer stadiumId    = (Integer) row[0];
+            java.sql.Date sqlDate = (java.sql.Date) row[1]; // 資料庫回傳
+
+            // 如果 sqlDate 不為 null，轉成 LocalDate
+            LocalDate localDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+            map.put(stadiumId, localDate);
+        }
+        return map;
     }
 
 //沃寯添加====================================================================================================
