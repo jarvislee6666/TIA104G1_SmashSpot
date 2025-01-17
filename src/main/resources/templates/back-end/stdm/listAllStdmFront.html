@@ -85,23 +85,16 @@
 										<div
 											class="d-flex justify-content-between align-items-center mb-2">
 											<h6 class="venue-title mb-0">
-										    <!-- 如果 stadiumVO == null，顯示 [場館不存在] -->
-										    <span th:if="${stadiumVO == null}">
-										        場館不存在
-										    </span>
-										
-										    <!-- 如果 stadiumVO 不為 null，顯示場館名稱 -->
-										    <span th:if="${stadiumVO != null}"
-										          th:text="${stadiumVO.stdmName}">
-										        [預設顯示文字]
-										    </span>
-											<br>
-										    <!-- 如果場館存在且 oprSta=false，就加 (即將下架) -->
-										    <span th:if="${stadiumVO != null and !stadiumVO.oprSta}"
-										          class="ms-1 text-danger fw-bold">
-										        (即將下架)
-										    </span>
-										</h6>
+												<!-- 如果 stadiumVO == null，顯示 [場館不存在] -->
+												<span th:if="${stadiumVO == null}"> 場館不存在 </span>
+
+												<!-- 如果 stadiumVO 不為 null，顯示場館名稱 -->
+												<span th:if="${stadiumVO != null}"
+													th:text="${stadiumVO.stdmName}"> [預設顯示文字] </span> <br>
+												<!-- 如果場館存在且 oprSta=false，就加 (即將下架) -->
+												<span th:if="${stadiumVO != null and !stadiumVO.oprSta}"
+													class="ms-1 text-danger fw-bold"> (即將下架) </span>
+											</h6>
 											<button class="btn-favorite">
 												<i class="bi bi-heart"></i>
 											</button>
@@ -112,7 +105,11 @@
 												<i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i>
 												<i class="bi bi-star-half"></i>
 											</div>
-											<span class="rating-text">4.5 (120則評價)</span>
+											<span class="rating-text"> <!-- 透過 averageMap[stadiumVO.stdmId] 取得該場館的平均星等 -->
+												<span th:text="${averageMap[stadiumVO.stdmId]}">0</span> ( <!-- 透過 reviewCountMap[stadiumVO.stdmId] 取得該場館的評價數 -->
+												<span th:text="${reviewCountMap[stadiumVO.stdmId]}">0</span>
+												則評價)
+											</span>
 										</div>
 									</div>
 								</div>

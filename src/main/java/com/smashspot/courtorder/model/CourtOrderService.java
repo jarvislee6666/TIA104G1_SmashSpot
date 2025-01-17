@@ -463,8 +463,29 @@ public class CourtOrderService {
                 count++;
             }
         }
-        return (count == 0) ? 0.0 : (sum / count);
+        double average = (count == 0) ? 0.0 : (sum / count);
+        // 使用 Math.round，將平均值乘以 10 再除以 10，達到只留一位小數
+        double rounded = Math.round(average * 10.0) / 10.0;
+        return rounded;
     }
+    
+    public int calculateSumMessageForStadium(Integer stdmId) {
+        List<CourtOrderVO> reviewList = findReviewsByStadiumId(stdmId);
+        if (reviewList.isEmpty()) {
+            return 0;
+        }
+
+        int messageCount = 0;
+        for (CourtOrderVO review : reviewList) {
+            // 如果 message 不為 null，代表這筆訂單有留言
+            if (review.getMessage() != null && !review.getMessage().trim().isEmpty()) {
+                messageCount++;
+            }
+          }
+        return messageCount;
+        
+    }
+
     
     
 }
