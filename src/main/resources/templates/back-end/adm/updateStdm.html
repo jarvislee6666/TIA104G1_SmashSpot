@@ -134,15 +134,16 @@
 								</div>
 							</div>
 
-							<!-- 舊圖片顯示: 如果要顯示原本上傳過的圖片，可在後端將圖片轉為Base64或有網址可顯示 -->
-							<!--                         <div class="mb-4" th:if="${stadiumVO.imageBase64}"> -->
-							<!--                             <label class="form-label">原本圖片預覽</label> -->
-							<!--                             <div> -->
-							<!--                                 <img th:src="@{|data:image/jpeg;base64,${stadiumVO.imageBase64}|}" -->
-							<!--                                      alt="舊圖片" -->
-							<!--                                      style="width:150px; height:auto;"> -->
-							<!--                             </div> -->
-							<!--                         </div> -->
+							 <!--舊圖片顯示: 如果要顯示原本上傳過的圖片，可在後端將圖片轉為Base64或有網址可顯示 -->
+				                         <div class="mb-4" th:if="${stadiumVO.stdmPic != null}"> 
+							                             <label class="form-label">原本圖片預覽</label> 
+							                             <div> 
+							                                 <img th:if="${stadiumVO.stdmPic != null}"
+																	  th:src="@{/stadium/getImage/{id}(id=${stadiumVO.stdmId})}" 
+							                                     alt="舊圖片" 
+							                                      style="width:150px; height:auto;"> 
+							                             </div> 
+							                         </div> 
 
 							<!-- 新的球館圖片上傳(可選擇覆蓋) -->
 							<div class="mb-4">
@@ -287,17 +288,25 @@
 
         // 圖片預覽功能
         function previewImage() {
-            var upfile1 = document.getElementById("upFiles");
-            if(!upfile1) return;
+   			var upfile1 = document.getElementById("upFiles");   		
+   			
+   			if (!upfile1) return; // 確保 upfile1 存在
+    			upfile1.addEventListener("change", function(event) {
+        		// 清空預覽區
+        		var blob_holder = document.getElementById('blob_holder');
+        
+        		if (blob_holder) {           
+        			blob_holder.innerHTML = '';       
+        		}
+       
+        		// 取得選中的檔案        
+        		var files = event.target.files || event.dataTransfer.files;       
+        		// 遍歷每個檔案並進行預覽       
+        		for (var i = 0; i < files.length; i++) {            
+        			previewfile(files[i]);        
+        		}    
+    			}, false);
 
-            var files = upfile1.files || [];
-            // 預覽區先清空
-            var blob_holder = document.getElementById('blob_holder');
-            blob_holder.innerHTML = '';
-
-            for (var i = 0; i < files.length; i++) {
-                previewfile(files[i]);
-            }
         }
 
         // 處理預覽
