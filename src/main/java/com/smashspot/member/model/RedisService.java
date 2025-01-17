@@ -112,6 +112,8 @@ public class RedisService {
     public String getVerificationLink(String token) {
         // 組合完整的驗證 URL
         return "http://localhost:8080/member/verify?token=" + token;
+        	            //上雲端要改成這個        
+//        return "http://smashspot.ddns.net/"+token;
     }
     
     /**
