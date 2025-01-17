@@ -61,33 +61,42 @@ public class MemberController {
      */
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        // 向模型中添加一個空的MemberVO物件，供表單綁定使用
-        model.addAttribute("memberVO", new MemberVO());
+        // 向模型中添加一個空的MemberVO物件，但不進行驗證
+        if (!model.containsAttribute("memberVO")) {
+            model.addAttribute("memberVO", new MemberVO());
+        }
         return "back-end/member/register";
-    } 
+    }
 
     @PostMapping("/register")
-    public String insert(@Valid MemberVO memberVO, BindingResult result, ModelMap model,
+    public String insert(@Valid MemberVO memberVO, BindingResult result, Model model,
                         @RequestParam("confirmPassword") String confirmPassword) {
         
+        // 驗證邏輯
+        boolean hasErrors = false;
+
         // 檢查是否有重複的帳號、Email或電話號碼
         if (memberService.findByAccount(memberVO.getAccount()) != null) {
             result.rejectValue("account", "error.memberVO", "此帳號已存在");
+            hasErrors = true;
         }
         if (memberService.findByEmail(memberVO.getEmail()) != null) {
             result.rejectValue("email", "error.memberVO", "此 Email 已存在");
+            hasErrors = true;
         }
         if (memberService.findByPhone(memberVO.getPhone()) != null) {
             result.rejectValue("phone", "error.memberVO", "此電話號碼已存在");
+            hasErrors = true;
         }
                
         // 確認密碼是否匹配
         if (!memberVO.getPassword().equals(confirmPassword)) {
             result.rejectValue("password", "error.memberVO", "密碼與確認密碼不符");
+            hasErrors = true;
         }
 
         // 如果有任何驗證錯誤，返回註冊頁面
-        if (result.hasErrors()) {
+        if (result.hasErrors() || hasErrors) {
             return "back-end/member/register";
         }
         
@@ -118,6 +127,7 @@ public class MemberController {
         } catch (Exception e) {
             logger.error("註冊過程發生錯誤", e);
             model.addAttribute("error", "註冊失敗: " + e.getMessage());
+            model.addAttribute("memberVO", memberVO);
             return "back-end/member/register";
         }
     }
@@ -502,8 +512,6 @@ public class MemberController {
             
             // 更新session中的會員資料
             session.setAttribute("login", member);
-            
-            redirectAttributes.addFlashAttribute("message", "頭像上傳成功");
             
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "頭像上傳失敗：" + e.getMessage());
