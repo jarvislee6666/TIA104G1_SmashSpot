@@ -232,7 +232,6 @@ body {
 	        console.log('WebSocket 連接已建立');
 	        // 修改訂閱路徑，確保與後端對應
 	        stompClient.subscribe('/user/Adm/queue/messages', onMessageReceived);
-	        stompClient.subscribe('/topic/notifications', onNotificationReceived);
 	    }
 
 	    function onMessageReceived(payload) {
