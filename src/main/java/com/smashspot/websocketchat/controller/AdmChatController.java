@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 //import com.smashspot.admin.model.AdmVO;
 import com.smashspot.websocketchat.chat.ChatMessage;
 import com.smashspot.websocketchat.chat.ChatMessageService;
-import com.smashspot.websocketchat.chat.HttpSessionConfigurator;
 
 import lombok.RequiredArgsConstructor;
 
