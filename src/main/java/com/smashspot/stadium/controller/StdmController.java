@@ -80,36 +80,51 @@ public class StdmController {
 	        @RequestParam(required = false) String stdmName,
 	        @RequestParam(required = false) String oprSta,
 	        @RequestParam(required = false) String admname,
+	        @RequestParam(defaultValue = "1") int page, // Current page
+	        @RequestParam(defaultValue = "6") int size, // Page size
 	        Model model) {
-    
-    Map<String, String[]> map = new HashMap<>();
-    if (stdmName != null && !stdmName.trim().isEmpty()) {
-        map.put("stdmName", new String[]{stdmName});
-    }
-    if (oprSta != null && !oprSta.trim().isEmpty()) {
-        map.put("oprSta", new String[]{oprSta});
-    }
-    if (admname != null && !admname.trim().isEmpty()) {
-        map.put("admname", new String[]{admname});
-    }
 
-    
-    List<StadiumVO> stdmList;
-    if (map.isEmpty()) {
-        stdmList = stdmSvc.getAll();
-    } else {
-        stdmList = stdmSvc.getAll(map);
-    }
-    
-    // 確保管理員列表資料有被加載
-    if (!model.containsAttribute("admListData")) {
-        model.addAttribute("admListData", admSvc.getAll());
-    }
-    
-    model.addAttribute("stadiumVO", new StadiumVO());
-    model.addAttribute("stdmListData", stdmList);
-    return "back-end/adm/listAllStdm";
-}
+
+	    Map<String, String[]> map = new HashMap<>();
+	    if (stdmName != null && !stdmName.trim().isEmpty()) {
+	        map.put("stdmName", new String[]{stdmName});
+	    }
+	    if (oprSta != null && !oprSta.trim().isEmpty()) {
+	        map.put("oprSta", new String[]{oprSta});
+	    }
+	    if (admname != null && !admname.trim().isEmpty()) {
+	        map.put("admname", new String[]{admname});
+	    }
+
+	    List<StadiumVO> stdmList = map.isEmpty() ? stdmSvc.getAll() : stdmSvc.getAll(map);
+
+	    // Pagination logic
+	    int totalRecords = stdmList.size();
+	    int totalPages = (int) Math.ceil((double) totalRecords / size);
+	    int startIndex = (page - 1) * size;
+	    int endIndex = Math.min(startIndex + size, totalRecords);
+
+	    // Handle boundary cases
+	    if (startIndex > totalRecords) {
+	        startIndex = totalRecords - size;
+	        endIndex = totalRecords;
+	    }
+
+	    List<StadiumVO> paginatedList = stdmList.subList(startIndex, endIndex);
+
+	    model.addAttribute("stadiumVO", new StadiumVO());
+	    model.addAttribute("stdmListData", paginatedList);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("pageSize", size);
+	    model.addAttribute("totalRecords", totalRecords);
+
+	    if (!model.containsAttribute("admListData")) {
+	        model.addAttribute("admListData", admSvc.getAll());
+	    }
+
+	    return "back-end/adm/listAllStdm";
+	}
 
 	
 	@ModelAttribute("admListData")
@@ -191,18 +206,6 @@ public class StdmController {
 	    map.put(22, "連江縣");
 	    return map;
 	}
-
-	
-	/*
-	 * This method will be called on select_page.html form submission, handling POST request
-	 */
-//	@PostMapping("listEmps_ByCompositeQuery")
-//	public String listAllEmp(HttpServletRequest req, Model model) {
-//		Map<String, String[]> map = req.getParameterMap();
-//		List<StadiumVO> list = stdmSvc.getAll(map);
-//		model.addAttribute("empListData", list); // for listAllStdm.html 第85行用
-//		return "back-end/emp/listAllEmp";
-//	}
 	
 	@GetMapping("/updateStdm")
 	public String updateStdmForm(@RequestParam("stdmId") Integer stdmId, ModelMap model) {

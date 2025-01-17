@@ -120,18 +120,29 @@
 			</div>
 		</div>
 
-
-
-
-		<!-- 分頁 -->
-		<nav class="mt-4">
-			<ul class="pagination justify-content-center">
-				<li class="page-item"><a class="page-link" href="#">1</a></li>
-				<li class="page-item"><a class="page-link" href="#">2</a></li>
-				<li class="page-item"><a class="page-link" href="#">3</a></li>
-				<li class="page-item"><a class="page-link" href="#">»</a></li>
-			</ul>
-		</nav>
+		<div class="d-flex justify-content-center mt-4"
+								th:if="${totalPages > 1}">
+								<nav>
+									<ul class="pagination justify-content-center">
+										<li class="page-item"
+											th:classappend="${currentPage == 1} ? 'disabled'"><a
+											th:href="@{/stadium/listAllStadium(page=${currentPage - 1})}"
+											class="page-link"> <span>&laquo;</span>
+										</a></li>
+										<li th:each="i : ${#numbers.sequence(1, totalPages)}"
+											th:class="${i==currentPage} ? 'page-item active' : 'page-item'">
+											<a class="page-link"
+											th:href="@{/stadium/listAllStadium(page=${i})}">[[${i}]]</a>
+										</li>
+										<li class="page-item"
+											th:classappend="${currentPage == totalPages} ? 'disabled'">
+											<a th:href="@{/stadium/listAllStadium(page=${currentPage + 1})}"
+											class="page-link"> <span>&raquo;</span>
+										</a>
+										</li>
+									</ul>
+								</nav>
+							</div>
 
 
 	</main>
