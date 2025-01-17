@@ -20,6 +20,8 @@ import com.smashspot.stadium.model.StadiumVO;
 @Entity
 @Table(name = "stadium_like")
 public class StadiumLikeVO {
+	
+	private static final long serialVersionUID = 1L;
 	//test
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +46,12 @@ public class StadiumLikeVO {
 
     // 無參數建構子
     public StadiumLikeVO() {
+    }
+    
+    // 也可加個建構子方便使用
+    public StadiumLikeVO(Integer memId, StadiumVO stadium) {
+        this.memId = memId;
+        this.stadium = stadium;
     }
 
     // Getter 和 Setter 方法

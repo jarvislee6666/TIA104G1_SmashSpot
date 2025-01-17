@@ -252,6 +252,28 @@ body {
 	color: red;
 	font-size: 1.5em;
 }
+/*scroll-bar*/
+/* 僅針對 review-list 這個容器自訂捲軸樣式 */
+.review-list::-webkit-scrollbar {
+  width: 8px;            /* 捲軸寬度 */
+}
+
+.review-list::-webkit-scrollbar-track {
+  background: #f0f0f0;   /* 捲軸軌道底色 */
+  border-radius: 4px;    /* 可視需要加上圓角 */
+}
+
+.review-list::-webkit-scrollbar-thumb {
+  background-color: #aaa; /* 捲軸滑塊顏色 */
+  border-radius: 4px;
+  border: 1px solid #f0f0f0; /* 讓滑塊邊緣有點淺色視覺 */
+}
+
+/* 滑塊 hover 時的顏色變化 */
+.review-list::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+}
+
 </style>
 </head>
 <body>

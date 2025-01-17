@@ -90,19 +90,32 @@ public class StdmControllerFront {
     return "back-end/stdm/listAllStdmFront";
 }
 	
-	@ModelAttribute("locMapData") //
+	@ModelAttribute("locMapData")
 	protected Map<Integer, String> referenceMapData() {
-		Map<Integer, String> map = new LinkedHashMap<Integer, String>();
-		map.put(1, "台北市");
-		map.put(2, "新北市");
-		map.put(3, "桃園市");
-		map.put(4, "台中市");
-		map.put(5, "高雄市");
-		map.put(6, "台南市");
-		map.put(7, "基隆市");
-		map.put(8, "新竹市");
-		map.put(9, "嘉義市");
-		return map;
+	    Map<Integer, String> map = new LinkedHashMap<Integer, String>();
+	    map.put(1,  "台北市");
+	    map.put(2,  "新北市");
+	    map.put(3,  "桃園市");
+	    map.put(4,  "台中市");
+	    map.put(5,  "台南市");
+	    map.put(6,  "高雄市");
+	    map.put(7,  "基隆市");
+	    map.put(8,  "新竹市");
+	    map.put(9,  "嘉義市");
+	    map.put(10, "宜蘭縣");
+	    map.put(11, "新竹縣");
+	    map.put(12, "苗栗縣");
+	    map.put(13, "彰化縣");
+	    map.put(14, "南投縣");
+	    map.put(15, "雲林縣");
+	    map.put(16, "嘉義縣");
+	    map.put(17, "屏東縣");
+	    map.put(18, "台東縣");
+	    map.put(19, "花蓮縣");
+	    map.put(20, "澎湖縣");
+	    map.put(21, "金門縣");
+	    map.put(22, "連江縣");
+	    return map;
 	}
 
 
