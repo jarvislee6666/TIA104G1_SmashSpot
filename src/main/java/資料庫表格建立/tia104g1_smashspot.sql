@@ -166,8 +166,8 @@ CREATE TABLE reservation_time (
     rsv_time_id INT PRIMARY KEY AUTO_INCREMENT,
     stdm_id INT NOT NULL,
     dates DATE NOT NULL,
-    booked VARCHAR(12) NOT NULL,
-    rsv_ava VARCHAR(12) NOT NULL,
+    booked VARCHAR(24) NOT NULL,
+    rsv_ava VARCHAR(24) NOT NULL,
        FOREIGN KEY (stdm_id) REFERENCES stadium(stdm_id)
 );
 
