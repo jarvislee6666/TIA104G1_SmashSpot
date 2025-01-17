@@ -24,24 +24,25 @@
 						<a class="navbar-brand" href="">管理員後台</a>
 						<div class="nav-buttons">
 							<a class="nav-link" th:href="@{/}"><i class="bi bi-door-open-fill"></i>&nbsp;返回前台</a>
-							<a class="nav-link" th:href="@{listAllAdm}"
+							<a class="nav-link" th:href="@{/adm/listAllAdm}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllAdm')} ? 'active' : ''">
-							<i class="fas fa-users me-2"></i>員工帳號管理</a>					
-							<a class="nav-link" th:href="@{listAllCoupon}"
+							<i class="fas fa-users me-2"></i>員工帳號管理</a>						
+							<a class="nav-link" th:href="@{/adm/listAllCoupon}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllCoupon')} ? 'active' : ''">
 							<i class="fas fa-ticket-alt me-2"></i>優惠券管理</a>					
-							<a class="nav-link" th:href="@{listAllProduct}"
+							<a class="nav-link" th:href="@{/adm/listAllProduct}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllProduct') or
 							   					 #httpServletRequest.getRequestURI().contains('listAllOrders')} ? 'active' : ''">
 							<i class="fas fa-store me-2"></i>商城管理</a> 
-							<a class="nav-link" th:href="@{listAllStdm}"
+							<a class="nav-link" th:href="@{/adm/listAllStdm}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllStdm')or
 							   					 #httpServletRequest.getRequestURI().contains('addStdm')or
 							   					 #httpServletRequest.getRequestURI().contains('listAllCourtOrders')or
 							   					 #httpServletRequest.getRequestURI().contains('listAllChart')} ? 'active' : ''">
 							<i	class="fas fa-map-marker-alt me-2"></i>場地管理</a>
-							<a class="nav-link" th:href="@{listAllChat}"><i class="fas fa-headset me-2"></i>客服中心</a> 
-							<a class="nav-link" th:href="@{listAllMember}"
+							<a class="nav-link" th:href="@{/adm/listAllChat}" th:classappend="${#httpServletRequest.getRequestURI().contains('listAllChat') or 
+								      #httpServletRequest.getRequestURI().contains('chat')} ? 'active' : ''"><i class="fas fa-headset me-2"></i>客服中心</a> 
+							<a class="nav-link" th:href="@{/adm/listAllMember}"
 							   th:classappend="${#httpServletRequest.getRequestURI().contains('listAllMember')} ? 'active' : ''">
 							<i class="fas fa-user-circle me-2"></i>會員帳號管理</a>
 						</div>

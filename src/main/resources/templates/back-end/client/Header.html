@@ -50,7 +50,9 @@
 		                              } ? 'active' : ''">場地預約</a>
 		          </li>
 		          <li class="nav-item">
-		            <a th:href="${session.login != null} ? @{/chat/Adm/{senderId}(senderId=${session.login.memid})} : @{/member/login}" class="nav-link px-3 py-2 rounded-2">客服中心</a>
+		            <a th:href="${session.login != null} ? @{/chat/Adm/{senderId}(senderId=${session.login.memid})} : @{/member/login}" class="nav-link px-3 py-2 rounded-2"
+		            th:classappend="${#httpServletRequest.getRequestURI().contains('/chat/Adm')
+		                            }? 'active' : ''">客服中心</a>
 		          </li>
 		          <li class="nav-item">
 		            <a th:href="@{/client/memProductList}" class="nav-link px-3 py-2 rounded-2"
