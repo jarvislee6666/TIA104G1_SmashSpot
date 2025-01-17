@@ -20,7 +20,6 @@ import com.smashspot.member.model.MemberVO;
 import com.smashspot.websocketchat.chat.ChatMessage;
 import com.smashspot.websocketchat.chat.ChatMessageService;
 import com.smashspot.websocketchat.chat.ChatNotification;
-import com.smashspot.websocketchat.chat.HttpSessionConfigurator;
 import com.smashspot.websocketchat.chatroom.Chatroom;
 import com.smashspot.websocketchat.chatroom.ChatroomService;
 

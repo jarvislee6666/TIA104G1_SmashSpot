@@ -1,4 +1,4 @@
-package com.smashspot.websocketchat.chat;
+package com.smashspot.websocketchat.controller;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.HandshakeResponse;
