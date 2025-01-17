@@ -113,7 +113,7 @@
 									<input type="number" th:field="*{courtPrice}"
 										class="form-control"
 										th:class="${#fields.hasErrors('courtPrice')} ? 'form-control is-invalid' : 'form-control'">
-									<span class="input-group-text">元/小時</span>
+									<span class="input-group-text">元/2小時</span>
 									<div class="invalid-feedback"
 										th:if="${#fields.hasErrors('courtPrice')}"
 										th:errors="*{courtPrice}"></div>
