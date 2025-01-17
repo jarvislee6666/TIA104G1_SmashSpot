@@ -31,6 +31,9 @@ public class BidController {
     @Autowired
     private OrdersService ordersService;
     
+    @Autowired
+    private BidWebSocketController bidWebSocketController;
+    
     @GetMapping("/member/biddingList")
     public String listBiddingProduct(Model model, HttpSession session) {
         MemberVO member = (MemberVO) session.getAttribute("login");
@@ -154,6 +157,9 @@ public class BidController {
             
             // 獲取更新後的競標歷史
             List<BidVO> bidHistory = bidService.getProductBidHistory(productId);
+            
+            // 使用WebSocket廣播更新
+            bidWebSocketController.broadcastBidUpdate(productId, bidAmount, bidHistory);
             
             response.put("success", true);
             response.put("currentHighestBid", bidAmount);

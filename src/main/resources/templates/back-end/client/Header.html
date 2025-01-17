@@ -38,7 +38,8 @@
 		            <a th:href="@{/client/listAllProductING}" class="nav-link px-3 py-2 rounded-2"
 		            th:classappend="${#httpServletRequest.getRequestURI().contains('/client/listAllProductING')or 
 								      #httpServletRequest.getRequestURI().contains('/client/getOneProduct') or 
-								      #httpServletRequest.getRequestURI().contains('/client/listProductByClass')
+								      #httpServletRequest.getRequestURI().contains('/client/listProductByClass')or 
+								      #httpServletRequest.getRequestURI().contains('/client/favorite/list')
 		                              } ? 'active' : ''"
 		            >競標專區</a>
 		          </li>
@@ -54,7 +55,8 @@
 		          <li class="nav-item">
 		            <a th:href="@{/client/memProductList}" class="nav-link px-3 py-2 rounded-2"
 		            th:classappend="${#httpServletRequest.getRequestURI().contains('/client/memProductList') or 
-								      #httpServletRequest.getRequestURI().contains('/client/addProduct') 
+								      #httpServletRequest.getRequestURI().contains('/client/addProduct')or 
+								      #httpServletRequest.getRequestURI().contains('/client/memOrdersList') 
 		                            }? 'active' : ''"
 		            >賣家專區</a>
 		          </li>
@@ -69,7 +71,11 @@
                         <li class="nav-item" th:if="${session.login != null}">
                             <a th:href="@{/member/basic-info}" 
                                class="nav-link px-3 py-2 rounded-2"
-                               th:classappend="${#httpServletRequest.getRequestURI().contains('/member/basic-info')}? 'active' : ''">
+                               th:classappend="${#httpServletRequest.getRequestURI().contains('/member/basic-info')or 
+								     			 #httpServletRequest.getRequestURI().contains('/member/biddingList')or 
+								     			 #httpServletRequest.getRequestURI().contains('/member/buyingList')or 
+								     			 #httpServletRequest.getRequestURI().contains('/member/appointment-records')
+								     			 }? 'active' : ''">
                                 <i class="bi bi-person"></i>
                                 <span th:text="${session.login.name}"></span>
                             </a>
