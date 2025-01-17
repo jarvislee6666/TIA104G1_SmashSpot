@@ -46,7 +46,8 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
       "       CONCAT('xxxx', REPEAT(s.court_count, 7), 'x') AS dynamic_rsv_ava, " +
       "       'xxxx0000000x' AS bookedStr " +
       "FROM stadium s " +
-      "WHERE NOT EXISTS ( " +
+      "WHERE s.opr_sta = 1 "+
+      "AND NOT EXISTS ( " +
       "    SELECT 1 FROM reservation_time r " +
       "    WHERE r.stdm_id = s.stdm_id " +
       "      AND r.dates = :insertDate " +
@@ -87,5 +88,11 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
 	    @Param("startDate") Date startDate,
 	    @Param("endDate") Date endDate
 	);
+   
+   @Query("SELECT r.stadium.stdmId, MAX(r.dates) " +
+	       "FROM ReservationTimeVO r " +
+	       "GROUP BY r.stadium.stdmId")
+	List<Object[]> findLastDatesForEachStadium();
+
    
 }

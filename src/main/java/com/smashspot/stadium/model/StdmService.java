@@ -157,5 +157,5 @@ public class StdmService {
 	public List<StadiumVO> getAll(Map<String, String[]> map) {
 		return HibernateUtil_CompositeQuery_Stdm.getAllC(map, sessionFactory.openSession());
 	}
-
+	
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 
 import javax.servlet.http.HttpSession;
 
@@ -54,11 +55,24 @@ public class ReservationTimeController {
         // 1) 查詢對應的場館資料
         StadiumVO stadium = stdmService.getOneStdm(stdmId);
         
-     // 檢查場館是否存在 + 是否啟用 (oprSta == true)
+        model.addAttribute("stadiumVO", stadium);
+
+        // (C) 檢查場館是否已啟用 (選擇性)
+        /*
         if (stadium == null || !Boolean.TRUE.equals(stadium.getOprSta())) {
-            model.addAttribute("error", "該場館不存在或目前不開放營運，訂單問題請洽詢客服");
-            return "back-end/client/reservationtime/courtReservationError";
+            model.addAttribute("error", "該場館不存在或目前不開放營運");
+            return "back-end/client/reservationtime/courtReservation";
         }
+        */
+
+        // (D) 查詢「每個場館的最後營業日」，拿到 Map<Integer, LocalDate>
+        Map<Integer, LocalDate> lastDatesMap = reservationTimeService.getLastDatesForEachStadium();
+        // 拿到本場館對應的最後營業日
+        LocalDate closingDate = lastDatesMap.get(stdmId);
+        // 丟到 Model 裡
+        model.addAttribute("closingDate", closingDate);
+        
+
 
         
         model.addAttribute("stadiumVO", stadium);
@@ -71,6 +85,8 @@ public class ReservationTimeController {
 
         // 也可以直接放到 model
         model.addAttribute("member", member);
+        
+        
         
         // 檢查 week 範圍
         if (week < 0) week = 0;
@@ -157,9 +173,9 @@ public class ReservationTimeController {
         // 3. 撈該場館的評價列表
         List<CourtOrderVO> reviewList = courtOrderSvc.findReviewsByStadiumId(stdmId);
 
+
         // 4. 放到 model，給 Thymeleaf 用
         model.addAttribute("reviewList", reviewList);
-
         model.addAttribute("stdmId", stdmId);
         model.addAttribute("week", week);
         model.addAttribute("reservationList", reservationList);
@@ -215,5 +231,8 @@ public class ReservationTimeController {
         }
         return sb.toString();
     }
+    
+
+
     
 }

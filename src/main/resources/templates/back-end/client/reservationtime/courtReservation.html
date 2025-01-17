@@ -245,6 +245,13 @@ body {
 	text-align: center;
 	line-height: 1.1;
 }
+
+.centered-red-text {
+	display: block;
+	text-align: center;
+	color: red;
+	font-size: 1.5em;
+}
 </style>
 </head>
 <body>
@@ -253,6 +260,21 @@ body {
 	<div class="main-container">
 		<div id="stadiumInfo" th:data-stdmId="${stdmId}"
 			style="display: none;"></div>
+		<!-- 加在原本畫面的合適位置，例如標題下方 -->
+		<span th:if="${stadiumVO == null or !stadiumVO.oprSta}"> <!-- 如果closingDate不為null，就顯示結束營業日期 -->
+			<h5 class="alert alert-warning text-center fw-bold" role="alert"
+				th:text="'此場館即將於 ' 
+                  + ${#temporals.format(closingDate, 'yyyy/MM/dd')} 
+                  + ' 結束營業。'">
+				<!-- 預設顯示文字(若無thymeleaf解析) -->
+				此場館即將結束營業
+			</h5>
+		</span>
+
+
+
+
+
 
 		<!-- 外層 container 來控制整體寬度和邊距 -->
 		<div class="container-fluid px-3">
@@ -311,7 +333,6 @@ body {
 										</tr>
 									</thead>
 									<tbody id="calendarBody">
-										<!-- 日曆內容將由 JavaScript 填充 -->
 									</tbody>
 								</table>
 							</div>
@@ -698,8 +719,9 @@ body {
 					<div class="card custom-shadow">
 						<div class="card-body">
 							<h5
-								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">場地評價
-							<!-- 平均評分顯示 (可依照後端計算出的平均分數來套) -->
+								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">
+								場地評價
+								<!-- 平均評分顯示 (可依照後端計算出的平均分數來套) -->
 								<small></small> <i class="fas fa-star text-warning"></i> <span
 									th:text="${averageRating}">4.5</span> <span
 									class="ms-1 text-muted" th:if="${totalReviews != null}"

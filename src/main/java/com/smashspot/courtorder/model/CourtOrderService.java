@@ -450,6 +450,21 @@ public class CourtOrderService {
     }
     
 
+    public double calculateAverageRatingForStadium(Integer stdmId) {
+        List<CourtOrderVO> reviewList = findReviewsByStadiumId(stdmId);
+        if (reviewList.isEmpty()) {
+            return 0.0;
+        }
+        double sum = 0.0;
+        int count = 0;
+        for (CourtOrderVO review : reviewList) {
+            if (review.getStarrank() != null) {
+                sum += review.getStarrank();
+                count++;
+            }
+        }
+        return (count == 0) ? 0.0 : (sum / count);
+    }
     
     
 }

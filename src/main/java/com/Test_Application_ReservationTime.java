@@ -11,7 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
+import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.reservationtime.model.ReservationTimeRepository;
 import com.smashspot.reservationtime.model.ReservationTimeVO;
 
@@ -162,6 +162,8 @@ public class Test_Application_ReservationTime implements CommandLineRunner {
             );
         }
 		
+
+
 
     }
 }
