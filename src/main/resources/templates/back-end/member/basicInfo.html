@@ -85,11 +85,11 @@
                         
                         <!-- 錯誤或成功訊息提示 -->
                         <div th:if="${message}" 
-                             class="alert" 
-                             th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}" 
-                             role="alert">
-                            <p th:text="${message}"></p>
-                        </div>
+						     class="alert" 
+						     th:classappend="${messageType == 'success'} ? 'alert-success' : 'alert-danger'"
+						     role="alert">
+						    <p th:text="${message}" class="mb-0"></p>
+						</div>
 
                         <!-- 基本資料更新表單 -->
                       <!--  <form class="form" th:action="@{/member/update-info}" th:object="${memberForm}" method="post">-->
