@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.smashspot.admin.model.AdmService;
+import com.smashspot.courtorder.model.CourtOrderService;
+import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.stadium.model.StdmService;
+
 
 @Controller
 @RequestMapping("/stadium")
@@ -29,6 +32,9 @@ public class StdmControllerFront {
 
 	@Autowired
 	StdmService stdmSvc;
+	
+	@Autowired
+	private CourtOrderService courtOrderSvc;
 
 	
 	@GetMapping("/listAllStadium")
@@ -63,6 +69,24 @@ public class StdmControllerFront {
     
     model.addAttribute("stadiumVO", new StadiumVO());
     model.addAttribute("stdmListData", stdmList);
+   
+
+    // 建立兩個 Map
+    Map<Integer, Double> averageMap = new HashMap<>();
+    Map<Integer, Integer> reviewCountMap = new HashMap<>();
+
+    for (StadiumVO stadium : stdmList) {
+        Integer stdmId = stadium.getStdmId();
+        double avgRating = courtOrderSvc.calculateAverageRatingForStadium(stdmId);
+        int totalMsg = courtOrderSvc.calculateSumMessageForStadium(stdmId);
+        averageMap.put(stdmId, avgRating);
+        reviewCountMap.put(stdmId, totalMsg);
+    }
+    
+    model.addAttribute("averageMap", averageMap);
+    model.addAttribute("reviewCountMap", reviewCountMap);
+    
+    
     return "back-end/stdm/listAllStdmFront";
 }
 	

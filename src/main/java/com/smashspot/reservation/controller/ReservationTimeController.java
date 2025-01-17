@@ -173,9 +173,16 @@ public class ReservationTimeController {
         // 3. 撈該場館的評價列表
         List<CourtOrderVO> reviewList = courtOrderSvc.findReviewsByStadiumId(stdmId);
 
+        // 直接呼叫 Service 計算平均星等
+        double averageRating = courtOrderSvc.calculateAverageRatingForStadium(stdmId);
+        // 直接呼叫 Service 計算總留言數
+        int sumMessage = courtOrderSvc.calculateSumMessageForStadium(stdmId);
+
 
         // 4. 放到 model，給 Thymeleaf 用
         model.addAttribute("reviewList", reviewList);
+        model.addAttribute("averageRating", averageRating);
+        model.addAttribute("totalReviews", sumMessage);
         model.addAttribute("stdmId", stdmId);
         model.addAttribute("week", week);
         model.addAttribute("reservationList", reservationList);
