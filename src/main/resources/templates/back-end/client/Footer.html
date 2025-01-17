@@ -27,7 +27,7 @@
           <div class="footer-contact mt-3">
             <p class="footer-text align-items-center">連絡電話: (02) 1234-5678</p>
             <p>
-              <a href="#" class="text-decoration-none footer-text">客服專區</a>
+              <a th:href="${session.login != null} ? @{/chat/Adm/{senderId}(senderId=${session.login.memid})} : @{/member/login}" class="text-decoration-none footer-text">客服專區</a>
             </p>
             <p class=''>
               <a th:href="@{/adm/listAllAdm}" class="text-decoration-none dashboard">後台登入</a>
