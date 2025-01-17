@@ -4,8 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smashspot.member.model.MemberVO;
 
@@ -20,7 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
+@JsonIgnoreProperties(ignoreUnknown = true)  
 public class ChatMessage {
 
 	@Id
@@ -60,7 +60,7 @@ public class ChatMessage {
                 ", chatId='" + chatId + '\'' +
                 ", sender={" +
                 "memid=" + (sender != null ? sender.getMemid() : "null") +
-                ", name='" + (sender != null ? sender.getName() : "null") + '\'' +
+                ", name='" + (sender != null ? sender.getName() : "Unknown") + '\'' +
                 '}' +
                 ", recipientId='" + recipientId + '\'' +
                 ", content='" + content + '\'' +

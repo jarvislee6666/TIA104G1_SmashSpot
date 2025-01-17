@@ -86,7 +86,7 @@
                 <div class="d-flex gap-2">
 				  <input type="search" 
 				         class="form-control" 
-				         placeholder="搜尋商品..." 
+				         placeholder="搜尋商品名稱..." 
 				         style="max-width: 250px" 
 				         id="productSearch"/>
 				  <select class="form-select" 
@@ -150,7 +150,7 @@
 			          <span th:switch="${orderVO.ordstaid}">
 			            <span th:case="2" class="badge bg-warning">付款完成</span>
 			            <span th:case="3" class="badge bg-info">已出貨</span>
-			            <span th:case="4" class="badge bg-success">完成</span>
+			            <span th:case="4" class="badge bg-success">訂單完成</span>
 			            <span th:case="5" class="badge bg-danger">已取消</span>
 			          </span>
 			        </td>
@@ -167,16 +167,6 @@
 			    </tbody>
 			  </table>
 			</div>
-            <nav class="mt-2">
-              <ul class="pagination justify-content-center">
-                <li class="page-item active">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">4</a></li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
@@ -214,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 搜尋和狀態篩選功能
+ 	// 搜尋和狀態篩選功能
     const searchInput = document.getElementById('productSearch');
     const statusFilter = document.getElementById('statusFilter');
     const tableBody = document.querySelector('tbody');
@@ -225,8 +215,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusValue = statusFilter.value;
 
         allRows.forEach(row => {
-            const productName = row.querySelector('.link-text').textContent.toLowerCase();
-            const orderStatus = row.querySelector('.badge').parentElement.getAttribute('data-status');
+            // 搜尋商品名稱 (在 fw-medium class 的 span 元素中)
+            const productName = row.querySelector('.fw-medium').textContent.toLowerCase();
+            // 取得訂單狀態 (在 badge class 的元素中)
+            const statusBadge = row.querySelector('.badge');
+            const orderStatus = statusBadge ? getOrderStatusId(statusBadge.textContent) : '';
             
             const matchesSearch = productName.includes(searchTerm);
             const matchesStatus = statusValue === '' || orderStatus === statusValue;
@@ -235,8 +228,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 根據狀態文字返回對應的狀態ID
+    function getOrderStatusId(statusText) {
+        const statusMap = {
+            '付款完成': '2',
+            '已出貨': '3',
+            '完成': '4',
+            '已取消': '5'
+        };
+        return statusMap[statusText.trim()] || '';
+    }
+
+    // 添加事件監聽器
     searchInput.addEventListener('input', filterOrders);
     statusFilter.addEventListener('change', filterOrders);
+
+    // 初始化過濾
+    filterOrders();
 });
 </script>
 </body>

@@ -16,7 +16,7 @@ public class ChatroomRepository {
 
     // 在 RedisConfig 中實作，用來支援序列化/反序列化
     private final RedisTemplate<String, Chatroom> redisTemplate;
-    // HashOperations<HASH_KEY, key, value>
+    // HashOperations<HASH_KEY, generateKey, value>
     private HashOperations<String, String, Chatroom> hashOperations;
 
     public ChatroomRepository(RedisTemplate<String, Chatroom> redisTemplate) {
@@ -41,6 +41,8 @@ public class ChatroomRepository {
      * @param chatId 聊天室ID
      * @return Optional<Chatroom>
      */
+    // 取得Redis Hash中所有值(即所有Chatroom)，轉換成stream並透過filter過濾條件
+    // .findFirst()是一個短路操作，當找到第一個符合條件的元素後，會立即停止遍歷
     public Optional<Chatroom> findByChatId(String chatId) {
         return hashOperations.entries(HASH_KEY).values().stream()
                 .filter(chatroom -> chatId.equals(chatroom.getChatId()))
@@ -62,6 +64,9 @@ public class ChatroomRepository {
      * 儲存 Chatroom 資料到 Redis
      */
     public void save(Chatroom chatroom) {
+    	 if (chatroom.getSender() == null || chatroom.getSender().getName() == null) {
+    	        throw new IllegalArgumentException("Chatroom sender or senderName is missing.");
+    	    }
         String key = generateKey(chatroom.getSenderName(), chatroom.getRecipientId());
         hashOperations.put(HASH_KEY, key, chatroom);
     }

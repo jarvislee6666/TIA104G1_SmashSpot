@@ -127,10 +127,8 @@ public class StadiumVO implements java.io.Serializable {
 		this.stdmAddr = stdmAddr;
 	}
 
-	// 【此處預設為 @ManyToOne(fetch=FetchType.EAGER) --> 是指 lazy="false"之意】【注意:
-	// 此處的預設值與XML版 (p.127及p.132) 的預設值相反】
+	// 【此處預設為 @ManyToOne(fetch=FetchType.EAGER) --> 是指 lazy="false"之意】
 	// 【如果修改為 @ManyToOne(fetch=FetchType.LAZY) --> 則指 lazy="true" 之意】
-	// @JoinColumn(name = "") 場館PK待加
 	@JoinColumn(name = "loc_id", referencedColumnName = "loc_id")
 	@ManyToOne
 	public LocationVO getLocationVO() {
@@ -207,8 +205,7 @@ public class StadiumVO implements java.io.Serializable {
 	}
 
 	@Column(name = "stdm_pic")
-	// @NotEmpty(message = "場館照片: 請上傳照片")
-	// --> 由Controller.java 處理錯誤信息
+	// @NotEmpty(message = "場館照片: 請上傳照片")--> 由Controller.java 處理錯誤信息
 	public byte[] getStdmPic() {
 		return stdmPic;
 	}
@@ -218,10 +215,8 @@ public class StadiumVO implements java.io.Serializable {
 	}
 
 	// 【此處預設為 @ManyToOne(fetch=FetchType.EAGER) --> 是指 lazy="false"之意】【注意:
-	// 此處的預設值與XML版 (p.127及p.132) 的預設值相反】
 	// 【如果修改為 @ManyToOne(fetch=FetchType.LAZY) --> 則指 lazy="true" 之意】
 	@JoinColumn(name = "adm_id", referencedColumnName = "adm_id")
-	// @Column(name = "adm_id")
 	@ManyToOne
 	public AdmVO getAdmVO() {
 		return admVO;
@@ -231,11 +226,8 @@ public class StadiumVO implements java.io.Serializable {
 		this.admVO = admVO;
 	}
 
-	// 開閉館時間的驗證邏輯待修~~~
 	@Column(name = "opentime")
 	@NotNull(message = "開館時間請填數字")
-//	@DecimalMin(value = "0", message = "開館時間: 不能小於{value}點")
-//	@DecimalMax(value = "24", message = "開館時間: 不能超過{value}點")
 	public Integer getOpenTime() {
 		return openTime;
 	}
@@ -246,8 +238,6 @@ public class StadiumVO implements java.io.Serializable {
 
 	@Column(name = "closetime")
 	@NotNull(message = "閉館時間請填數字")
-//	@DecimalMin(value = "0", message = "閉館時間: 不能小於{value}點")
-//	@DecimalMax(value = "24", message = "閉館時間: 不能超過{value}點")
 	public Integer getCloseTime() {
 		return closeTime;
 	}
@@ -264,17 +254,5 @@ public class StadiumVO implements java.io.Serializable {
 	public void setStdmStartTime(Timestamp stdmStartTime) {
 		this.stdmStartTime = stdmStartTime;
 	}
-
-	// 圖片格式先以Base64處理，0205版本無下面getter/setter
-//	public String getStdmPicBase64() {
-//		return stdmPicBase64;
-//	}
-//
-//	public void setStdmPicBase64(byte[] stdmPic) {
-//		if (stdmPic != null) {
-//			this.stdmPicBase64 = Base64.getEncoder().encodeToString(stdmPic);
-//		}
-//
-//	}
 
 }

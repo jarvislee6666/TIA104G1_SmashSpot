@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -11,79 +12,103 @@ import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatroomService {
-
     private final ChatroomRepository chatroomRepository;
-    private final MemberService memberService; // 注入 MemberService，用於獲取 MemberVO
+    private final MemberService memberService;
 
     /**
      * 獲取所有聊天室
-     * @return 聊天室列表
      */
     public List<Chatroom> getAllChatrooms() {
         Collection<Chatroom> chatrooms = chatroomRepository.findAll();
         return new ArrayList<>(chatrooms);
     }
     
+
     /**
-     * 根據 senderId 查詢對應的 senderName 並獲取聊天室 ID
-     * 如果不存在並 createNewRoomIfNotExists 為 true，則創建新聊天室
+     * 根據用戶ID獲取或創建聊天室
+     * @param userId 用戶ID（可能是會員ID或管理員ID）
+     * @param isAdmin 是否為管理員發送消息
+     * @param createNewRoomIfNotExists 如果不存在是否創建新聊天室
      */
     public Optional<String> getChatroomId(
-            Integer senderId, // 傳入 senderId
+            Integer userId,
+            boolean isAdmin,
             boolean createNewRoomIfNotExists
     ) {
-        // 根據 senderId 獲取 MemberVO 的 name
-        String senderName = memberService.getMemberNameById(senderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+        if (userId == null) {
+            return Optional.empty();
+        }
 
-        return chatroomRepository.findBySenderNameAndRecipientId(senderName, "Adm")
-                .map(Chatroom::getChatId)
-                .or(() -> {
-                    if (createNewRoomIfNotExists) {
-                    	System.out.println("Creating new chatroom...");
-                        var chatId = createChatId(senderName);
-                        return Optional.of(chatId);
-                    }
-                    return Optional.empty();
-                });
-        
+        try {
+            // 獲取會員名稱
+            String memberName = memberService.getMemberNameById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+            // 查找現有聊天室
+            return chatroomRepository.findBySenderNameAndRecipientId(memberName, "Adm")
+                    .map(Chatroom::getChatId)
+                    .or(() -> {
+                        if (createNewRoomIfNotExists) {
+                            log.info("Creating new chatroom for {} user: {}", 
+                                   isAdmin ? "admin" : "member", memberName);
+                            return Optional.of(createChatId(memberName, userId));
+                        }
+                        return Optional.empty();
+                    });
+        } catch (Exception e) {
+            log.error("Error getting chatroom ID", e);
+            return Optional.empty();
+        }
     }
 
     /**
-     * 創建新的聊天室 ID
-     * @param senderName 發送者名稱
-     * @return 聊天室 ID
+     * 向下相容的方法，供現有代碼調用
      */
-    private String createChatId(String senderName) {
-        String chatId = String.format("%s_%s", senderName, "Adm");
+    public Optional<String> getChatroomId(Integer senderId, boolean createNewRoomIfNotExists) {
+        return getChatroomId(senderId, false, createNewRoomIfNotExists);
+    }
 
-        // 創建正確的 MemberVO 並設置名稱
-        MemberVO sender = new MemberVO();
-        sender.setName(senderName);
+    /**
+     * 創建新的聊天室
+     * @param memberName 會員名稱
+     * @param memberId 會員ID
+     * @return 聊天室ID
+     */
+    private String createChatId(String memberName, Integer memberId) {
+        String chatId = String.format("%s_%s", memberName, "Adm");
+        
+        // 創建完整的 MemberVO
+        MemberVO member = new MemberVO();
+        member.setMemid(memberId);
+        member.setName(memberName);
 
-        // 創建 Chatroom 對象並設置 sender 和 chatId
+        // 創建聊天室
         Chatroom chatroom = Chatroom.builder()
-                .chatId(chatId)
-                .sender(sender)
-                .build();
+        		 .id(UUID.randomUUID().toString()) // 添加 id 字段
+                 .chatId(chatId)
+                 .sender(member)
+                 .senderName(memberName)  
+                 .recipientId("Adm")
+                 .lastMessage("")         // 初始化 lastMessage
+                 .unreadCount(0)          // 初始化 unreadCount
+                 .build();
 
-        System.out.println("Creating new Chatroom with sender name: " + senderName);
-        chatroomRepository.save(chatroom); // 儲存到 Redis
-
+        log.info("Saving new chatroom: {}", chatroom);
+        chatroomRepository.save(chatroom);
+        
         return chatId;
     }
 
     /**
      * 根據聊天室ID獲取聊天室
-     * @param chatId 聊天室ID
-     * @return 聊天室資訊
      */
     public Optional<Chatroom> getChatroomByChatId(String chatId) {
         return chatroomRepository.findByChatId(chatId);
     }
-    
 }

@@ -39,9 +39,6 @@ public class StdmController {
 
 	@Autowired
 	StdmService stdmSvc;
-
-//	@Autowired
-//	LocationService locSvc;
 	
 	@Autowired
 	AdmService admSvc;
@@ -167,58 +164,6 @@ public class StdmController {
 	}
 
 	
-//	@PostMapping("getOne_For_Update")
-//	public String getOne_For_Update(@RequestParam("stdmId") String stdmId, ModelMap model) {
-//		StadiumVO stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmId));
-//		model.addAttribute("stadiumVO", stdmVO);
-//		return "back-end/adm/update_stdm_input"; // 查詢完成後轉交update_stdm_input.html
-//	}
-//
-//	
-//	/*
-//	 * This method will be called on update_stdm_input.html form submission, handling POST request It also validates the user input
-//	 */
-//	@PostMapping("updateStdm")
-//	public String update(@Valid StadiumVO stdmVO, BindingResult result, ModelMap model,
-//			@RequestParam("stdmPic") MultipartFile[] parts) throws IOException {
-//
-//		/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 ************************/
-//		// 去除BindingResult中upFiles欄位的FieldError紀錄 --> 見第172行
-//		result = removeFieldError(stdmVO, result, "stdmPic");
-//
-//		if (parts[0].isEmpty()) { // 使用者未選擇要上傳的新圖片時
-//			byte[] upFiles = stdmSvc.getOneStdm(stdmVO.getStdmId()).getStdmPic();
-//			stdmVO.setStdmPic(upFiles);
-//		} else {
-//			for (MultipartFile multipartFile : parts) {
-//				byte[] upFiles = multipartFile.getBytes();
-//				stdmVO.setStdmPic(upFiles);
-//			}
-//		}
-//		if (result.hasErrors()) {
-//			return "back-end/adm/update_stdm_input";
-//		}
-//		/*************************** 2.開始修改資料 *****************************************/
-//		stdmSvc.updateStdm(stdmVO);
-//
-//		/*************************** 3.修改完成,準備轉交(Send the Success view) **************/
-//		model.addAttribute("success", "- (修改成功)");
-//		stdmVO = stdmSvc.getOneStdm(Integer.valueOf(stdmVO.getStdmId()));
-//		model.addAttribute("stadiumVO", stdmVO);
-//		return "back-end/adm/listOneStdm"; // 修改成功後轉交listOneStdm.html
-//	}
-
-
-
-
-	
-//	@ModelAttribute("locListData")
-//	protected List<LocationVO> referenceListData() {
-//		// LocService locSvc = new LocService();
-//		List<Location> list = locSvc.getAll();
-//		return list;
-//	}
-	
 	@ModelAttribute("locMapData")
 	protected Map<Integer, String> referenceMapData() {
 	    Map<Integer, String> map = new LinkedHashMap<Integer, String>();
@@ -247,19 +192,6 @@ public class StdmController {
 	    return map;
 	}
 
-
-
-	// 去除BindingResult中某個欄位的FieldError紀錄
-//	public BindingResult removeFieldError(StadiumVO stdmVO, BindingResult result, String removedFieldname) {
-//		List<FieldError> errorsListToKeep = result.getFieldErrors().stream()
-//				.filter(fieldname -> !fieldname.getField().equals(removedFieldname))
-//				.collect(Collectors.toList());
-//		result = new BeanPropertyBindingResult(stdmVO, "stadiumVO");
-//		for (FieldError fieldError : errorsListToKeep) {
-//			result.addError(fieldError);
-//		}
-//		return result;
-//	}
 	
 	/*
 	 * This method will be called on select_page.html form submission, handling POST request

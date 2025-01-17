@@ -106,10 +106,18 @@ public class AdmController {
 	    return "back-end/adm/listAllAdm";
 	}
 	@GetMapping("/addAdm")
-	public String addAdm(ModelMap model) {
-		AdmVO admVO = new AdmVO();
-		model.addAttribute("admVO", admVO);
-		return "back-end/adm/addAdm";
+	public String addAdm(ModelMap model, HttpSession session) {
+	    // 檢查登入狀態和權限
+	    AdmVO loginAdm = (AdmVO) session.getAttribute("loginAdm");
+	    
+	    // 如果未登入或不是高級管理員，導回列表頁
+	    if (loginAdm == null || !loginAdm.getSupvsr()) {
+	        return "redirect:/adm/listAllAdm";
+	    }
+	    
+	    AdmVO admVO = new AdmVO();
+	    model.addAttribute("admVO", admVO);
+	    return "back-end/adm/addAdm";
 	}
 	
 	@InitBinder

@@ -20,13 +20,12 @@ import com.google.gson.Gson;
 //import com.smashspot.admin.model.AdmVO;
 import com.smashspot.websocketchat.chat.ChatMessage;
 import com.smashspot.websocketchat.chat.ChatMessageService;
-import com.smashspot.websocketchat.chat.HttpSessionConfigurator;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@ServerEndpoint(value = "/adm/websocket/chat/{admname}", configurator = HttpSessionConfigurator.class)
+@ServerEndpoint(value = "/adm/websocket/chat/{admid}", configurator = HttpSessionConfigurator.class)
 public class AdmChatController {
 
 	private final ChatMessageService chatMessageService;
@@ -36,23 +35,35 @@ public class AdmChatController {
 	/**
 	 * WebSocket 連接建立時的回調
 	 */
-	@OnOpen
-	public void onOpen(@PathParam("admname") String admname, Session session, EndpointConfig config) {
-		HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSessionConfigurator.class.getName());
-//		if (httpSession == null || httpSession.getAttribute("loginAdm") == null) {
-//			try {
-//				session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized admin"));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			return;
-//		}
+	 @OnOpen
+	    public void onOpen(@PathParam("admid") String admid, Session session, EndpointConfig config) {
+	        HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSessionConfigurator.class.getName());	        
+	        // Verify admin session and extract admin details
+	        if (httpSession == null || httpSession.getAttribute("loginAdm") == null) {
+	            try {
+	                session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized admin"));
+	                return;
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	            return;
+	        }
 
-		// 驗證成功，繼續處理
-		System.out.println("HttpSession: " + httpSession);
-		sessionsMap.put(admname, session);
-		System.out.println(admname + " connected as admin.");
-	}
+	        Integer admId = (Integer) httpSession.getAttribute("admId");
+	        String admName = (String) httpSession.getAttribute("admName");
+	        
+	        if (admId == null || !admid.equals(admId.toString())) {
+	            try {
+	                session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Invalid admin ID"));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	            return;
+	        }
+
+	        sessionsMap.put(admid, session);
+	        System.out.println("Admin " + admName + " (ID: " + admid + ") connected");
+	    }
 
 	/**
 	 * WebSocket 接收到訊息時的回調

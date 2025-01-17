@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smashspot.member.model.MemberVO;
 
@@ -19,7 +20,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@RedisHash("Chatroom")
+//@RedisHash("Chatroom")
 public class Chatroom implements Serializable {
 
     @Id
@@ -27,7 +28,6 @@ public class Chatroom implements Serializable {
 
     private String chatId;
 
-//    @Transient
     private MemberVO sender; // 從 MemberVO 中獲取相關資訊
     
     @JsonProperty
@@ -54,7 +54,10 @@ public class Chatroom implements Serializable {
         return "Chatroom{" +
                 "id='" + id + '\'' +
                 ", chatId='" + chatId + '\'' +
-                ", senderName='" + getSenderName() + '\'' +
+                ", sender={" +
+                "memid=" + (sender != null ? sender.getMemid() : "null") +
+                ", name='" + (sender != null ? sender.getName() : "Unknown") + '\'' +
+                '}' +
                 ", recipientId='" + recipientId + '\'' +
                 ", lastMessage='" + lastMessage + '\'' +
                 ", unreadCount=" + unreadCount +
