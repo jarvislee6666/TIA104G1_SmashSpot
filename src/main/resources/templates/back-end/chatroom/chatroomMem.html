@@ -215,8 +215,7 @@ footer {
                 console.log(`WebSocket 已連接，會員 ID: ${memberId}`);
                 // 訂閱個人消息頻道
                 stompClient.subscribe(`/user/${memberId}/queue/messages`, onMessageReceived);
-                // 訂閱管理員消息頻道
-                stompClient.subscribe('/topic/chat.public', onMessageReceived);
+              
                 reconnectAttempts = 0; // 重置重連計數
             }, onError);
         };
@@ -224,11 +223,20 @@ footer {
         // 消息接收處理
         const onMessageReceived = (payload) => {
             try {
-                const message = JSON.parse(payload.body); // 將消息內容解析為 JSON
-                appendMessage(message); // 將消息添加到聊天窗口
-                scrollToBottom(); // 滾動到最新消息
+                const message = JSON.parse(payload.body);
+                console.log('收到新消息:', message);  // 添加日誌
+                
+                // 統一消息格式處理
+                const processedMessage = {
+                    content: message.content,
+                    senderName: message.senderName || (message.sender && message.sender.name),
+                    timestamp: message.timestamp,
+                };
+                
+                appendMessage(processedMessage);
+                scrollToBottom();
             } catch (err) {
-                console.error('處理訊息失敗:', err); // 錯誤處理
+                console.error('消息處理失敗:', err);
             }
         };
 
@@ -260,6 +268,7 @@ footer {
                 // 前端發送消息格式
                 const message = {
                     content,
+                    senderName: memName,
                     sender: {                    // 改用 sender 物件
                     	 memid: memId,
                     	 name: memName
