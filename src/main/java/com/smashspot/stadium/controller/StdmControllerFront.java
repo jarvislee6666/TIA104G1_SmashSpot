@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -19,9 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.smashspot.admin.model.AdmService;
 import com.smashspot.courtorder.model.CourtOrderService;
-import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.stadium.model.StdmService;
 
@@ -41,54 +38,65 @@ public class StdmControllerFront {
 	public String listAllStdm(
 	        @RequestParam(required = false) String stdmName,
 	        @RequestParam(required = false) String locationVO,
+	        @RequestParam(defaultValue = "1") int page, // 當前頁數
+	        @RequestParam(defaultValue = "6") int size, // 每頁顯示數量
 	        Model model) {
-    
-    
-		
-		Map<String, String[]> map = new HashMap<>();
-    if (stdmName != null && !stdmName.trim().isEmpty()) {
-        map.put("stdmName", new String[]{stdmName});
-    }
-    if (locationVO != null && !locationVO.isEmpty()) {
-        map.put("locationVO", new String[]{locationVO});
-    }
 
-    
-    List<StadiumVO> stdmList;
-    if (map.isEmpty()) {
-        stdmList = stdmSvc.getAll();
-    } else {
-        stdmList = stdmSvc.getAll(map);
-    }
-    
-    
-//    stdmList = stdmList.stream()
-//    	    .filter(stdm -> stdm.getOprSta())
-//    	    .collect(Collectors.toList());
-    
-    
-    model.addAttribute("stadiumVO", new StadiumVO());
-    model.addAttribute("stdmListData", stdmList);
-   
+	    
+	    Map<String, String[]> map = new HashMap<>();
+	    if (stdmName != null && !stdmName.trim().isEmpty()) {
+	        map.put("stdmName", new String[]{stdmName});
+	    }
+	    if (locationVO != null && !locationVO.isEmpty()) {
+	        map.put("locationVO", new String[]{locationVO});
+	    }
 
-    // 建立兩個 Map
-    Map<Integer, Double> averageMap = new HashMap<>();
-    Map<Integer, Integer> reviewCountMap = new HashMap<>();
+	    
+	    List<StadiumVO> stdmList;
+	    if (map.isEmpty()) {
+	        stdmList = stdmSvc.getAll();
+	    } else {
+	        stdmList = stdmSvc.getAll(map);
+	    }
 
-    for (StadiumVO stadium : stdmList) {
-        Integer stdmId = stadium.getStdmId();
-        double avgRating = courtOrderSvc.calculateAverageRatingForStadium(stdmId);
-        int totalMsg = courtOrderSvc.calculateSumMessageForStadium(stdmId);
-        averageMap.put(stdmId, avgRating);
-        reviewCountMap.put(stdmId, totalMsg);
-    }
-    
-    model.addAttribute("averageMap", averageMap);
-    model.addAttribute("reviewCountMap", reviewCountMap);
-    
-    
-    return "back-end/stdm/listAllStdmFront";
-}
+	    
+	    int totalRecords = stdmList.size(); 
+	    int totalPages = (int) Math.ceil((double) totalRecords / size);
+	    int startIndex = (page - 1) * size; 
+	    int endIndex = Math.min(startIndex + size, totalRecords); 
+
+	    if (startIndex > totalRecords) {
+	        startIndex = Math.max((totalPages - 1) * size, 0);
+	        endIndex = totalRecords;
+	    }
+
+	    List<StadiumVO> paginatedList = stdmList.subList(startIndex, endIndex);
+
+	   
+	    model.addAttribute("stadiumVO", new StadiumVO());
+	    model.addAttribute("stdmListData", paginatedList); // 分頁後數據
+	    model.addAttribute("currentPage", page); // 當前頁數
+	    model.addAttribute("totalPages", totalPages); // 總頁數
+	    model.addAttribute("pageSize", size); // 每頁數量
+	    model.addAttribute("totalRecords", totalRecords); // 總記錄數
+
+	    // 評分與評論計算
+	    Map<Integer, Double> averageMap = new HashMap<>();
+	    Map<Integer, Integer> reviewCountMap = new HashMap<>();
+
+	    for (StadiumVO stadium : stdmList) {
+	        Integer stdmId = stadium.getStdmId();
+	        double avgRating = courtOrderSvc.calculateAverageRatingForStadium(stdmId);
+	        int totalMsg = courtOrderSvc.calculateSumMessageForStadium(stdmId);
+	        averageMap.put(stdmId, avgRating);
+	        reviewCountMap.put(stdmId, totalMsg);
+	    }
+
+	    model.addAttribute("averageMap", averageMap);
+	    model.addAttribute("reviewCountMap", reviewCountMap);
+
+	    return "back-end/stdm/listAllStdmFront";
+	}
 	
 	@ModelAttribute("locMapData")
 	protected Map<Integer, String> referenceMapData() {
