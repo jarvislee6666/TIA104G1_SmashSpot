@@ -42,7 +42,13 @@
       font-weight: 500;
       padding: 0.5em 0.8em;
     }
-	
+	.empty-state {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      transition: transform 0.2s ease-in-out;
+    }
+    .empty-state:hover {
+      transform: translateY(-5px);
+    }
 
 </style>
 
@@ -102,7 +108,16 @@
               </div>
             </div>
             <!-- Table Content -->
-            <div class="table-responsive">
+            <div th:if="${#lists.isEmpty(ordersListData)}" class="text-center py-5">
+              <div class="empty-state mx-auto p-5 rounded-4 shadow-sm" style="max-width: 600px;">
+                <div class="mb-4">
+                  <i class="bi bi-clipboard-x text-secondary" style="font-size: 3rem;"></i>
+                </div>
+                <h4 class="mb-3">暫時沒有已成立的商品訂單...</h4>
+              </div>
+            </div>
+            
+            <div th:if="${not #lists.isEmpty(ordersListData)}" class="table-responsive">
 			  <table class="table table-hover align-middle bg-white shadow-sm rounded">
 			    <thead class="bg-light">
 			      <tr>

@@ -61,7 +61,14 @@
 	  color: #0d6efd;
 	}
 	
-
+	.empty-state {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      transition: transform 0.2s ease-in-out;
+    }
+    .empty-state:hover {
+      transform: translateY(-5px);
+    }
+	
 </style>
 
 </head>
@@ -74,7 +81,7 @@
       <div
          class="position-absolute top-0 end-0"
          style="margin-top: 10px; margin-right: 15px; z-index: 2">
-         <a  th:href="@{/client/addProduct}" class="btn btn-primary">
+         <a  th:href="@{/client/addProduct}" class="btn btn-secondary">
          	<i class="bi bi-plus-circle"></i> 競標商品刊登
          </a>
        </div>
@@ -126,7 +133,21 @@
               </div>
             </div>
             <!-- Table Content -->
-            <div class="table-responsive">
+            <div th:if="${#lists.isEmpty(memProductListData)}" class="text-center py-5">
+              <div class="empty-state mx-auto p-5 rounded-4 shadow-sm" style="max-width: 600px;">
+                <div class="mb-4">
+                  <i class="bi bi-bag-x text-secondary" style="font-size: 3rem;"></i>
+                </div>
+                <h4 class="mb-3">目前沒有上架中的商品</h4>
+                <p class="text-secondary mb-4">來去刊登新的商品吧！</p>
+                <a th:href="@{/client/addProduct}" 
+                   class="btn btn-secondary">
+                  <i class="bi bi-plus-circle me-2"></i>商品刊登
+                </a>
+              </div>
+            </div>
+            
+            <div th:if="${not #lists.isEmpty(memProductListData)}" class="table-responsive">
 			  <table class="table table-hover align-middle bg-white shadow-sm rounded">
 			    <thead class="bg-light">
 			      <tr>
