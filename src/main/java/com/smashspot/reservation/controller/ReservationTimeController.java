@@ -263,7 +263,5 @@ public class ReservationTimeController {
         return sb.toString();
     }
     
-
-
     
 }
