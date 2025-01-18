@@ -26,6 +26,7 @@ import com.smashspot.member.model.MemberService;
 import com.smashspot.reservationtime.model.ReservationTimeService;
 import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.stadium.model.StdmService;
+import com.smashspot.stadiumlike.model.StadiumLikeService;
 import com.smashspot.courtorder.model.CourtOrderService;
 
 @Controller
@@ -43,6 +44,9 @@ public class ReservationTimeController {
 	
 	@Autowired
 	private MemberService memberSvc;
+	
+	@Autowired
+	private StadiumLikeService stadiumLikeSvc;
 
     @GetMapping("/week")
     public String getWeeklyReservation(
@@ -50,12 +54,32 @@ public class ReservationTimeController {
         @RequestParam(value = "week", defaultValue = "0") Integer week,
         Model model, HttpSession session
     ) {
-
     	
+        // 先檢查今天星期幾
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        // Calendar.SATURDAY = 7
+        if (dayOfWeek == Calendar.SATURDAY && week == 0) {
+            // 如果今天是周六，而且使用者又沒帶參數(或帶 0)，就把週數改成 1
+            week = 1;
+        }
+
+        // 0) 檢查登入用戶
+        MemberVO loginMember = (MemberVO) session.getAttribute("login");
+        
+        
         // 1) 查詢對應的場館資料
         StadiumVO stadium = stdmService.getOneStdm(stdmId);
         
         model.addAttribute("stadiumVO", stadium);
+        
+        // 2) 準備 isLiked -> 若未登入或沒有收藏，就 false
+        boolean isLiked = false;
+        if (loginMember != null) {
+            // 查詢是否已收藏
+            isLiked = stadiumLikeSvc.isLiked(loginMember.getMemid(), stdmId);
+        }
+        model.addAttribute("isLiked", isLiked);
 
         // (C) 檢查場館是否已啟用 (選擇性)
         /*
@@ -239,7 +263,5 @@ public class ReservationTimeController {
         return sb.toString();
     }
     
-
-
     
 }

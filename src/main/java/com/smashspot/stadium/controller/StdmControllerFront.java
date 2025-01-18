@@ -149,6 +149,9 @@ public class StdmControllerFront {
 	    return map;
 	}
 
+	
+	
+	
 
 	@GetMapping("/getImage/{id}")
 	public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
@@ -166,8 +169,10 @@ public class StdmControllerFront {
         // 1) 取得登入會員
         MemberVO loginMember = (MemberVO) session.getAttribute("login");
         if (loginMember == null) {
-            // 尚未登入就轉回登入頁
-            return "redirect:/member/login";
+            // 未登入 => 將想前往的網址存到 session
+            session.setAttribute("redirectURL", "/stadium/listLiked");
+            // 直接跳轉登入頁（不帶參數）
+            return "redirect:/member/login?redirectUrl=/stadium/listLiked";
         }
         // 1) 印出登入會員的 memId
         System.out.println("【DEBUG】loginMember memId = " + loginMember.getMemid());
@@ -208,9 +213,12 @@ public class StdmControllerFront {
         // 6) 把這些放進 model
         model.addAttribute("stdmListData", onlyLikedStadiums); 
         model.addAttribute("isLikedSet", isLikedSet);
-        
-
+             
         // 7) 跳到跟「全部場館列表」同一個模板，但裡面只會顯示已收藏的場館
         return "back-end/stdm/listAllStdmFront";
     }
+    
+    
 }
+
+
