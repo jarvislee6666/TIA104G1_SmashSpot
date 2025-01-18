@@ -149,6 +149,9 @@ public class StdmControllerFront {
 	    return map;
 	}
 
+	
+	
+	
 
 	@GetMapping("/getImage/{id}")
 	public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {

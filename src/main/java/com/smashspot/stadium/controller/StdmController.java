@@ -290,6 +290,9 @@ public class StdmController {
 	    return newResult;
 	}
 	
+	
+	
+	
 	@GetMapping("/getImage/{id}")
 	public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
 		StadiumVO stdmVO = stdmSvc.getOneStdm(id);
