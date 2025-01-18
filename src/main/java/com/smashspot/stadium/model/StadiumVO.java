@@ -27,7 +27,7 @@ import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.location.model.LocationVO;
 import com.smashspot.reservationtime.model.ReservationTimeVO;
-import com.smashspot.stadiumlike.StadiumLikeVO;
+import com.smashspot.stadiumlike.model.StadiumLikeVO;
 
 @Entity
 @Table(name = "stadium")
@@ -64,16 +64,16 @@ public class StadiumVO implements java.io.Serializable {
 		this.reservationTime = reservationTime;
 	}
 
-	private Set<StadiumLikeVO> StadiumLike;
-
-	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)
-	public Set<StadiumLikeVO> getStadiumLike() {
-		return StadiumLike;
-	}
-
-	public void setStadiumLike(Set<StadiumLikeVO> stadiumLike) {
-		StadiumLike = stadiumLike;
-	}
+//	private Set<StadiumLikeVO> StadiumLike;
+//
+//	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//	public Set<StadiumLikeVO> getStadiumLike() {
+//		return StadiumLike;
+//	}
+//
+//	public void setStadiumLike(Set<StadiumLikeVO> stadiumLike) {
+//		StadiumLike = stadiumLike;
+//	}
 
 	private Set<CourtOrderVO> CourtOrder;
 

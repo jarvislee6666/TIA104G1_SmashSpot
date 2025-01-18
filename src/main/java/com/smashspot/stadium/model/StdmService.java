@@ -2,6 +2,7 @@ package com.smashspot.stadium.model;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.smashspot.reservationtime.model.ReservationTimeRepository;
 import com.smashspot.reservationtime.model.ReservationTimeVO;
+import com.smashspot.stadiumlike.model.StadiumLikeVO;
 
 import util.HibernateUtil_CompositeQuery_Stdm;
 
@@ -31,6 +33,7 @@ public class StdmService {
 
 	@Autowired
 	private ReservationTimeRepository reservationTimeRepository;
+	
 
 	// 休館日的標記
 	private static final String HOLIDAY_RSVAVA = "xxxxxxxxxxxx";// by麒安
@@ -157,5 +160,17 @@ public class StdmService {
 	public List<StadiumVO> getAll(Map<String, String[]> map) {
 		return HibernateUtil_CompositeQuery_Stdm.getAllC(map, sessionFactory.openSession());
 	}
+
+
+	
+    public List<StadiumVO> findByStdmIds(Set<Integer> ids) {
+        // 如果 set 為空，直接回傳空
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return repository.findByStdmIdIn(ids);
+    }
+	
+
 	
 }

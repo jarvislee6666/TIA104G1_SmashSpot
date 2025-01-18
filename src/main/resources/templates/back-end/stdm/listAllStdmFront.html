@@ -29,7 +29,7 @@
 								<a th:href="@{/stadium/listAllStadium}"
 									class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
 									<i class="bi bi-list-ul"></i> <span>球場一覽</span>
-								</a> <a th:href="@{/client/memOrdersList}"
+								</a> <a th:href="@{/stadium/listLiked}"
 									class="sidebar-link d-flex align-items-center gap-2 p-2 rounded text-decoration-none">
 									<i class="bi bi-clipboard"></i> <span>收藏清單</span>
 								</a>
@@ -95,9 +95,14 @@
 												<span th:if="${stadiumVO != null and !stadiumVO.oprSta}"
 													class="ms-1 text-danger fw-bold"> (即將下架) </span>
 											</h6>
-											<button class="btn-favorite">
-												<i class="bi bi-heart"></i>
+											<!-- 收藏按鈕：加 data-stdm-id -->
+											<button class="btn-favorite"
+												th:data-stdm-id="${stadiumVO.stdmId}"
+												th:classappend="${isLikedSet.contains(stadiumVO.stdmId)} ? ' active' : ''">
+												<i class="bi"
+													th:classappend="${isLikedSet.contains(stadiumVO.stdmId)} ? ' bi-heart-fill' : ' bi-heart'"></i>
 											</button>
+
 										</div>
 										<div class="rating-container">
 											<div class="star-rating">
@@ -120,18 +125,28 @@
 			</div>
 		</div>
 
-
-
-
-		<!-- 分頁 -->
-		<nav class="mt-4">
-			<ul class="pagination justify-content-center">
-				<li class="page-item"><a class="page-link" href="#">1</a></li>
-				<li class="page-item"><a class="page-link" href="#">2</a></li>
-				<li class="page-item"><a class="page-link" href="#">3</a></li>
-				<li class="page-item"><a class="page-link" href="#">»</a></li>
-			</ul>
-		</nav>
+		<div class="d-flex justify-content-center mt-4"
+			th:if="${totalPages > 1}">
+			<nav>
+				<ul class="pagination justify-content-center">
+					<li class="page-item"
+						th:classappend="${currentPage == 1} ? 'disabled'"><a
+						th:href="@{/stadium/listAllStadium(page=${currentPage - 1})}"
+						class="page-link"> <span>&laquo;</span>
+					</a></li>
+					<li th:each="i : ${#numbers.sequence(1, totalPages)}"
+						th:class="${i==currentPage} ? 'page-item active' : 'page-item'">
+						<a class="page-link"
+						th:href="@{/stadium/listAllStadium(page=${i})}">[[${i}]]</a>
+					</li>
+					<li class="page-item"
+						th:classappend="${currentPage == totalPages} ? 'disabled'"><a
+						th:href="@{/stadium/listAllStadium(page=${currentPage + 1})}"
+						class="page-link"> <span>&raquo;</span>
+					</a></li>
+				</ul>
+			</nav>
+		</div>
 
 
 	</main>
@@ -141,19 +156,72 @@
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 	<script>
+    // 1) 綁定所有 .btn-favorite 之點擊事件
     document.querySelectorAll('.btn-favorite').forEach(button => {
-        button.addEventListener('click', function() {
-            this.classList.toggle('active');
+        button.addEventListener('click', function(event) {
+            // 避免點擊按鈕後，超連結也觸發
+            event.stopPropagation();
+            event.preventDefault();
+
             const icon = this.querySelector('i');
-            if (this.classList.contains('active')) {
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
+            const stadiumId = this.dataset.stdmId;  // 取得 data-stdm-id
+            const isActive = this.classList.contains('active');
+
+            if (!isActive) {
+                // 尚未收藏 => 呼叫後端新增收藏 API
+                addFavorite(stadiumId, this);
             } else {
-                icon.classList.remove('bi-heart-fill');
-                icon.classList.add('bi-heart');
+                // 已收藏 => 呼叫後端取消收藏 API
+                removeFavorite(stadiumId, this);
             }
         });
     });
+
+    // 2) 新增收藏
+    function addFavorite(stadiumId, btnEl) {
+        fetch(`/stadium-like/add/${stadiumId}`, {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // 變更按鈕外觀
+                btnEl.classList.add('active');
+                const icon = btnEl.querySelector('i');
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            } else {
+                alert(data.message || "加入收藏失敗");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("系統錯誤，請稍後再試");
+        });
+    }
+
+    // 3) 取消收藏
+    function removeFavorite(stadiumId, btnEl) {
+        fetch(`/stadium-like/remove/${stadiumId}`, {
+            method: 'DELETE'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // 變更按鈕外觀
+                btnEl.classList.remove('active');
+                const icon = btnEl.querySelector('i');
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            } else {
+                alert(data.message || "取消收藏失敗");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("系統錯誤，請稍後再試");
+        });
+    }
     </script>
 </body>
 </html>

@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.smashspot.stadium.model.StadiumVO;
 
 
@@ -28,6 +29,7 @@ public class LocationVO implements java.io.Serializable {
  private static final long serialVersionUID = 1L;
  
  @OneToMany(mappedBy = "locationVO", cascade = CascadeType.ALL)   // "stadium" 必須對應 ReservationTimeVO 中的 @ManyToOne 的變數名稱
+ @JsonIgnore
  private Set<StadiumVO> stadium; 
  
  
