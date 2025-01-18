@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.smashspot.stadium.model.StadiumVO;
 
 @Entity
@@ -30,6 +31,7 @@ public class ReservationTimeVO {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id") 
+	@JsonBackReference
 	private StadiumVO stadium;
 
 	
