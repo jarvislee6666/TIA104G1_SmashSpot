@@ -374,7 +374,7 @@ public class MemberController {
                 return "redirect:" + redirectURL;
             } else {
                 // 無特定路徑則導向會員基本資料頁
-                return "redirect:/member/basic-info";
+                return "redirect:/";
             }
         }
         // 登入失敗，返回登入頁面並顯示錯誤訊息
