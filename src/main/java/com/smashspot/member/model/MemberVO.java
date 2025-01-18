@@ -22,6 +22,8 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smashspot.courtorder.model.CourtOrderVO;
 import com.smashspot.product.model.ProductVO;
@@ -74,7 +76,7 @@ public class MemberVO implements Serializable {
 
     @Column(name = "password", length = 20)
     @NotEmpty(message="密碼: 請勿空白")
-    @Size(min = 6, max = 20, message="密碼長度必需在{min}到{max}之間")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,20}$", message = "密碼: 必須包含英文字母與數字的組合，且長度需在6到20之間")
     public String getPassword() {
         return this.password;
     }
@@ -85,8 +87,7 @@ public class MemberVO implements Serializable {
 
     @Column(name = "name", length = 20)
     @NotEmpty(message="姓名: 請勿空白")
-    @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z)]{2,20}$", 
-             message = "姓名: 只能是中、英文字母, 且長度必需在2到20之間")
+    @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z)]{2,20}$", message = "姓名: 只能是中、英文字母, 且長度必需在2到20之間")
     public String getName() {
         return this.name;
     }
@@ -138,6 +139,7 @@ public class MemberVO implements Serializable {
     @Column(name = "bday")
     @NotNull(message="生日: 請勿空白")
     @Past(message="生日必須是在今日(含)之前")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     public Date getBday() {
         return this.bday;
     }
@@ -148,7 +150,7 @@ public class MemberVO implements Serializable {
 
     @Column(name = "addr", length = 100)
     @NotEmpty(message="地址: 請勿空白")
-    @Size(min = 5, max = 100, message="地址長度必需在{min}到{max}之間")
+    @Pattern(regexp = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{5,30}$", message = "地址: 只能是中、英文字母、數字和 , 且長度必需在5到30之間")
     public String getAddr() {
         return this.addr;
     }

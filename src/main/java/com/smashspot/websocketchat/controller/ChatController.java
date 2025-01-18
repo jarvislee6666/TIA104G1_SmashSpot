@@ -1,5 +1,6 @@
 package com.smashspot.websocketchat.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -47,10 +48,13 @@ public class ChatController {
         	"Adm", // 使用管理員 ID
             "/queue/messages",
             ChatNotification.builder()
-                .id(savedMessage.getId())
-                .senderName(savedMessage.getSenderName())
-                .content(savedMessage.getContent())
-                .build()
+            .id(savedMessage.getId())
+            .content(savedMessage.getContent())
+            .senderName(savedMessage.getSenderName())
+//            .sender(savedMessage.getSender())
+//            .recipientId(savedMessage.getRecipientId())
+            .timestamp(savedMessage.getTimestamp())
+            .build() 
         );
     }
     
@@ -78,8 +82,11 @@ public class ChatController {
             "/queue/messages",
             ChatNotification.builder()
                 .id(savedMessage.getId())
-                .senderName(savedMessage.getSenderName())
                 .content(savedMessage.getContent())
+                .senderName(savedMessage.getSenderName())
+//                .sender(savedMessage.getSender())
+//                .recipientId(savedMessage.getRecipientId())
+                .timestamp(savedMessage.getTimestamp())
                 .build()
         );
     }
@@ -88,8 +95,17 @@ public class ChatController {
      * 會員聊天室
      */
     @GetMapping("/chat/Adm/{senderId}")
-    public String findAdmMessages(@PathVariable Integer senderId, Model model) {
-        String recipientId = "Adm";
+    public String findAdmMessages(@PathVariable Integer senderId, Model model, HttpSession session) {
+    	// 取得當前登入的會員資訊
+        MemberVO loginMember = (MemberVO) session.getAttribute("login");
+        
+        // 驗證是否已登入且訪問的是自己的聊天室
+        if (loginMember == null || !loginMember.getMemid().equals(senderId)) {
+            // 如果未登入或嘗試訪問其他會員的聊天室，重定向到登入頁面或首頁
+            return "redirect:/member/login";
+        }
+    	
+    	String recipientId = "Adm";
 
         List<ChatMessage> messages;
         messages = chatMessageService.findChatMessages(senderId, recipientId);

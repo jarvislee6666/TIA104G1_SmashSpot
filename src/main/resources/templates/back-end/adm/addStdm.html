@@ -113,7 +113,7 @@
 									<input type="number" th:field="*{courtPrice}"
 										class="form-control"
 										th:class="${#fields.hasErrors('courtPrice')} ? 'form-control is-invalid' : 'form-control'">
-									<span class="input-group-text">元/小時</span>
+									<span class="input-group-text">元/2小時</span>
 									<div class="invalid-feedback"
 										th:if="${#fields.hasErrors('courtPrice')}"
 										th:errors="*{courtPrice}"></div>
@@ -126,8 +126,8 @@
 									<input type="file" id="upFiles" name="stdmPic"
 										class="form-control"
 										th:class="${#fields.hasErrors('stdmPic')} ? 'form-control is-invalid' : 'form-control'"
-										accept="image/png,image/jpeg,image/gif" onc="previewImage()"
-										multiple="multiple" onchange="hideContent('upFiles.errors');">
+										accept="image/png,image/jpeg,image/gif" 
+										multiple="multiple" onchange="hideContent('upFiles.errors'); previewImage();">
 
 									<div id="blob_holder" class="mt-2"></div>
 								</div>
@@ -216,17 +216,27 @@
 							};
 
 							// 圖片預覽功能
-							function previewImage() {
-								var upfile1 = document
-										.getElementById("upFiles");
-								upfile1.addEventListener("change", function(
-										event) {
-									var files = event.target.files
-											|| event.dataTransfer.files;
-									for (var i = 0; i < files.length; i++) {
-										previewfile(files[i])
+							 function previewImage() {
+   			
+								var upfile1 = document.getElementById("upFiles");   		  			  				
+								if (!upfile1) return; // 確保 upfile1 存在
+    			
+								upfile1.addEventListener("change", function(event) {
+        		
+									// 清空預覽區        		
+									var blob_holder = document.getElementById('blob_holder');       		
+									if (blob_holder) {                  			
+										blob_holder.innerHTML = '';              		
 									}
-								}, false);
+               		
+									// 取得選中的檔案                		
+									var files = event.target.files || event.dataTransfer.files;       
+        		
+									// 遍歷每個檔案並進行預覽              		
+									for (var i = 0; i < files.length; i++) {                    			
+										previewfile(files[i]);               		
+									}       			
+								}, false);       
 							}
 
 							// 處理預覽
