@@ -104,18 +104,29 @@
 											</button>
 
 										</div>
-										<div class="rating-container">
-											<div class="star-rating">
-												<i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i>
-												<i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i>
-												<i class="bi bi-star-half"></i>
-											</div>
-											<span class="rating-text"> <!-- 透過 averageMap[stadiumVO.stdmId] 取得該場館的平均星等 -->
-												<span th:text="${averageMap[stadiumVO.stdmId]}">0</span> ( <!-- 透過 reviewCountMap[stadiumVO.stdmId] 取得該場館的評價數 -->
-												<span th:text="${reviewCountMap[stadiumVO.stdmId]}">0</span>
-												則評價)
-											</span>
+										<div class="rating-container" 
+										     th:with="doubleAvg=${averageMap[stadiumVO.stdmId]} * 2">
+										    <div class="star-rating">
+										        <!-- 迴圈 1~5 顯示五顆星 -->
+										        <span th:each="starNum : ${#numbers.sequence(1,5)}"
+										              th:with="thresholdFull=${starNum} * 2, thresholdHalf=${thresholdFull} - 1">
+										            
+										            <i class="bi"
+										               th:classappend=" ${doubleAvg} >= ${thresholdFull} ? 'bi-star-fill' 
+										                              : ( ${doubleAvg} >= ${thresholdHalf} ? 'bi-star-half' : 'bi-star')">
+										            </i>
+										        </span>
+										    </div>
+										    
+										    <span class="rating-text">
+										        <!-- 顯示原始平均星等 (非放大後的數值) -->
+										        <span th:text="${averageMap[stadiumVO.stdmId]}">0</span> 
+										        ( <span th:text="${reviewCountMap[stadiumVO.stdmId]}">0</span> 則評價 )
+										    </span>
 										</div>
+
+
+
 									</div>
 								</div>
 							</a>

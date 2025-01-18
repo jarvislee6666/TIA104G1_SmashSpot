@@ -166,8 +166,10 @@ public class StdmControllerFront {
         // 1) 取得登入會員
         MemberVO loginMember = (MemberVO) session.getAttribute("login");
         if (loginMember == null) {
-            // 尚未登入就轉回登入頁
-            return "redirect:/member/login";
+            // 未登入 => 將想前往的網址存到 session
+            session.setAttribute("redirectURL", "/stadium/listLiked");
+            // 直接跳轉登入頁（不帶參數）
+            return "redirect:/member/login?redirectUrl=/stadium/listLiked";
         }
         // 1) 印出登入會員的 memId
         System.out.println("【DEBUG】loginMember memId = " + loginMember.getMemid());
