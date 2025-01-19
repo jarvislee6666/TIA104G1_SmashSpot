@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.member.model.MemberVO;
@@ -30,7 +31,8 @@ public class CourtOrderVO {
 	@Column(name = "court_ord_id", updatable = false)
 	private Integer courtordid;
 
-	@JsonBackReference(value = "stadiumRef")
+//	@JsonBackReference(value = "stadiumRef")
+	@JsonIgnoreProperties({"courtOrder", "reservationTime"})
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "stdm_id", referencedColumnName = "stdm_id")
 	private StadiumVO stadium;

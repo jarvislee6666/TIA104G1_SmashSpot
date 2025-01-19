@@ -1,5 +1,6 @@
 package com.smashspot.courtorder.controller;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -213,6 +216,25 @@ public class CourtOrderController {
         // 如果找不到，回傳 404
         return ResponseEntity.notFound().build();
     }
+    
+    @GetMapping("/my-orders-search")
+    public List<CourtOrderVO> searchMyOrders(
+        @RequestParam Integer memId,
+        @RequestParam(required=false) String stadiumName,
+        @RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date ordDate,
+        @RequestParam(required=false) Boolean ordsta
+    ){
+        if (stadiumName != null && stadiumName.trim().isEmpty()) {
+            stadiumName = null;
+        }
+        System.out.println("檢查參數: memId="+memId+", stadiumName="+stadiumName+", ordDate="+ordDate+", ordsta="+ordsta);
+        // 同理 date, status 如果想手動處理，也可判斷
+        // 但 date 若是空字串，Spring 可能會 parse 失敗 => 進不來
+        // ordsta 若是空字串，也可能 parse 失敗 => 進不來
+
+        return courtOrderSvc.searchMyOrders(memId, stadiumName, ordDate, ordsta);
+    }
+
 
     
 }
