@@ -261,8 +261,10 @@ body {
 		<!-- WebSocket 連接處理 -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化設置
+    // WebSocket 客戶端實例
     let stompClient = null;
+
+    // 獲取管理員名稱
     const adminNameElement = document.getElementById('adminName');
     if (!adminNameElement || !adminNameElement.value) {
         console.error('管理員名稱未設置');
@@ -270,12 +272,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const admname = adminNameElement.value;
 
-    // 時間格式化函數
+    /**
+     * 格式化時間顯示
+     * @param {string} timestamp - ISO 格式的時間戳
+     * @returns {string} 格式化後的時間字符串
+     * 
+     * 規則：
+     * 1. 如果是今天，顯示具體時間（HH:mm）
+     * 2. 如果是最近七天，顯示星期幾
+     * 3. 其他情況顯示完整日期
+     */
     function formatTime(timestamp) {
         const date = new Date(timestamp);
         const now = new Date();
         
-        // 如果是今天，返回時間 HH:mm
+        // 今天的消息顯示具體時間
         if (date.toDateString() === now.toDateString()) {
             return date.toLocaleTimeString([], { 
                 hour: '2-digit', 
@@ -283,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // 如果是過去7天內，返回星期幾
+        // 最近七天內的消息顯示星期幾
         const diffTime = Math.abs(now - date);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         if (diffDays < 7) {
@@ -291,36 +302,40 @@ document.addEventListener('DOMContentLoaded', function() {
             return `週${days[date.getDay()]}`;
         }
         
-        // 其他返回完整日期
+        // 超過七天顯示完整日期
         return date.toLocaleDateString();
     }
 
-    // WebSocket 連接管理
+    /**
+     * 建立 WebSocket 連接
+     * 使用 SockJS 和 STOMP 協議
+     */
     function connectWebSocket() {
         const socket = new SockJS('/websocket');
         stompClient = Stomp.over(socket);
         
-        // 連接配置
-        const connectHeaders = {
+        // 配置連接參數並建立連接
+        stompClient.connect({
             'adminName': admname
-        };
-
-        stompClient.connect(connectHeaders, onConnected, onError);
+        }, onConnected, onError);
     }
 
-    // 連接成功處理
+    /**
+     * WebSocket 連接成功的回調處理
+     * 訂閱相關的消息頻道
+     */
     function onConnected() {
         console.log('WebSocket 連接已建立');
-        
         // 訂閱個人消息頻道
         stompClient.subscribe(`/user/${admname}/queue/messages`, onMessageReceived);
-       // 訂閱系統通知頻道
-        // stompClient.subscribe('/topic/notifications', onNotificationReceived);
-        
+        // 訂閱已讀狀態更新頻道
+        stompClient.subscribe(`/user/${admname}/queue/read.status`, onReadStatusReceived);
     }
 
-
-    // 消息接收處理
+    /**
+     * 處理接收到的新消息
+     * @param {Object} payload - STOMP 消息載荷
+     */
     function onMessageReceived(payload) {
         try {
             const message = JSON.parse(payload.body);
@@ -330,137 +345,132 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 系統通知處理
-    function onNotificationReceived(payload) {
+    /**
+     * 處理消息已讀狀態的更新
+     * @param {Object} payload - 包含已讀狀態信息的載荷
+     */
+    function onReadStatusReceived(payload) {
         try {
-            const notification = JSON.parse(payload.body);
-            handleSystemNotification(notification);
+            const status = JSON.parse(payload.body);
+            // 找到對應的聊天室元素
+            const chatRoomElement = document.querySelector(`.message-item[data-member-id="${status.senderId}"]`);
+            if (chatRoomElement) {
+                // 移除未讀標記
+                const unreadBadge = chatRoomElement.querySelector('.status-count');
+                if (unreadBadge) {
+                    unreadBadge.remove();
+                }
+                chatRoomElement.classList.remove('unread');
+            }
         } catch (error) {
-            console.error('處理通知失敗:', error);
+            console.error('處理讀取狀態更新失敗:', error);
         }
     }
 
+    /**
+     * 更新聊天室列表
+     * @param {Object} message - 新消息對象
+     * 處理新消息到達時的聊天室列表更新
+     */
     function updateChatRoomList(message) {
         const messageList = document.querySelector('.message-list');
-        const chatRoomElement = document.querySelector(`.message-item[data-sender-id="${message.senderId}"]`);
+        const chatRoomElement = document.querySelector(`.message-item[data-member-id="${message.sender.memid}"]`);
 
         if (chatRoomElement) {
-            // 更新現有聊天室
+            // 更新已存在的聊天室
             updateExistingChatRoom(chatRoomElement, message);
+            // 將聊天室移到列表頂部
+            messageList.insertBefore(chatRoomElement, messageList.firstChild);
         } else {
-            // 創建新聊天室
+            // 創建新的聊天室
             createNewChatRoom(messageList, message);
         }
     }
 
+    /**
+     * 更新現有聊天室的內容
+     * @param {HTMLElement} chatRoomElement - 聊天室DOM元素
+     * @param {Object} message - 新消息對象
+     */
     function updateExistingChatRoom(chatRoomElement, message) {
+        // 更新消息預覽
         const messagePreview = chatRoomElement.querySelector('.message-preview');
-        const timeElement = chatRoomElement.querySelector('.message-time');
-        const unreadBadge = chatRoomElement.querySelector('.status-count');
-
-        // 更新最新消息預覽
         if (messagePreview) {
             messagePreview.textContent = message.content;
         }
 
-        // 更新時間戳
-        if (timeElement) {
-            timeElement.textContent = formatTime(message.timestamp);
-        }
-
-        // 更新未讀消息數量
-        if (!message.read) {
+        // 如果不是管理員發送的消息，更新未讀計數
+        if (message.senderName !== 'Adm') {
+            const unreadBadge = chatRoomElement.querySelector('.status-count');
             if (unreadBadge) {
-                unreadBadge.textContent = parseInt(unreadBadge.textContent || 0) + 1;
+                // 更新現有未讀計數
+                const currentCount = parseInt(unreadBadge.textContent) || 0;
+                unreadBadge.textContent = currentCount + 1;
             } else {
-                const newBadge = createUnreadBadge(1);
-                const header = chatRoomElement.querySelector('.message-header');
-                if (header) {
-                    header.appendChild(newBadge);
-                }
+                // 創建新的未讀標記
+                const statusContainer = chatRoomElement.querySelector('.message-header .d-flex');
+                const countBadge = document.createElement('span');
+                countBadge.className = 'status-count';
+                countBadge.textContent = '1';
+                statusContainer.appendChild(countBadge);
             }
             chatRoomElement.classList.add('unread');
-        } else if (unreadBadge) {
-            unreadBadge.textContent = 0;
-            chatRoomElement.classList.remove('unread');
-        }
-
-        // 將聊天室移動到列表頂部
-        const parent = chatRoomElement.parentNode;
-        if (parent) {
-            parent.insertBefore(chatRoomElement, parent.firstChild);
         }
     }
 
-    // 處理未讀消息
-    function handleUnreadMessage(chatRoomElement, countElement) {
-        if (countElement) {
-            const currentCount = parseInt(countElement.textContent) || 0;
-            countElement.textContent = currentCount + 1;
-        } else {
-            const countBadge = createUnreadBadge(1);
-            chatRoomElement.querySelector('.message-header').appendChild(countBadge);
-        }
-        chatRoomElement.classList.add('unread');
-    }
-
-    // 創建新聊天室
-  function createNewChatRoom(messageList, message) {
-    const chatRoomHtml = `
-        <a href="/adm/chat/${message.getsender.getmemid}/Adm" 
-           class="message-item unread" 
-           data-sender-id="${message.senderId}">
-            <div class="user-avatar">
-                <span>${message.senderName.charAt(0)}</span>
-            </div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-sender">${message.senderName}</span>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="message-time">${formatTime(message.timestamp)}</span>
-                        <span class="status-count">1</span>
-                    </div>
+    /**
+     * 創建新的聊天室元素
+     * @param {HTMLElement} messageList - 聊天室列表容器
+     * @param {Object} message - 新消息對象
+     */
+    function createNewChatRoom(messageList, message) {
+        // 生成新聊天室的 HTML
+        const chatRoomHtml = `
+            <a href="/adm/chat/${message.sender.memid}/Adm" 
+               class="message-item ${message.senderName !== 'Adm' ? 'unread' : ''}" 
+               data-member-id="${message.sender.memid}">
+                <div class="user-avatar">
+                    <span>${message.sender.name.charAt(0)}</span>
                 </div>
-                <p class="message-preview">${message.content}</p>
-            </div>
-        </a>
-    `;
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">${message.sender.name}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            ${message.senderName !== 'Adm' ? 
+                              '<span class="status-count">1</span>' : ''}
+                        </div>
+                    </div>
+                    <p class="message-preview">${message.content}</p>
+                </div>
+            </a>
+        `;
 
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = chatRoomHtml;
-        
-    // 插入新聊天室
-    if (messageList) {
-        messageList.insertBefore(tempDiv.firstChild, messageList.firstChild);
+        // 將新聊天室插入到列表頂部
+        messageList.insertAdjacentHTML('afterbegin', chatRoomHtml);
+
+        // 移除空列表提示（如果存在）
+        const emptyMessage = messageList.querySelector('.text-center');
+        if (emptyMessage) {
+            emptyMessage.remove();
+        }
     }
 
-    // 移除空列表提示
-    const emptyMessage = messageList.querySelector('.text-center');
-    if (emptyMessage) {
-        emptyMessage.remove();
-    }
-}
-
-    // 錯誤處理
+    /**
+     * WebSocket 連接錯誤處理
+     * @param {Error} error - 錯誤對象
+     */
     function onError(error) {
         console.error('WebSocket 錯誤:', error);
-        // 可以添加重試邏輯
+        // 3秒後嘗試重新連接
         setTimeout(connectWebSocket, 3000);
     }
 
-    // 系統通知處理
-    function handleSystemNotification(notification) {
-        // 根據需求處理系統通知
-        console.log('收到系統通知:', notification);
-    }
-
-    // 初始化連接
+    // 初始化 WebSocket 連接
     connectWebSocket();
 
-    // 清理工作
+    // 頁面關閉時清理 WebSocket 連接
     window.addEventListener('beforeunload', function() {
         if (stompClient) {
-            sendUserStatus('OFFLINE');
             stompClient.disconnect();
         }
     });

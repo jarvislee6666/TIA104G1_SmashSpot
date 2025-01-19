@@ -185,17 +185,27 @@ body {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 	<script>
-
 	document.addEventListener('DOMContentLoaded', function() {
+	    // 初始化 WebSocket 客戶端和管理員信息
 	    let stompClient = null;
 	    const adminNameElement = document.getElementById('adminName');
+	    const currentUserId = document.getElementById('currentUserId').value;
+	    
+	    // 驗證管理員信息
 	    if (!adminNameElement || !adminNameElement.value) {
 	        console.error('管理員名稱未設置');
 	        return;
 	    }
 	    const admname = adminNameElement.value;
 
-	    // 時間格式化函數
+	    /**
+	     * 格式化時間顯示
+	     * @param {string} timestamp - ISO 格式的時間戳
+	     * 根據時間距離現在的遠近，顯示不同格式：
+	     * - 今天的消息顯示 HH:mm
+	     * - 一週內顯示星期幾
+	     * - 更久以前顯示完整日期
+	     */
 	    function formatTime(timestamp) {
 	        const date = new Date(timestamp);
 	        const now = new Date();
@@ -217,34 +227,66 @@ body {
 	        return date.toLocaleDateString();
 	    }
 
+	    /**
+	     * 建立 WebSocket 連接
+	     * 使用 SockJS 作為傳輸層，STOMP 作為消息協議
+	     */
 	    function connectWebSocket() {
 	        const socket = new SockJS('/websocket');
 	        stompClient = Stomp.over(socket);
 	        
-	        const connectHeaders = {
+	        stompClient.connect({
 	            'adminName': admname
-	        };
-
-	        stompClient.connect(connectHeaders, onConnected, onError);
+	        }, onConnected, onError);
 	    }
 
+	    /**
+	     * WebSocket 連接成功後的處理
+	     * 訂閱個人消息頻道並發送已讀標記
+	     */
 	    function onConnected() {
 	        console.log('WebSocket 連接已建立');
-	        // 修改訂閱路徑，確保與後端對應
+	        // 訂閱消息頻道
 	        stompClient.subscribe('/user/Adm/queue/messages', onMessageReceived);
+	        
+	        // 發送消息已讀標記
+	        markMessagesAsRead();
 	    }
 
+	    /**
+	     * 標記消息為已讀
+	     * 向後端發送已讀信號
+	     */
+	    function markMessagesAsRead() {
+	        if (currentUserId && stompClient) {
+	            stompClient.send("/app/adm/chat.read", {}, currentUserId);
+	        }
+	    }
+
+	    /**
+	     * 處理接收到的新消息
+	     * 添加到聊天界面並滾動到底部
+	     */
 	    function onMessageReceived(payload) {
 	        try {
 	            const message = JSON.parse(payload.body);
-	            console.log('收到訊息:', message); // 添加日誌
 	            appendMessage(message);
+	            console.log(message);
 	            scrollToBottom();
+	            // 如果頁面可見，立即標記為已讀
+	            if (!document.hidden) {
+	                markMessagesAsRead();
+	            }
 	        } catch (error) {
 	            console.error('處理消息失敗:', error);
 	        }
 	    }
 
+	    /**
+	     * 將新消息添加到聊天界面
+	     * @param {Object} message - 消息對象
+	     * 包含發送者判斷和 XSS 防護
+	     */
 	    function appendMessage(message) {
 	        const chatMessages = document.getElementById('chatMessages');
 	        if (!chatMessages) {
@@ -253,10 +295,11 @@ body {
 	        }
 
 	        const messageDiv = document.createElement('div');
+	        // 判斷是否為管理員發送的消息
 	        const isAdmin = message.senderName === 'Adm' || message.senderName === admname;
 	        messageDiv.className = isAdmin ? 'message sent' : 'message received';
 	        
-	        // 確保消息內容被正確轉義以避免 XSS
+	        // 創建消息內容，防止 XSS 攻擊
 	        const content = document.createElement('div');
 	        content.className = 'message-content';
 	        content.innerHTML = `
@@ -268,7 +311,10 @@ body {
 	        chatMessages.appendChild(messageDiv);
 	    }
 
-	    // HTML 轉義函數
+	    /**
+	     * HTML 特殊字符轉義
+	     * 防止 XSS 攻擊
+	     */
 	    function escapeHtml(unsafe) {
 	        return unsafe
 	            .replace(/&/g, "&amp;")
@@ -278,60 +324,58 @@ body {
 	            .replace(/'/g, "&#039;");
 	    }
 
+	    /**
+	     * 發送消息
+	     * 包含消息格式化和即時顯示
+	     */
 	    function sendMessage() {
 	        const messageInput = document.getElementById('messageInput');
 	        const content = messageInput.value.trim();
-	        const currentUserId = document.getElementById('currentUserId').value;
 	        
 	        if (content && stompClient) {
 	            const chatMessage = {
-	                    content: content,
-	                    senderName: 'Adm',
-	                    sender: {
-	                        memid: 0,  // 使用固定值 0 表示管理員
-	                        name: 'Adm'
-	                    },
-	                    recipientId: currentUserId,
-	                    timestamp: new Date().toISOString(),
-	                    type: 'CHAT'
+	                content: content,
+	                senderName: 'Adm',
+	                sender: {
+	                    memid: 0,
+	                    name: 'Adm'
+	                },
+	                recipientId: currentUserId,
+	                timestamp: new Date().toISOString(),
+	                type: 'CHAT'
 	            };
 
-	            // 修改發送端點為 /app/adm/chat 以匹配 Controller
 	            stompClient.send("/app/adm/chat", {}, JSON.stringify(chatMessage));
-	            
-	            // 立即在前端顯示發送的訊息
 	            appendMessage(chatMessage);
-	            
 	            messageInput.value = '';
 	            scrollToBottom();
 	        }
 	    }
 
+	    /**
+	     * 滾動聊天視窗到底部
+	     */
 	    function scrollToBottom() {
 	        const chatMessages = document.getElementById('chatMessages');
 	        chatMessages.scrollTop = chatMessages.scrollHeight;
 	    }
 
-	    function onNotificationReceived(payload) {
-	        try {
-	            const notification = JSON.parse(payload.body);
-	            console.log('收到系統通知:', notification);
-	        } catch (error) {
-	            console.error('處理通知失敗:', error);
-	        }
-	    }
-
+	    /**
+	     * WebSocket 錯誤處理
+	     * 包含重連機制
+	     */
 	    function onError(error) {
 	        console.error('WebSocket 錯誤:', error);
 	        setTimeout(connectWebSocket, 3000);
 	    }
 
-	    // 綁定事件監聽器
+	    // 綁定消息發送事件
 	    const sendButton = document.getElementById('sendButton');
 	    if (sendButton) {
 	        sendButton.addEventListener('click', sendMessage);
 	    }
 	    
+	    // 綁定輸入框回車發送
 	    const messageInput = document.getElementById('messageInput');
 	    if (messageInput) {
 	        messageInput.addEventListener('keypress', function(e) {
@@ -342,11 +386,18 @@ body {
 	        });
 	    }
 
-	    // 初始化連接
+	    // 監聽頁面可見性變化，處理消息已讀
+	    document.addEventListener('visibilitychange', function() {
+	        if (!document.hidden) {
+	            markMessagesAsRead();
+	        }
+	    });
+
+	    // 初始化
 	    connectWebSocket();
 	    scrollToBottom();
 
-	    // 清理工作
+	    // 頁面關閉前斷開連接
 	    window.addEventListener('beforeunload', function() {
 	        if (stompClient) {
 	            stompClient.disconnect();
