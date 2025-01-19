@@ -925,7 +925,8 @@ body {
 	<script th:inline="javascript">
   		let courtPrice = /*[[${stadiumVO.courtPrice}]]*/ 0; 
   		let courtCount = /*[[${stadiumVO.courtCount}]]*/ 0;
-  		const memIdFromServer = /*[[${member != null} ? ${member.memid} : 0]]*/
+  		const memIdFromServer = /*[[${member != null} ? ${member.memid} : 0]]*/ 0;
+
 
 	</script>
 	<script
@@ -1028,10 +1029,59 @@ body {
         '20:00-22:00': 10
     };
 
+ // A. 存到 localStorage
+    function saveSelectedTimeSlotsToLocal(stadiumId, slots) {
+        const payload = {
+          stadiumId: stadiumId,
+          slots: slots
+        };
+        localStorage.setItem("reservationCart", JSON.stringify(payload));
+    }
+
+    // B. 從 localStorage 讀回
+    function loadSelectedTimeSlotsFromLocal(stadiumId) {
+        let cartData = localStorage.getItem("reservationCart");
+        if (!cartData) {
+          return [];
+        }
+        try {
+          cartData = JSON.parse(cartData);
+          if (cartData.stadiumId != stadiumId) {
+            return []; // 若不同場館ID，不合併
+          }
+          return cartData.slots || [];
+        } catch (err) {
+          console.error("localStorage parse error", err);
+          return [];
+        }
+    }
+    
     // --------------------------------------------------
     // 2. 初始化，綁定點選事件
     // --------------------------------------------------
     document.addEventListener('DOMContentLoaded', function() {
+
+        // 1. 先載入本頁場館ID
+        const stadiumInfo = document.getElementById('stadiumInfo');
+        const stadiumIdFromServer = stadiumInfo.dataset.stdmid;
+
+        // 2. 從 localStorage 讀回先前已選的 (跨週) 時段
+        selectedTimeSlots = loadSelectedTimeSlotsFromLocal(stadiumIdFromServer);
+
+        // 3. 把前面選過的日期&時段，做「樣式回填」
+        selectedTimeSlots.forEach(slot => {
+            const selector = `.court-cell[data-date="${slot.date}"][data-time="${slot.timeSlot}"]`;
+            const cell = document.querySelector(selector);
+            if (cell) {
+                // 檢查可用再加 selected
+                if (cell.dataset.available > 0) {
+                  cell.classList.add('selected');
+                }
+            }
+        });
+
+        updateBookingButton(); // 依有無已選時段，決定是否顯示"確認預約"按鈕
+    	
         document.querySelectorAll('.court-cell').forEach(cell => {
             cell.addEventListener('click', function() {
                 const available = this.dataset.available;
@@ -1053,27 +1103,36 @@ body {
     // --------------------------------------------------
     // 3. 使用者點選時段 (勾選/取消)
     // --------------------------------------------------
-    function selectTimeSlot(element, date, timeSlot) {
-        const isSelected = element.classList.toggle('selected');
-        
-        if (isSelected) {
-            selectedTimeSlots.push({ date, timeSlot, count: 1 });
-        } else {
-            selectedTimeSlots = selectedTimeSlots.filter(
-                slot => slot.date !== date || slot.timeSlot !== timeSlot
-                //Array.prototype.filter(callback) 會依據回傳的布林值，保留或丟棄陣列中的元素：callback 回傳 true → 保留該元素//callback 回傳 false → 移除該元素
-            );
-        }
-        updateBookingButton();
-    }
+	function selectTimeSlot(element, date, timeSlot, available) {
+	    const isSelected = element.classList.toggle('selected');
+	
+	    if (isSelected) {
+	      selectedTimeSlots.push({ date, timeSlot, count: 1 });
+	    } else {
+	      selectedTimeSlots = selectedTimeSlots.filter(
+	        slot => slot.date !== date || slot.timeSlot !== timeSlot
+	      );
+	    }
+	
+	    // ★★★ 儲存到 localStorage
+	    const stadiumIdFromServer = document.getElementById('stadiumInfo').dataset.stdmid;
+	    saveSelectedTimeSlotsToLocal(stadiumIdFromServer, selectedTimeSlots);
+	
+	    updateBookingButton();
+	}
 
     // --------------------------------------------------
     // 4. 檢查是否有已選時段，控制「確認預約」按鈕顯示
     // --------------------------------------------------
-     function updateBookingButton() {
-         const container = document.getElementById('bookingButtonContainer');
-         container.style.display ='block' ;
-     }
+	function updateBookingButton() {
+	    const container = document.getElementById('bookingButtonContainer');
+	    // 只要有至少一個已選時段，就顯示按鈕
+	    if (selectedTimeSlots.length > 0) {
+	        container.style.display = 'block';
+	    } else {
+	        container.style.display = 'none';
+	    }
+	}
 
     // --------------------------------------------------
     // 5. 顯示預約資訊 Modal
@@ -1201,6 +1260,8 @@ body {
                 // 成功才有 courtordid / totamt
                 console.log('訂單新增成功:', data);
                 alert('訂單編號: ' + data.courtordid + ', 金額: ' + data.totamt);
+                localStorage.removeItem("reservationCart");
+                selectedTimeSlots = [];
               } else {
                 // 失敗，拿 data.message
                 alert(data.message);

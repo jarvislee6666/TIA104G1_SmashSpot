@@ -2,8 +2,10 @@ package com.smashspot.courtorder.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smashspot.courtorder.model.CourtOrderService;
 import com.smashspot.courtorder.model.CourtOrderVO;
+import com.smashspot.courtorderdetail.model.CourtOrderDetailVO;
 import com.smashspot.member.model.MemberVO;
 import com.smashspot.member.model.MemberService;
 
@@ -121,6 +124,26 @@ public class CourtOrderController {
         // 呼叫 Service 拿資料
         List<CourtOrderVO> list = courtOrderSvc.findOrdersWithDetailsByMemberId(memid);
         // 直接回傳 CourtOrderVO，其中有 Set<CourtOrderDetailVO>
+        
+        // 對每一筆訂單的明細進行日期排序
+        for (CourtOrderVO order : list) {
+            if (order.getCourtOrderDetail() != null) {
+            	// 假設原本是 Set<CourtOrderDetailVO>
+            	List<CourtOrderDetailVO> sortedDetails = new ArrayList<>(order.getCourtOrderDetail());
+
+            	// 排序
+            	sortedDetails.sort((d1, d2) -> {
+            	    // 如果 ordDate 是字串且能用 compareTo() 比較 (例如 yyyy-MM-dd 格式)
+            	    return d1.getOrdDate().compareTo(d2.getOrdDate());
+            	});
+
+            	// 轉回 Set，使用 LinkedHashSet 保留排序後的插入順序
+            	Set<CourtOrderDetailVO> sortedSet = new LinkedHashSet<>(sortedDetails);
+
+            	// 再塞回去 entity
+            	order.setCourtOrderDetail(sortedSet);
+            }
+        }
         return list;
     }
     

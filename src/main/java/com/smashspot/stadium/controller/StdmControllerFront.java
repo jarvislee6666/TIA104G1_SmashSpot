@@ -150,8 +150,6 @@ public class StdmControllerFront {
 	}
 
 	
-	
-	
 
 	@GetMapping("/getImage/{id}")
 	public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
@@ -217,6 +215,8 @@ public class StdmControllerFront {
         // 7) 跳到跟「全部場館列表」同一個模板，但裡面只會顯示已收藏的場館
         return "back-end/stdm/listAllStdmFront";
     }
+    
+    
     
     
 }
