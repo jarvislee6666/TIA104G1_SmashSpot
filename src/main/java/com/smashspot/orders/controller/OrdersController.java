@@ -281,8 +281,8 @@ public class OrdersController {
             // 設置商品資訊
             Integer productId = (Integer) orderData.get("productId");
             ProductVO product = proSvc.getOneProduct(productId);
-            if (product == null) {
-                return "redirect:/client/orders/DPstep1"; 
+            if (product.getBidstaid() == 2) {
+                return "redirect:/client/listAllProductING"; 
             }
             order.setProductVO(product);
             
