@@ -1,13 +1,12 @@
 package com.smashspot.websocketchat.controller;
 
-import java.util.Date;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
-import javax.websocket.server.ServerEndpoint;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,10 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smashspot.member.model.MemberVO;
 import com.smashspot.websocketchat.chat.ChatMessage;
 import com.smashspot.websocketchat.chat.ChatMessageService;
-import com.smashspot.websocketchat.chat.ChatNotification;
 import com.smashspot.websocketchat.chatroom.Chatroom;
 import com.smashspot.websocketchat.chatroom.ChatroomService;
 
@@ -33,7 +32,68 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
     private final ChatroomService chatroomService;
-    
+    private final ObjectMapper objectMapper = new ObjectMapper(); // 用於序列化 JSON
+
+//    /**
+//     * 動態獲取聊天歷史記錄
+//     */
+//    @MessageMapping("/chat.getHistory")
+//    public void getChatHistory(@Payload Map<String, String> request) {
+//        try {
+//            // 從請求中獲取發送者和接收者ID
+//            String senderId = request.get("senderId");
+//            String recipientId = request.get("recipientId");
+//            
+//            if (senderId == null || recipientId == null) {
+//                System.err.println("Missing senderId or recipientId");
+//                return;
+//            }
+//
+//            List<ChatMessage> chatHistory;
+//            
+//            // 判斷請求來源
+//            if ("Adm".equals(senderId)) {
+//                // 管理員查看特定會員的聊天記錄
+//                chatHistory = chatMessageService.findChatMessages(
+//                    Integer.valueOf(recipientId),  // 會員ID
+//                    "Adm"                         // 固定接收者
+//                );
+//            } else {
+//                // 會員查看與管理員的聊天記錄
+//                chatHistory = chatMessageService.findChatMessages(
+//                    Integer.valueOf(senderId),     // 會員ID
+//                    "Adm"                         // 固定接收者
+//                );
+//            }
+//
+//            // 更新已讀狀態 (只更新非管理員發送的未讀訊息)
+//            chatHistory.stream()
+//                .filter(msg -> !msg.isRead() && 
+//                        msg.getSenderName() != null && 
+//                        !msg.getSenderName().equals("Adm"))
+//                .forEach(msg -> chatMessageService.markAsRead(msg.getId()));
+//
+//            // 依據請求來源決定發送目標
+//            String targetUser = "Adm".equals(senderId) ? senderId : String.valueOf(senderId);
+//            
+//            // 發送歷史訊息
+//            messagingTemplate.convertAndSendToUser(
+//                targetUser,           // 目標用戶ID
+//                "/queue/history",     // 訂閱路徑
+//                chatHistory          // 消息內容
+//            );
+//            
+//            // 日誌記錄
+//            System.out.println("Chat history sent to user: " + targetUser);
+//            System.out.println("Number of messages: " + chatHistory.size());
+//            
+//        } catch (NumberFormatException e) {
+//            System.err.println("Invalid senderId format: " + e.getMessage());
+//        } catch (Exception e) {
+//            System.err.println("Error processing chat history: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
     
     /**
      * 發送聊天訊息，會員傳送訊息觸發
@@ -43,53 +103,52 @@ public class ChatController {
         // 保存訊息
         ChatMessage savedMessage = chatMessageService.save(chatMessage);
 
-        // 發送訊息給管理員
-        messagingTemplate.convertAndSendToUser(
-        	"Adm", // 使用管理員 ID
-            "/queue/messages",
-            ChatNotification.builder()
-            .id(savedMessage.getId())
-            .content(savedMessage.getContent())
-            .senderName(savedMessage.getSenderName())
-//            .sender(savedMessage.getSender())
-//            .recipientId(savedMessage.getRecipientId())
-            .timestamp(savedMessage.getTimestamp())
-            .build() 
-        );
+        try {
+            // 將訊息序列化為 JSON
+            String messageJson = objectMapper.writeValueAsString(savedMessage);
+
+            // 發送訊息給管理員
+            messagingTemplate.convertAndSendToUser(
+                "Adm", // 管理員 ID
+                "/queue/messages", // 訂閱路徑
+                messageJson // 發送 JSON 格式的訊息
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
-    
+
     /**
      * 發送聊天訊息，管理員傳送訊息觸發
      */
     @MessageMapping("/adm/chat")
     public void processMessage(@Payload ChatMessage chatMessage) {
-
-        // 如果sender為空值，則手動建立一個管理員的VO
-    	if (chatMessage.getSender() == null) {
+        if (chatMessage.getSender() == null) {
+            // 如果 sender 為空，則建立管理員 VO
             MemberVO adminSender = new MemberVO();
-            adminSender.setMemid(0);  
+            adminSender.setMemid(0);
             adminSender.setName("Adm");
             chatMessage.setSender(adminSender);
         }
-    	
-    	// 保存訊息
+
+        // 保存訊息
         ChatMessage savedMessage = chatMessageService.save(chatMessage);
 
-        // 發送給指定會員
-        messagingTemplate.convertAndSendToUser(
-        		 chatMessage.getRecipientId(),   // 使用接收者ID
-            "/queue/messages",
-            ChatNotification.builder()
-                .id(savedMessage.getId())
-                .content(savedMessage.getContent())
-                .senderName(savedMessage.getSenderName())
-//                .sender(savedMessage.getSender())
-//                .recipientId(savedMessage.getRecipientId())
-                .timestamp(savedMessage.getTimestamp())
-                .build()
-        );
+        try {
+            // 將訊息序列化為 JSON
+            String messageJson = objectMapper.writeValueAsString(savedMessage);
+
+            // 發送訊息給會員
+            messagingTemplate.convertAndSendToUser(
+                chatMessage.getRecipientId(), // 接收者 ID
+                "/queue/messages", // 訂閱路徑
+                messageJson // 發送 JSON 格式的訊息
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    
     
     /**
      * 會員聊天室
@@ -110,10 +169,10 @@ public class ChatController {
         List<ChatMessage> messages;
         messages = chatMessageService.findChatMessages(senderId, recipientId);
 
-        // 更新訊息已讀狀態
-        messages.stream()
-            .filter(msg -> !msg.isRead() && !"Adm".equals(msg.getSenderName()))
-            .forEach(msg -> chatMessageService.markAsRead(msg.getId()));
+//        // 更新訊息已讀狀態
+//        messages.stream()
+//            .filter(msg -> !msg.isRead() && !"Adm".equals(msg.getSenderName()))
+//            .forEach(msg -> chatMessageService.markAsRead(msg.getId()));
 
         model.addAttribute("chatMessages", messages);
         model.addAttribute("senderId", senderId);
@@ -140,7 +199,7 @@ public class ChatController {
 
         // 更新訊息已讀狀態
         messages.stream()
-				.filter(msg -> !msg.isRead() && msg.getSenderName() != null && !"Adm".equals(msg.getSenderName()))
+				.filter(msg -> !msg.isRead() && msg.getSenderName() != null)
 				.forEach(msg -> chatMessageService.markAsRead(msg.getId()));
 
         model.addAttribute("chatMessages", messages);
@@ -150,7 +209,37 @@ public class ChatController {
         return "back-end/adm/chatroomAdm";
         
     }
+//    /**
+//     * 會員聊天室頁面
+//     */
+//    @GetMapping("/chat/Adm/{senderId}")
+//    public String findAdmMessages(@PathVariable Integer senderId, Model model, HttpSession session) {
+//        MemberVO loginMember = (MemberVO) session.getAttribute("login");
+//        
+//        if (loginMember == null || !loginMember.getMemid().equals(senderId)) {
+//            return "redirect:/member/login";
+//        }
+//        
+//        model.addAttribute("senderId", senderId);
+//        return "back-end/chatroom/chatroomMem";
+//    }
+//
+//    /**
+//     * 管理員聊天室頁面
+//     */
+//    @GetMapping("/adm/chat/{senderId}/Adm")
+//    public String findChatMessages(@PathVariable Integer senderId, Model model) {
+//        if (senderId == null) {
+//            return "redirect:/adm/listAllChat";
+//        }
+//        
+//        model.addAttribute("senderId", senderId);
+//        return "back-end/adm/chatroomAdm";
+//    }
     
+    /**
+     * 管理員聊天室列表
+     */
     @GetMapping("/adm/listAllChat")
     public String getChatRooms(Model model, HttpSession session) {
         // 獲取聊天室列表
@@ -191,5 +280,30 @@ public class ChatController {
 
         model.addAttribute("chatrooms", chatroomDTOs);
         return "back-end/adm/listAllChat";
+    }
+    @MessageMapping("/adm/chat.read")
+    public void markMessagesAsRead(@Payload String senderId) {
+    	 System.out.println("Marking messages as read for senderId: " + senderId); // Debug
+        if (senderId != null) {
+            // 查找該發送者的所有未讀消息
+            List<ChatMessage> unreadMessages = chatMessageService.findChatMessages(
+                Integer.valueOf(senderId), 
+                "Adm"
+            ).stream()
+            .filter(msg -> !msg.isRead() && 
+                    msg.getSenderName() != null && 
+                    !msg.getSenderName().equals("Adm"))
+            .collect(Collectors.toList());
+
+            // 將所有消息標記為已讀
+            unreadMessages.forEach(msg -> chatMessageService.markAsRead(msg.getId()));
+
+            // 廣播已讀狀態更新
+            messagingTemplate.convertAndSendToUser(
+                senderId,
+                "/queue/read.status",
+                "Messages marked as read"
+            );
+        }
     }
 }

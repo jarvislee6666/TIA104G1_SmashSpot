@@ -25,7 +25,8 @@ public class ChatMessageService {
 	 */
 
 	public ChatMessage save(ChatMessage chatMessage) {
-		
+		  String key = "chat:" + chatMessage.getChatId();
+		   System.out.println("Storing message in key: " + key);
 		try {
 			log.info("Saving chat message: {}", chatMessage);
 
@@ -109,15 +110,19 @@ public class ChatMessageService {
 	                    .orElse(new ArrayList<>());
 	    }
 	    
-	    // 標記訊息已讀
-	    public void markAsRead(String chatId) {
-	        List<ChatMessage> messages = repository.findByChatId(chatId);
-	        messages.stream()
-	               .filter(msg -> !msg.isRead())
-	               .forEach(msg -> {
-	                   msg.setRead(true);
-	                   repository.save(msg);
-	               });
-	    }
+	 // 標記訊息已讀
+	 public void markAsRead(String chatId) {
+		  System.out.println("Marking messages as read for chatId: " + chatId);
+		    List<ChatMessage> messages = repository.findByChatId(chatId);
+		    System.out.println("Found messages: " + messages.size());
+		    for (ChatMessage message : messages) {
+		        System.out.println("Processing message: " + message.getId());
+		        if (!message.isRead()) {
+		            message.setRead(true);
+		            System.out.println("Marking as read: " + message.getId());
+		            repository.save(message);
+		        }
+		    }
+		}
 
 }

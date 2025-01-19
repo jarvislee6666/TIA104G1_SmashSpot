@@ -25,8 +25,10 @@ public class ChatMessageRepository {
 	
 	public void save(ChatMessage chatMessage) {
 	    String STORE_KEY = "chat:" + chatMessage.getChatId();
+	    
 	    try (Jedis jedis = JedisPoolUtil.getJedisPool().getResource()) {
 	        String valueAsString = objectMapper.writeValueAsString(chatMessage);
+//	        jedis.del(STORE_KEY); // 刪除舊數據
 	        jedis.rpush(STORE_KEY, valueAsString); // 使用 rpush 將訊息追加到列表
 	    } catch (Exception e) {
 	        e.printStackTrace();

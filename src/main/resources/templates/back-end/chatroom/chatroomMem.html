@@ -210,7 +210,7 @@ footer {
             const socket = new SockJS('/websocket');
 
             stompClient = Stomp.over(socket);
-            stompClient.debug = null; // 關閉調試模式
+        
 
             // 設置 STOMP 連接標頭
             stompClient.connect({ memberId }, () => {
