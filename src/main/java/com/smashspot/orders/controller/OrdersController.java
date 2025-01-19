@@ -278,12 +278,14 @@ public class OrdersController {
             order.setMemid(mem.getMemid()); // 獲取當前會員ID
             order.setOrdstaid(2); // 2 代表付款完成
             
+            
             // 設置商品資訊
             Integer productId = (Integer) orderData.get("productId");
+            List<OrdersVO> exsitOrder = odrsvc.findByProduct(productId);
+	        if (exsitOrder.size() >= 1) {
+	            return "redirect:/client/listAllProductING"; 
+	        }
             ProductVO product = proSvc.getOneProduct(productId);
-            if (product.getBidstaid() == 2) {
-                return "redirect:/client/listAllProductING"; 
-            }
             order.setProductVO(product);
             
             // 設置價格資訊
@@ -311,7 +313,7 @@ public class OrdersController {
             product.setBidstaid(2);
             proSvc.updateProduct(product);
             
-            // 將訂單資訊傳遞給視圖
+            // 將訂單資訊傳遞給頁面
             model.addAttribute("order", order);
             model.addAttribute("payment", orderData.get("payment"));
             model.addAttribute("finalPrice", orderData.get("finalPrice"));
