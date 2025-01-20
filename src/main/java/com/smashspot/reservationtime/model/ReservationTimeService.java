@@ -83,21 +83,21 @@ public class ReservationTimeService {
         return map; // 直接回傳 Map<Integer, LocalDate>
     }
     
-    public Map<Integer, LocalDate> getLastDatesForEachStadium1() {
-        List<Object[]> results = repository.findLastDatesForEachStadium();
-        // 例如: SELECT r.stadium.stdmId, MAX(r.dates) FROM ...
-
-        Map<Integer, LocalDate> map = new HashMap<>();
-        for (Object[] row : results) {
-            Integer stadiumId    = (Integer) row[0];
-            java.sql.Date sqlDate = (java.sql.Date) row[1]; // 資料庫回傳
-
-            // 如果 sqlDate 不為 null，轉成 LocalDate
-            LocalDate localDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
-            map.put(stadiumId, localDate);
-        }
-        return map;
-    }
+//    public Map<Integer, LocalDate> getLastDatesForEachStadium1() {
+//        List<Object[]> results = repository.findLastDatesForEachStadium();
+//        // 例如: SELECT r.stadium.stdmId, MAX(r.dates) FROM ...
+//
+//        Map<Integer, LocalDate> map = new HashMap<>();
+//        for (Object[] row : results) {
+//            Integer stadiumId    = (Integer) row[0];
+//            java.sql.Date sqlDate = (java.sql.Date) row[1]; // 資料庫回傳
+//
+//            // 如果 sqlDate 不為 null，轉成 LocalDate
+//            LocalDate localDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+//            map.put(stadiumId, localDate);
+//        }
+//        return map;
+//    }
 
 //沃寯添加====================================================================================================
     public Map<String, Integer> calculateTimeSlotStats(List<ReservationTimeVO> reservations) {

@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Lock;
+import javax.persistence.LockModeType;
+
 
 public interface ReservationTimeRepository extends JpaRepository<ReservationTimeVO, Integer> {
     @Query(value = 
@@ -57,11 +60,11 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
        @Param("insertDate") Date insertDate
    );
    
-   // 查出「同場館、同日期」的 ReservationTimeVO 
-   @Query("SELECT r FROM ReservationTimeVO r "
-        + "WHERE r.stadium.stdmId = :stdmId AND r.dates = :dates")
-   ReservationTimeVO findByStadiumIdAndDates(@Param("stdmId") Integer stdmId,
-                                             @Param("dates") Date dates);
+//   // 查出「同場館、同日期」的 ReservationTimeVO 
+//   @Query("SELECT r FROM ReservationTimeVO r "
+//        + "WHERE r.stadium.stdmId = :stdmId AND r.dates = :dates")
+//   ReservationTimeVO findByStadiumIdAndDates(@Param("stdmId") Integer stdmId,
+//                                             @Param("dates") Date dates);
 
    // 查出「同場館、且日期 >= :dates」的多筆
    @Query("SELECT r FROM ReservationTimeVO r "
@@ -93,6 +96,17 @@ public interface ReservationTimeRepository extends JpaRepository<ReservationTime
 	       "FROM ReservationTimeVO r " +
 	       "GROUP BY r.stadium.stdmId")
 	List<Object[]> findLastDatesForEachStadium();
+	
+    // 新增帶悲觀鎖的方法
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM ReservationTimeVO r "
+         + "WHERE r.stadium.stdmId = :stdmId AND r.dates = :dates")
+    ReservationTimeVO findByStadiumIdAndDatesForUpdate(
+            @Param("stdmId") Integer stdmId, 
+            @Param("dates") java.sql.Date dates
+    );
 
+
+   
    
 }
