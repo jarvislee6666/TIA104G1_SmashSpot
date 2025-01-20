@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smashspot.admin.model.AdmVO;
 import com.smashspot.courtorder.model.CourtOrderVO;
@@ -77,7 +78,8 @@ public class StadiumVO implements java.io.Serializable {
 
 	private Set<CourtOrderVO> CourtOrder;
 
-	@JsonManagedReference(value = "stadiumRef")
+//	@JsonManagedReference(value = "stadiumRef")
+	@JsonIgnoreProperties({"courtOrder"})
 	@OneToMany(mappedBy = "stadium", cascade = CascadeType.ALL)
 	public Set<CourtOrderVO> getCourtOrder() {
 		return CourtOrder;
