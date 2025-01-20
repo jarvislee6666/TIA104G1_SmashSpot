@@ -30,7 +30,7 @@ public class RedisService {
     // 用於存放臨時會員資料
     private static final String MEMBER_TEMP_PREFIX = "member:temp:";
     // 定義資料的預設過期時間為 30 分鐘
-    private static final long EXPIRE_MINUTES = 1;
+    private static final long EXPIRE_MINUTES = 30;
     // 添加密碼重設相關的 Redis key 前綴
     private static final String PASSWORD_RESET_PREFIX = "password:reset:";
     
