@@ -32,7 +32,7 @@ public class ChatroomService {
 
     /**
      * 根據用戶ID獲取或創建聊天室
-     * @param userId 用戶ID（可能是會員ID或管理員ID）
+     * @param userId 用戶ID（這邊是指會員ID）
      * @param isAdmin 是否為管理員發送消息
      * @param createNewRoomIfNotExists 如果不存在是否創建新聊天室
      */
