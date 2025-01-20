@@ -246,15 +246,14 @@ body {
 								th:classappend="${chatroom.unreadCount > 0 ? 'unread' : ''}">
 
 								<!-- Dynamic avatar section -->
-    <div th:if="${chatroom.sender.mempic != null}" class="user-avatar-img">
+							
+    <div th:if="${chatroom.sender!= null}" class="user-avatar-img">
         <img th:src="@{/getImage/{id}(id=${chatroom.sender.memid})}"
              th:alt="${chatroom.sender.name}"
              class="rounded-circle"
              style="width: 40px; height: 40px; object-fit: cover;">
     </div>
-    <div th:unless="${chatroom.sender.mempic != null}" class="user-avatar">
-        <span th:text="${chatroom.sender.name != null ? #strings.substring(chatroom.sender.name, 0, 1) : 'U'}">U</span>
-    </div>
+
 								<div class="message-content">
 									<div class="message-header">
 										<span class="message-sender" th:text="${chatroom.sender.name}">用戶名稱</span>

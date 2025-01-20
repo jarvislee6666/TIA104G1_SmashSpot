@@ -327,7 +327,7 @@ footer {
             if (content && stompClient && memId && memName) {
                 // 前端發送消息格式
                 const message = {
-                    content,
+                    content: content,
                     senderName: memName,
                     sender: {                    // 改用 sender 物件
                     	 memid: memId,
