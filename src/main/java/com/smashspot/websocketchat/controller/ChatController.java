@@ -41,87 +41,22 @@ public class ChatController {
     private final MemberService memSvc;
     private final ObjectMapper objectMapper = new ObjectMapper(); // 用於序列化 JSON
 
-//    /**
-//     * 動態獲取聊天歷史記錄
-//     */
-//    @MessageMapping("/chat.getHistory")
-//    public void getChatHistory(@Payload Map<String, String> request) {
-//        try {
-//            // 從請求中獲取發送者和接收者ID
-//            String senderId = request.get("senderId");
-//            String recipientId = request.get("recipientId");
-//            
-//            if (senderId == null || recipientId == null) {
-//                System.err.println("Missing senderId or recipientId");
-//                return;
-//            }
-//
-//            List<ChatMessage> chatHistory;
-//            
-//            // 判斷請求來源
-//            if ("Adm".equals(senderId)) {
-//                // 管理員查看特定會員的聊天記錄
-//                chatHistory = chatMessageService.findChatMessages(
-//                    Integer.valueOf(recipientId),  // 會員ID
-//                    "Adm"                         // 固定接收者
-//                );
-//            } else {
-//                // 會員查看與管理員的聊天記錄
-//                chatHistory = chatMessageService.findChatMessages(
-//                    Integer.valueOf(senderId),     // 會員ID
-//                    "Adm"                         // 固定接收者
-//                );
-//            }
-//
-//            // 更新已讀狀態 (只更新非管理員發送的未讀訊息)
-//            chatHistory.stream()
-//                .filter(msg -> !msg.isRead() && 
-//                        msg.getSenderName() != null && 
-//                        !msg.getSenderName().equals("Adm"))
-//                .forEach(msg -> chatMessageService.markAsRead(msg.getId()));
-//
-//            // 依據請求來源決定發送目標
-//            String targetUser = "Adm".equals(senderId) ? senderId : String.valueOf(senderId);
-//            
-//            // 發送歷史訊息
-//            messagingTemplate.convertAndSendToUser(
-//                targetUser,           // 目標用戶ID
-//                "/queue/history",     // 訂閱路徑
-//                chatHistory          // 消息內容
-//            );
-//            
-//            // 日誌記錄
-//            System.out.println("Chat history sent to user: " + targetUser);
-//            System.out.println("Number of messages: " + chatHistory.size());
-//            
-//        } catch (NumberFormatException e) {
-//            System.err.println("Invalid senderId format: " + e.getMessage());
-//        } catch (Exception e) {
-//            System.err.println("Error processing chat history: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
-    
     
     /** 
      * 發送聊天訊息，會員傳送訊息觸發
-     * @param chatMessage 聊天訊息物件
+     * @param chatMessage 聊天訊息物件(前端回傳Json格式不用另外序列化)
      */
     @MessageMapping("/chat")
     public void processMemberMessage(@Payload ChatMessage chatMessage) {
         // 保存訊息
-        ChatMessage savedMessage = chatMessageService.save(chatMessage);
+        chatMessageService.save(chatMessage);
 
         try {
-            // 將訊息序列化為 JSON
-            String messageJson = objectMapper.writeValueAsString(savedMessage);
-            System.out.println(messageJson);
-
             // 發送訊息給管理員
             messagingTemplate.convertAndSendToUser(
                 "Adm", // 管理員 ID
                 "/queue/messages", // 訂閱路徑
-                messageJson // 發送 JSON 格式的訊息
+                chatMessage // 發送 JSON 格式的訊息
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,7 +90,7 @@ public class ChatController {
             messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(), // 接收者 ID
                 "/queue/messages", // 訂閱路徑
-                messageJson // 發送 JSON 格式的訊息
+                chatMessage // 發送 JSON 格式的訊息
             );
         } catch (Exception e) {
             e.printStackTrace();
