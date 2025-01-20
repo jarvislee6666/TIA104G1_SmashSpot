@@ -56,11 +56,15 @@ body {
 
 .message {
     margin-bottom: 1rem;
-    max-width: 70%;
+/*     max-width: 70%; */
+    max-width: none;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .message.sent {
     margin-left: auto;
+    justify-content: flex-end;
 }
 
 .message.received {
@@ -71,6 +75,9 @@ body {
     padding: 0.8rem 1rem;
     border-radius: 1rem;
     position: relative;
+    max-width: 70%;
+    display: inline-block;
+    word-break: break-word;
 }
 
 .sent .message-content {
@@ -211,9 +218,11 @@ body {
 	        const now = new Date();
 	        
 	        if (date.toDateString() === now.toDateString()) {
-	            return date.toLocaleTimeString([], { 
+	            return date.toLocaleTimeString('zh-TW', { 
 	                hour: '2-digit', 
-	                minute: '2-digit' 
+	                minute: '2-digit',
+	                hour12: false  
+	                // 這裡指定使用 24 小時制
 	            });
 	        }
 	        
@@ -304,7 +313,7 @@ body {
 	        content.className = 'message-content';
 	        content.innerHTML = `
 	            <span class="message-text">${message.content}</span>
-	            <span class="message-time">${message.timestamp}</span>
+	            <span class="message-time">${formatTime(message.timestamp)}</span>
 	        `;
 	        
 	        messageDiv.appendChild(content);
