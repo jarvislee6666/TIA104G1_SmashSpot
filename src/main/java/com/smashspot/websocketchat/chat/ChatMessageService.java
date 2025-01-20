@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.smashspot.websocketchat.chatroom.ChatroomService;
 
@@ -23,76 +24,70 @@ public class ChatMessageService {
 	/**
 	 * 保存聊天訊息
 	 */
-
+	@Transactional
 	public ChatMessage save(ChatMessage chatMessage) {
-		  String key = "chat:" + chatMessage.getChatId();
-		   System.out.println("Storing message in key: " + key);
-		try {
-			log.info("Saving chat message: {}", chatMessage);
+	    try {
+	        log.info("Saving chat message: {}", chatMessage);
 
-			// 檢查是否為管理員消息
-			boolean isAdmin = "Adm".equals(chatMessage.getSenderName());
-			log.info("Message is from admin: {}", isAdmin);
+	        // 檢查是否為管理員消息
+	        boolean isAdmin = "Adm".equals(chatMessage.getSenderName());
+	        log.info("Message is from admin: {}", isAdmin);
 
-			String senderId;
-			String senderName;
-			if (isAdmin) {
-				// 管理員發送的消息，使用接收者ID
-				senderId = chatMessage.getRecipientId();
-				senderName = "Adm";
-				log.info("Admin sending to mem ID: {}", senderId);
-				log.info("Admin sending to mem NAME: {}", senderName);
-			} else {
-				// 會員發送的消息，使用發送者ID
-				senderId = String.valueOf(chatMessage.getSender().getMemid());
-				senderName = chatMessage.getSender().getName();
-				log.info("Member sending message, mem ID: {}", senderId);
-				log.info("Member sending message, mem NAME: {}", senderName);
-			}
+	        // 處理發送者信息
+	        String senderId;
+	        String senderName;
+	        
+	        if (isAdmin) {
+	        	senderId = chatMessage.getRecipientId();	        	
+	            senderName = "Adm";
+	        } else {
+	            senderId = String.valueOf(chatMessage.getSender().getMemid());
+	            senderName = chatMessage.getSender().getName();
+	        }
 
-			// 確保 senderId 不為空且為有效數字
-			if (senderId == null || senderId.trim().isEmpty()) {
-				throw new IllegalArgumentException("mem ID cannot be null or empty");
-			}
+	        // 驗證 senderId
+	        if (senderId == null || senderId.trim().isEmpty()) {
+	            throw new IllegalArgumentException("SenderId cannot be null or empty");
+	        }
 
-			try {
-				Integer userIdInt = Integer.parseInt(senderId);
-				log.info("Parsed mem ID: {}", userIdInt);
+	        Integer userIdInt = Integer.parseInt(senderId);
+	        log.info("Processing message for user ID: {}", userIdInt);
 
-				// 獲取或創建聊天室
-				String chatId = chatroomService.getChatroomId(userIdInt, isAdmin, true).orElseThrow(() -> {
-					log.error("Failed to create or get chatroom for mem ID: {}", userIdInt);
-					return new IllegalStateException("Failed to create or retrieve chatroom for mem: " + userIdInt);
-				});
+	        // 獲取或創建聊天室 ID
+	        String chatId = chatroomService.getChatroomId(userIdInt, isAdmin, true)
+	                .orElseGet(() -> {
+	                    // 如果沒有找到，嘗試再次創建
+	                    log.info("Retrying to create chatroom for user: {}", userIdInt);
+	                    return chatroomService.getChatroomId(userIdInt, isAdmin, true)
+	                            .orElseThrow(() -> new IllegalStateException(
+	                                    "Failed to create chatroom after retry for user: " + userIdInt));
+	                });
 
-				log.info("Retrieved chat ID: {}", chatId);
-				
-                ChatMessage newMessage = ChatMessage.builder()
-                    .id(UUID.randomUUID().toString())
-                    .chatId(chatId)
-                    .sender(chatMessage.getSender())
-                    .senderName(senderName)
-                    .recipientId(isAdmin ? senderId : "Adm")
-                    .content(chatMessage.getContent())
-                    .timestamp(new Date())
-                    .read(false)
-                    .build();
+	        log.info("Successfully got chatId: {}", chatId);
 
-				// 保存消息
+	        // 構建新消息
+	        ChatMessage newMessage = ChatMessage.builder()
+	                .id(UUID.randomUUID().toString())
+	                .chatId(chatId)
+	                .sender(chatMessage.getSender())
+	                .senderName(senderName)
+	                .recipientId(isAdmin ? senderId : "Adm")
+	                .content(chatMessage.getContent())
+	                .timestamp(new Date())
+	                .read(false)
+	                .build();
 
-				repository.save(newMessage);
+	        // 保存並返回新消息
+	        repository.save(newMessage);
+	        return chatMessage;  // 返回新保存的消息而不是原始消息
 
-				return chatMessage;
-
-			} catch (NumberFormatException e) {
-				log.error("Invalid mem ID format: {}", senderId, e);
-				throw new IllegalArgumentException("Invalid mem ID format: " + senderId);
-			}
-
-		} catch (Exception e) {
-			log.error("Error saving chat message", e);
-			throw e;
-		}
+	    } catch (NumberFormatException e) {
+	        log.error("Invalid user ID format", e);
+	        throw new IllegalArgumentException("Invalid user ID format: " + e.getMessage());
+	    } catch (Exception e) {
+	        log.error("Error saving chat message", e);
+	        throw new RuntimeException("Failed to save chat message", e);
+	    }
 	}
 
 	/**
@@ -103,25 +98,40 @@ public class ChatMessageService {
 	            return new ArrayList<>();
 	        }
 	        // 取得聊天室ID
-	        var chatId = chatroomService.getChatroomId(senderId, false);
+	        var chatId2 = chatroomService.getChatroomId(senderId, false);
 	        
 	        // 查詢訊息並過濾排序
-	        return chatId.map(id -> repository.findByChatId(id))
+	        return chatId2.map(chatId -> repository.findByChatId(chatId))
 	                    .orElse(new ArrayList<>());
 	    }
 	    
 	 // 標記訊息已讀
+	 @Transactional
 	 public void markAsRead(String chatId) {
-		  System.out.println("Marking messages as read for chatId: " + chatId);
-		    List<ChatMessage> messages = repository.findByChatId(chatId);
-		    System.out.println("Found messages: " + messages.size());
-		    for (ChatMessage message : messages) {
-		        System.out.println("Processing message: " + message.getId());
-		        if (!message.isRead()) {
-		            message.setRead(true);
-		            System.out.println("Marking as read: " + message.getId());
-		            repository.save(message);
+		    try {
+		        log.info("Marking messages as read for chatId: {}", chatId);
+		        List<ChatMessage> messages = repository.findByChatId(chatId);
+		        
+		        boolean hasUpdates = false;
+		        List<ChatMessage> updatedMessages = new ArrayList<>();
+		        
+		        for (ChatMessage message : messages) {
+		            if (!message.isRead()) {
+		                message.setRead(true);
+		                hasUpdates = true;
+		                log.info("Marked message {} as read", message.getChatId());
+		            }
+		            updatedMessages.add(message);
 		        }
+		        
+		        if (hasUpdates) {
+		            repository.updateMessages(chatId, updatedMessages);
+		            log.info("Updated read status for chatId: {}", chatId);
+		        }
+		        
+		    } catch (Exception e) {
+		        log.error("Error marking messages as read", e);
+		        throw new RuntimeException("Failed to mark messages as read", e);
 		    }
 		}
 

@@ -20,13 +20,12 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-//@RedisHash("Chatroom")
 public class Chatroom implements Serializable {
 
     @Id
-    private String id;
+    private String id; // 亂數
 
-    private String chatId;
+    private String chatId; // xxx_Adm
 
     private MemberVO sender; // 從 MemberVO 中獲取相關資訊
     
