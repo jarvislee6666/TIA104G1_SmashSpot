@@ -45,7 +45,6 @@ public class ChatroomService {
             return Optional.empty();
         }
 
-        try {
             // 獲取會員名稱
             String memberName = memberService.getMemberNameById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
@@ -61,10 +60,7 @@ public class ChatroomService {
                         }
                         return Optional.empty();
                     });
-        } catch (Exception e) {
-            log.error("Error getting chatroom ID", e);
-            return Optional.empty();
-        }
+        
     }
 
     /**

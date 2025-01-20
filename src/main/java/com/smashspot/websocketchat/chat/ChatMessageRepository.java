@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-//import redis.clients.jedis.UnifiedJedis;
 
 @Repository 
 public class ChatMessageRepository {
@@ -28,7 +27,7 @@ public class ChatMessageRepository {
 	    
 	    try (Jedis jedis = JedisPoolUtil.getJedisPool().getResource()) {
 	        String valueAsString = objectMapper.writeValueAsString(chatMessage);
-//	        jedis.del(STORE_KEY); // 刪除舊數據
+	        //jedis.del(STORE_KEY); // 刪除舊數據
 	        jedis.rpush(STORE_KEY, valueAsString); // 使用 rpush 將訊息追加到列表
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -62,4 +61,23 @@ public class ChatMessageRepository {
 	               .collect(Collectors.toList());
 	    }
 	}
+	
+	public void updateMessages(String chatId, List<ChatMessage> updatedMessages) {
+	    String redisKey = "chat:" + chatId;
+
+	    try (Jedis jedis = JedisPoolUtil.getJedisPool().getResource()) {
+	        // 清空舊列表
+	        jedis.del(redisKey);
+
+	        // 將更新後的消息逐條寫入 Redis
+	        for (ChatMessage message : updatedMessages) {
+	            String updatedJson = objectMapper.writeValueAsString(message);
+	            jedis.rpush(redisKey, updatedJson);
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error updating messages for chatId: " + chatId);
+	        e.printStackTrace();
+	    }
+	}
+
 }

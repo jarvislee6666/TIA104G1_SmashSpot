@@ -1,8 +1,6 @@
 package com.smashspot.websocketchat.controller;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,7 +22,9 @@ import com.smashspot.websocketchat.chatroom.Chatroom;
 import com.smashspot.websocketchat.chatroom.ChatroomService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
@@ -169,10 +169,6 @@ public class ChatController {
         List<ChatMessage> messages;
         messages = chatMessageService.findChatMessages(senderId, recipientId);
 
-//        // 更新訊息已讀狀態
-//        messages.stream()
-//            .filter(msg -> !msg.isRead() && !"Adm".equals(msg.getSenderName()))
-//            .forEach(msg -> chatMessageService.markAsRead(msg.getId()));
 
         model.addAttribute("chatMessages", messages);
         model.addAttribute("senderId", senderId);
@@ -197,10 +193,10 @@ public class ChatController {
         List<ChatMessage> messages;
         messages = chatMessageService.findChatMessages(senderId, recipientId);
 
-        // 更新訊息已讀狀態
-        messages.stream()
-				.filter(msg -> !msg.isRead() && msg.getSenderName() != null)
-				.forEach(msg -> chatMessageService.markAsRead(msg.getId()));
+//        // 更新訊息已讀狀態
+//        messages.stream()
+//				.filter(msg -> !msg.isRead() && msg.getSenderName() != null)
+//				.forEach(msg -> chatMessageService.markAsRead(msg.getChatId()));
 
         model.addAttribute("chatMessages", messages);
         model.addAttribute("senderId", senderId);
@@ -283,27 +279,33 @@ public class ChatController {
     }
     @MessageMapping("/adm/chat.read")
     public void markMessagesAsRead(@Payload String senderId) {
-    	 System.out.println("Marking messages as read for senderId: " + senderId); // Debug
-        if (senderId != null) {
-            // 查找該發送者的所有未讀消息
-            List<ChatMessage> unreadMessages = chatMessageService.findChatMessages(
+        try {
+            log.info("Processing read status for sender: {}", senderId);
+            
+            // 先獲取聊天室 ID
+            String chatId = chatroomService.getChatroomId(
                 Integer.valueOf(senderId), 
-                "Adm"
-            ).stream()
-            .filter(msg -> !msg.isRead() && 
-                    msg.getSenderName() != null && 
-                    !msg.getSenderName().equals("Adm"))
-            .collect(Collectors.toList());
-
-            // 將所有消息標記為已讀
-            unreadMessages.forEach(msg -> chatMessageService.markAsRead(msg.getId()));
-
-            // 廣播已讀狀態更新
+                false, 
+                false
+            ).orElse(null);
+            
+            if (chatId == null) {
+                log.warn("No chatroom found for sender: {}", senderId);
+                return;
+            }
+            
+            // 標記消息為已讀
+            chatMessageService.markAsRead(chatId);
+            
+            // 發送更新通知
             messagingTemplate.convertAndSendToUser(
                 senderId,
                 "/queue/read.status",
                 "Messages marked as read"
             );
+            
+        } catch (Exception e) {
+            log.error("Error marking messages as read for sender: " + senderId, e);
         }
     }
 }
