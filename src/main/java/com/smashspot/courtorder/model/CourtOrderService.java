@@ -49,8 +49,8 @@ public class CourtOrderService {
 	/**
 	 * 新增訂單 (只要傳 CourtOrderVO 進來即可)
 	 */
-
 	public CourtOrderVO createOrderAndUpdateReservationTime(CourtOrderVO requestOrder) {
+		
 
 		// 1. 先根據前端傳過來的 stadiumId, 撈出 DB 的 StadiumVO
 		Integer stdmId = requestOrder.getStadium().getStdmId();
@@ -109,11 +109,19 @@ public class CourtOrderService {
 			}
 
 			// 找出對應 reservation_time
-			ReservationTimeVO rsvTime = reservationTimeRepository.findByStadiumIdAndDates(stdmId, ordDate);
-			if (rsvTime == null) {
-				// 代表還沒有對應那天的資料，或查不到
-				return false;
-			}
+			ReservationTimeVO rsvTime = reservationTimeRepository.findByStadiumIdAndDatesForUpdate(stdmId, ordDate);
+			
+//	        // 2) (為了測試) 強制停頓 N 秒
+//	        try {
+//	            System.out.println("[Tx1] 已取得悲觀鎖，暫停 15 秒...");
+//	            Thread.sleep(15_000);
+//	        } catch (InterruptedException e) {
+//	            e.printStackTrace();
+//	        }
+//			if (rsvTime == null) {
+//				// 代表還沒有對應那天的資料，或查不到
+//				return false;
+//			}
 
 			// 拿到 rsv_ava & booked
 			String rsvAva = rsvTime.getRsvava(); // e.g. "xxxx7777777x"
@@ -338,7 +346,6 @@ public class CourtOrderService {
 	/**
 	 * 取消訂單 (ordsta = false, canreason)
 	 */
-	@Transactional
 	public void cancelOrder(Integer courtordid, Boolean ordsta, String canreason) {
 		// 1) 先撈出訂單主檔
 		CourtOrderVO order = courtOrderRepository.findById(courtordid)
@@ -385,7 +392,7 @@ public class CourtOrderService {
 			// (b) 找到對應的 reservation_time
 			Integer stdmId = order.getStadium().getStdmId();
 			Date ordDate = detail.getOrdDate();
-			ReservationTimeVO rsvTime = reservationTimeRepository.findByStadiumIdAndDates(stdmId, ordDate);
+			ReservationTimeVO rsvTime = reservationTimeRepository.findByStadiumIdAndDatesForUpdate(stdmId, ordDate);
 			if (rsvTime == null) {
 				// 若找不到對應日期的 reservation_time，可能代表還原失敗，
 				// 可以拋異常或記錄 log

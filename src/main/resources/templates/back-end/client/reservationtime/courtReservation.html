@@ -378,11 +378,11 @@ body {
 					</div>
 					<div class="card custom-shadow mb-3">
 						<div class="card-body">
-						<div class="d-flex align-items-center">
-							<h5
-								class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">
-								場地資訊</h5>
-						</div>
+							<div class="d-flex align-items-center">
+								<h5
+									class="card-title text-primary border-bottom pb-2 mb-3 fw-bold">
+									場地資訊</h5>
+							</div>
 							<div class="list-group list-group-flush venue-info">
 								<!-- 加入 venue-info class -->
 
@@ -741,7 +741,15 @@ body {
 									<small>預約額滿</small>
 								</div>
 								<!-- 預約按鈕 -->
-								<div class="ms-auto" id="bookingButtonContainer">
+								<div class="ms-auto d-flex align-items-center"
+									id="bookingButtonContainer">
+									<!-- 清空已選按鈕 -->
+									<button class="btn btn-outline-danger me-2"
+										onclick="clearAllSelectedSlots()">
+										<i class="fas fa-trash-alt me-1"></i> 清空
+									</button>
+
+									<!-- 預約按鈕 -->
 									<button class="btn btn-primary" onclick="showBookingModal()">
 										<i class="fas fa-calendar-check me-1"></i> 確認預約
 									</button>
@@ -1283,7 +1291,24 @@ body {
             cell.classList.remove('selected');
         });
     }
-    
+    function clearAllSelectedSlots() {
+        // 1. 移除 localStorage 中的 "reservationCart"
+        localStorage.removeItem("reservationCart");
+
+        // 2. 清空 selectedTimeSlots 陣列
+        selectedTimeSlots = [];
+
+        // 3. 把畫面上所有 .selected 樣式移除
+        document.querySelectorAll('.court-cell.selected').forEach(cell => {
+            cell.classList.remove('selected');
+        });
+
+        // 4. 更新按鈕顯示狀態 (若你有這個函式)
+        updateBookingButton();
+
+        // 5. 顯示提示
+        alert("已清空所有選取時段！");
+    }
 	 // --------------------------------------------------
 	 // (A) 全域變數宣告
 	 // --------------------------------------------------
