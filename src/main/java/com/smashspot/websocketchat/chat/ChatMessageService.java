@@ -21,9 +21,12 @@ public class ChatMessageService {
 	private final ChatMessageRepository repository;
 	private final ChatroomService chatroomService;
 
-	/**
-	 * 保存聊天訊息
-	 */
+	
+	/** 
+     * 保存聊天訊息
+     * @param chatMessage 聊天訊息物件
+     * @return 已保存的聊天訊息
+     */
 	@Transactional
 	public ChatMessage save(ChatMessage chatMessage) {
 	    try {
@@ -90,9 +93,13 @@ public class ChatMessageService {
 	    }
 	}
 
-	/**
-	 * 獲取聊天訊息列表
-	 */
+	
+	/** 
+     * 獲取聊天訊息列表
+     * @param senderId 發送者 ID
+     * @param recipientId 接收者 ID
+     * @return 聊天訊息列表
+     */
 	 public List<ChatMessage> findChatMessages(Integer senderId, String recipientId) {
 	        if (senderId == null) {
 	            return new ArrayList<>();
@@ -105,7 +112,11 @@ public class ChatMessageService {
 	                    .orElse(new ArrayList<>());
 	    }
 	    
-	 // 標記訊息已讀
+	 
+	 /** 
+	  * 標記訊息為已讀
+	  * @param chatId 聊天室 ID
+	  */
 	 @Transactional
 	 public void markAsRead(String chatId) {
 		    try {

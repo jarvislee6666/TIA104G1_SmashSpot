@@ -17,41 +17,52 @@ import redis.clients.jedis.JedisPool;
 @Repository 
 public class ChatMessageRepository {
 
-	
+	// 使用 ObjectMapper 將 ChatMessage 與 JSON 互相轉換
 	private static ObjectMapper objectMapper = new ObjectMapper();
 	private static JedisPool pool = JedisPoolUtil.getJedisPool();
 
 	
+	/**
+     * 保存聊天訊息至 Redis
+     * @param chatMessage 聊天訊息物件
+     */
 	public void save(ChatMessage chatMessage) {
+		
+		// Redis 鍵名：chat:<chatId>
 	    String STORE_KEY = "chat:" + chatMessage.getChatId();
 	    
 	    try (Jedis jedis = JedisPoolUtil.getJedisPool().getResource()) {
+	    	// 將 ChatMessage 物件序列化為 JSON 字串
 	        String valueAsString = objectMapper.writeValueAsString(chatMessage);
-	        //jedis.del(STORE_KEY); // 刪除舊數據
 	        jedis.rpush(STORE_KEY, valueAsString); // 使用 rpush 將訊息追加到列表
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
 
+	
+	 /**
+     * 根據聊天室 ID 獲取所有聊天訊息
+     * @param chatId 聊天室 ID
+     * @return 聊天訊息列表，按時間排序
+     */
 	public List<ChatMessage> findByChatId(String chatId) {
 	    List<ChatMessage> chatMessages = new ArrayList<>();
+	    // Redis 鍵名：chat:<chatId>
 	    String key = "chat:" + chatId;
 
 	    try (Jedis jedis = JedisPoolUtil.getJedisPool().getResource()) {
-	        // 獲取聊天室所有訊息
+	    	// 從 Redis 列表中獲取所有訊息
 	        List<String> messagesJson = jedis.lrange(key, 0, -1);
 	        
-	        // 解析每筆訊息
+	        // 將 JSON 字串解析為 ChatMessage 物件
 	        for (String json : messagesJson) {
 	            try {
 	                ChatMessage message = objectMapper.readValue(json, ChatMessage.class);
 	                chatMessages.add(message);
 	            } catch (JsonMappingException e) {
-	                // JSON 映射異常處理
 	                System.err.println("Error mapping JSON: " + e.getMessage());
 	            } catch (JsonProcessingException e) {
-	                // JSON 處理異常處理
 	                System.err.println("Error processing JSON: " + e.getMessage());
 	            }
 	        }
@@ -62,8 +73,15 @@ public class ChatMessageRepository {
 	    }
 	}
 	
+	
+	 /**
+     * 更新指定聊天室的所有聊天訊息
+     * @param chatId 聊天室 ID
+     * @param updatedMessages 更新後的聊天訊息列表
+     */
 	public void updateMessages(String chatId, List<ChatMessage> updatedMessages) {
-	    String redisKey = "chat:" + chatId;
+		// Redis 鍵名：chat:<chatId>
+		String redisKey = "chat:" + chatId;
 
 	    try (Jedis jedis = JedisPoolUtil.getJedisPool().getResource()) {
 	        // 清空舊列表

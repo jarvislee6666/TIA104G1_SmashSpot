@@ -95,8 +95,10 @@ public class ChatController {
 //        }
 //    }
     
-    /**
+    
+    /** 
      * 發送聊天訊息，會員傳送訊息觸發
+     * @param chatMessage 聊天訊息物件
      */
     @MessageMapping("/chat")
     public void processMemberMessage(@Payload ChatMessage chatMessage) {
@@ -118,8 +120,10 @@ public class ChatController {
         }
     }
 
-    /**
+    
+    /** 
      * 發送聊天訊息，管理員傳送訊息觸發
+     * @param chatMessage 聊天訊息物件
      */
     @MessageMapping("/adm/chat")
     public void processMessage(@Payload ChatMessage chatMessage) {
@@ -150,8 +154,12 @@ public class ChatController {
     }
     
     
-    /**
-     * 會員聊天室
+    /** 
+     * 會員聊天室頁面
+     * @param senderId 發送者 ID
+     * @param model 模型對象，用於傳遞數據到前端
+     * @param session 當前用戶會話
+     * @return 聊天室頁面名稱
      */
     @GetMapping("/chat/Adm/{senderId}")
     public String findAdmMessages(@PathVariable Integer senderId, Model model, HttpSession session) {
@@ -166,20 +174,24 @@ public class ChatController {
     	
     	String recipientId = "Adm";
 
-        List<ChatMessage> messages;
+    	// 獲取聊天訊息
+    	List<ChatMessage> messages;
         messages = chatMessageService.findChatMessages(senderId, recipientId);
-
 
         model.addAttribute("chatMessages", messages);
         model.addAttribute("senderId", senderId);
 
-        // 返回 Thymeleaf 模板名稱（例如 chatView.html）
+        
         return "back-end/chatroom/chatroomMem";
         
     }
 
-    /**
-     * 管理員聊天室
+    
+    /** 
+     * 管理員聊天室頁面
+     * @param senderId 發送者 ID
+     * @param model 模型對象，用於傳遞數據到前端
+     * @return 聊天室頁面名稱
      */
     @GetMapping("/adm/chat/{senderId}/Adm")
     public String findChatMessages(@PathVariable Integer senderId, Model model) {
@@ -190,18 +202,13 @@ public class ChatController {
             return "redirect:/adm/listAllChat";
         }
         
+        // 獲取聊天訊息
         List<ChatMessage> messages;
         messages = chatMessageService.findChatMessages(senderId, recipientId);
-
-//        // 更新訊息已讀狀態
-//        messages.stream()
-//				.filter(msg -> !msg.isRead() && msg.getSenderName() != null)
-//				.forEach(msg -> chatMessageService.markAsRead(msg.getChatId()));
 
         model.addAttribute("chatMessages", messages);
         model.addAttribute("senderId", senderId);
 
-        // 返回 Thymeleaf 模板名稱（例如 chatView.html）
         return "back-end/adm/chatroomAdm";
         
     }
@@ -233,8 +240,12 @@ public class ChatController {
 //        return "back-end/adm/chatroomAdm";
 //    }
     
-    /**
+    
+    /** 
      * 管理員聊天室列表
+     * @param model 模型對象，用於傳遞數據到前端
+     * @param session 當前用戶會話
+     * @return 聊天室列表頁面名稱
      */
     @GetMapping("/adm/listAllChat")
     public String getChatRooms(Model model, HttpSession session) {
@@ -252,7 +263,7 @@ public class ChatController {
                     );
                     
                     // 獲取最後一條訊息內容
-                    String lastMessage = messages.isEmpty() ? "" : messages.get(0).getContent();
+                    String lastMessage = messages.isEmpty() ? "" : messages.get(messages.size() - 1).getContent();
                     
                     // 計算未讀訊息數
                     long unreadCount = messages.stream()
@@ -277,12 +288,18 @@ public class ChatController {
         model.addAttribute("chatrooms", chatroomDTOs);
         return "back-end/adm/listAllChat";
     }
+    
+    
+    /** 
+     * 標記管理員的所有消息為已讀
+     * @param senderId 發送者 ID
+     */
     @MessageMapping("/adm/chat.read")
     public void markMessagesAsRead(@Payload String senderId) {
         try {
             log.info("Processing read status for sender: {}", senderId);
             
-            // 先獲取聊天室 ID
+            // 獲取聊天室 ID
             String chatId = chatroomService.getChatroomId(
                 Integer.valueOf(senderId), 
                 false, 
