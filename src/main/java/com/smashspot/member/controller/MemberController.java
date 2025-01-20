@@ -4,6 +4,7 @@ package com.smashspot.member.controller;
 // 引入必要的Java和Spring Framework相關類別
 import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -51,6 +52,8 @@ public class MemberController {
     // 建立日誌記錄器，用於記錄控制器中的重要操作和錯誤信息
     private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
     private static final String MEMBER_TEMP_PREFIX = "member:temp:";
+    private static final String VERIFY_PREFIX = "member:verify:";
+    
 
     /**
      * 顯示會員註冊頁面
@@ -132,14 +135,57 @@ public class MemberController {
         }
     }
 
+//    @GetMapping("/verify")
+//    public String verifyEmail(@RequestParam String token, Model model) {
+//        try {
+//            // 從 Redis 取得暫存的會員資料
+//            String memberJson = (String) redisTemplate.opsForValue().get(MEMBER_TEMP_PREFIX + token);
+//            
+//            if (memberJson != null) {
+//                // 將 JSON 轉回 MemberVO 物件
+//                ObjectMapper mapper = new ObjectMapper();
+//                MemberVO memberVO = mapper.readValue(memberJson, MemberVO.class);
+//                
+//                // 設定會員狀態為已驗證
+//                memberVO.setStatus(true);
+//                
+//                // 正式將會員資料寫入資料庫
+//                memberService.addMember(memberVO);
+//                
+//                // 刪除 Redis 中的暫存資料
+//                redisTemplate.delete(MEMBER_TEMP_PREFIX + token);
+//                
+//                // 發送歡迎郵件
+//                sendWelcomeEmail(memberVO);
+//                
+//                model.addAttribute("success", "註冊成功！歡迎加入SmashSpot，請登入開始使用我們的服務。");
+//                return "back-end/member/VerificationPage";
+//            }
+//            
+//            model.addAttribute("error", "驗證連結已失效或不正確");
+//            return "back-end/member/VerificationPage";
+//            
+//        } catch (Exception e) {
+//            logger.error("驗證過程發生錯誤", e);
+//            model.addAttribute("error", "驗證過程發生錯誤，請稍後再試");
+//            return "back-end/member/VerificationPage";
+//        }
+//    }
+    
+    
     @GetMapping("/verify")
     public String verifyEmail(@RequestParam String token, Model model) {
         try {
+            // 檢查 token 是否有效
+            if (!redisService.isTokenValid(token)) {
+                model.addAttribute("error", "驗證連結已失效或不正確");
+                return "back-end/member/VerificationPage";
+            }
+
             // 從 Redis 取得暫存的會員資料
             String memberJson = (String) redisTemplate.opsForValue().get(MEMBER_TEMP_PREFIX + token);
             
             if (memberJson != null) {
-                // 將 JSON 轉回 MemberVO 物件
                 ObjectMapper mapper = new ObjectMapper();
                 MemberVO memberVO = mapper.readValue(memberJson, MemberVO.class);
                 
@@ -149,14 +195,14 @@ public class MemberController {
                 // 正式將會員資料寫入資料庫
                 memberService.addMember(memberVO);
                 
-                // 刪除 Redis 中的暫存資料
-                redisTemplate.delete(MEMBER_TEMP_PREFIX + token);
+                // 清除所有相關的 Redis 資料
+                redisService.clearTemporaryData(token);
                 
                 // 發送歡迎郵件
                 sendWelcomeEmail(memberVO);
                 
                 model.addAttribute("success", "註冊成功！歡迎加入SmashSpot，請登入開始使用我們的服務。");
-                return "back-end/member/login";
+                return "back-end/member/VerificationPage";
             }
             
             model.addAttribute("error", "驗證連結已失效或不正確");
@@ -168,23 +214,122 @@ public class MemberController {
             return "back-end/member/VerificationPage";
         }
     }
-    //重新寄送驗證信
+    
+    
+//    //重新寄送驗證信
+//    @PostMapping("/resend-verification")
+//    public String resendVerification(@RequestParam String email, Model model) {
+//        try {
+//            // 檢查是否有該email的暫存會員資料
+//            String memberJson = (String) redisTemplate.opsForValue().get(MEMBER_TEMP_PREFIX + email);
+//            
+//            if (memberJson != null) {
+//                // 重新生成驗證token
+//                ObjectMapper mapper = new ObjectMapper();
+//                MemberVO memberVO = mapper.readValue(memberJson, MemberVO.class);
+//                String token = redisService.generateVerificationToken(memberVO);
+//                
+//                // 重新發送驗證郵件
+//                String verificationLink = redisService.getVerificationLink(token);
+//                emailService.sendVerificationEmail(email, verificationLink);
+//                
+//                model.addAttribute("success", "驗證信已重新發送，請查收您的信箱");
+//            } else {
+//                model.addAttribute("error", "無法找到註冊資料，請重新註冊");
+//            }
+//        } catch (Exception e) {
+//            logger.error("重新發送驗證信失敗", e);
+//            model.addAttribute("error", "發送驗證信失敗，請稍後再試");
+//        }
+//        
+//        model.addAttribute("email", email);
+//        return "back-end/member/VerificationPage";
+//    }
+    
+//    
+//    @PostMapping("/resend-verification")
+//    public String resendVerification(@RequestParam String email, Model model) {
+//        try {
+//            // 1. 搜尋 Redis 中所有的臨時會員資料
+//            // 使用 pattern 匹配所有臨時會員的 key
+//            Set<String> keys = redisTemplate.keys(MEMBER_TEMP_PREFIX + "*");
+//            MemberVO memberVO = null;
+//            ObjectMapper mapper = new ObjectMapper();
+//            
+//            // 2. 遍歷所有臨時會員資料，找出匹配的 email
+//            for (String key : keys) {
+//                String memberJson = (String) redisTemplate.opsForValue().get(key);
+//                if (memberJson != null) {
+//                    // 將 JSON 轉換回會員物件
+//                    MemberVO tempMember = mapper.readValue(memberJson, MemberVO.class);
+//                    // 比對 email
+//                    if (email.equals(tempMember.getEmail())) {
+//                        memberVO = tempMember;
+//                        // 找到匹配的會員後，刪除舊的臨時資料
+//                        redisTemplate.delete(key);
+//                        break;
+//                    }
+//                }
+//            }
+//            
+//            if (memberVO != null) {
+//                // 3. 產生新的驗證 token 和連結
+//                String token = redisService.generateVerificationToken(memberVO);
+//                String verificationLink = redisService.getVerificationLink(token);
+//                
+//                // 4. 發送新的驗證郵件
+//                emailService.sendVerificationEmail(email, verificationLink);
+//                
+//                // 5. 回傳成功訊息
+//                model.addAttribute("success", "驗證信已重新發送，請查收您的信箱");
+//            } else {
+//                model.addAttribute("error", "無法找到註冊資料，請重新註冊");
+//            }
+//            
+//        } catch (Exception e) {
+//            // 6. 錯誤處理與日誌記錄
+//            logger.error("重新發送驗證信失敗", e);
+//            model.addAttribute("error", "發送驗證信失敗，請稍後再試");
+//        }
+//        
+//        // 7. 保持 email 資訊在頁面上
+//        model.addAttribute("email", email);
+//        return "back-end/member/VerificationPage";
+//    }
+    
+    
     @PostMapping("/resend-verification")
     public String resendVerification(@RequestParam String email, Model model) {
         try {
-            // 檢查是否有該email的暫存會員資料
-            String memberJson = (String) redisTemplate.opsForValue().get(MEMBER_TEMP_PREFIX + email);
-            
-            if (memberJson != null) {
-                // 重新生成驗證token
-                ObjectMapper mapper = new ObjectMapper();
-                MemberVO memberVO = mapper.readValue(memberJson, MemberVO.class);
-                String token = redisService.generateVerificationToken(memberVO);
-                
-                // 重新發送驗證郵件
-                String verificationLink = redisService.getVerificationLink(token);
+            Set<String> tempKeys = redisTemplate.keys(MEMBER_TEMP_PREFIX + "*");
+            MemberVO memberVO = null;
+            String oldToken = null;
+            ObjectMapper mapper = new ObjectMapper();
+
+            // 找到對應的會員資料和 token
+            for (String key : tempKeys) {
+                String memberJson = (String) redisTemplate.opsForValue().get(key);
+                if (memberJson != null) {
+                    MemberVO tempMember = mapper.readValue(memberJson, MemberVO.class);
+                    if (email.equals(tempMember.getEmail())) {
+                        memberVO = tempMember;
+                        // 從 key 中提取 token
+                        oldToken = key.substring(MEMBER_TEMP_PREFIX.length());
+                        break;
+                    }
+                }
+            }
+
+            if (memberVO != null && oldToken != null) {
+                // 清除所有舊的資料
+                redisTemplate.delete(MEMBER_TEMP_PREFIX + oldToken);
+                redisTemplate.delete(VERIFY_PREFIX + oldToken);
+
+                // 產生新的驗證資料
+                String newToken = redisService.generateVerificationToken(memberVO);
+                String verificationLink = redisService.getVerificationLink(newToken);
                 emailService.sendVerificationEmail(email, verificationLink);
-                
+
                 model.addAttribute("success", "驗證信已重新發送，請查收您的信箱");
             } else {
                 model.addAttribute("error", "無法找到註冊資料，請重新註冊");
@@ -193,10 +338,11 @@ public class MemberController {
             logger.error("重新發送驗證信失敗", e);
             model.addAttribute("error", "發送驗證信失敗，請稍後再試");
         }
-        
+
         model.addAttribute("email", email);
         return "back-end/member/VerificationPage";
     }
+    
     
     
     @PostMapping("/forgot-password")
