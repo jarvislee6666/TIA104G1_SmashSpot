@@ -61,9 +61,14 @@ public class ChatMessage {
 
 	@Override
 	public String toString() {
-		return "ChatMessage{" + "id='" + id + '\'' + ", chatId='" + chatId + '\'' + ", sender={" + "memid="
-				+ (sender != null ? sender.getMemid() : "null") + ", name='"
-				+ (sender != null ? sender.getName() : "Unknown") + '\'' + '}' + ", recipientId='" + recipientId + '\''
-				+ ", content='" + content + '\'' + ", timestamp=" + timestamp + ", read=" + read + '}';
+		return "ChatMessage{" + "id='" + id + '\'' + 
+				", chatId='" + chatId + '\'' + 
+				", sender={" + 
+				"memid="+ (sender != null ? sender.getMemid() : "null") + 
+				", name='"+ (sender != null ? sender.getName() : "Unknown") + '\'' + 
+				", mempic='" + (sender != null ? sender.getMempic() : "null") + '\'' +
+				'}' + 
+				", recipientId='" + recipientId + '\''+ 
+				", content='" + content + '\'' + ", timestamp=" + timestamp + ", read=" + read + '}';
 	}
 }

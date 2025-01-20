@@ -303,8 +303,8 @@ body {
 	        const content = document.createElement('div');
 	        content.className = 'message-content';
 	        content.innerHTML = `
-	            <span class="message-text">${escapeHtml(message.content)}</span>
-	            <span class="message-time">${formatTime(message.timestamp)}</span>
+	            <span class="message-text">${message.content}</span>
+	            <span class="message-time">${message.timestamp}</span>
 	        `;
 	        
 	        messageDiv.appendChild(content);

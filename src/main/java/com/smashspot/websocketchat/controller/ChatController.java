@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,7 +19,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
+import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.websocketchat.chat.ChatMessage;
 import com.smashspot.websocketchat.chat.ChatMessageService;
 import com.smashspot.websocketchat.chatroom.Chatroom;
@@ -32,6 +38,7 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
     private final ChatroomService chatroomService;
+    private final MemberService memSvc;
     private final ObjectMapper objectMapper = new ObjectMapper(); // 用於序列化 JSON
 
 //    /**
@@ -108,6 +115,7 @@ public class ChatController {
         try {
             // 將訊息序列化為 JSON
             String messageJson = objectMapper.writeValueAsString(savedMessage);
+            System.out.println(messageJson);
 
             // 發送訊息給管理員
             messagingTemplate.convertAndSendToUser(
@@ -141,6 +149,7 @@ public class ChatController {
         try {
             // 將訊息序列化為 JSON
             String messageJson = objectMapper.writeValueAsString(savedMessage);
+            System.out.println(messageJson);
 
             // 發送訊息給會員
             messagingTemplate.convertAndSendToUser(
@@ -325,4 +334,15 @@ public class ChatController {
             log.error("Error marking messages as read for sender: " + senderId, e);
         }
     }
+    
+    @GetMapping("/getImage/{id}")
+	public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
+		MemberVO memVO = memSvc.getOneMember(id);
+		byte[] image = memVO.getMempic();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_JPEG); // 或其他適當的媒體類型
+
+		return new ResponseEntity<>(image, headers, HttpStatus.OK);
+	}
 }
