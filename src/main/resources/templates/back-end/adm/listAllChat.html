@@ -182,7 +182,28 @@ body {
 		height: 35px;
 		margin-right: 10px;
 	}
+	.user-avatar-img {
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+    }
 }
+
+.user-avatar-img {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.user-avatar-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
 </style>
 <!-- WebSocket and STOMP libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
@@ -224,10 +245,16 @@ body {
 								th:attr="data-member-id=${chatroom.sender.memid}"
 								th:classappend="${chatroom.unreadCount > 0 ? 'unread' : ''}">
 
-								<div class="user-avatar">
-									<span
-										th:text="${chatroom.sender.name != null ? #strings.substring(chatroom.sender.name, 0, 1) : 'U'}">U</span>
-								</div>
+								<!-- Dynamic avatar section -->
+    <div th:if="${chatroom.sender.mempic != null}" class="user-avatar-img">
+        <img th:src="@{/getImage/{id}(id=${chatroom.sender.memid})}"
+             th:alt="${chatroom.sender.name}"
+             class="rounded-circle"
+             style="width: 40px; height: 40px; object-fit: cover;">
+    </div>
+    <div th:unless="${chatroom.sender.mempic != null}" class="user-avatar">
+        <span th:text="${chatroom.sender.name != null ? #strings.substring(chatroom.sender.name, 0, 1) : 'U'}">U</span>
+    </div>
 								<div class="message-content">
 									<div class="message-header">
 										<span class="message-sender" th:text="${chatroom.sender.name}">用戶名稱</span>
