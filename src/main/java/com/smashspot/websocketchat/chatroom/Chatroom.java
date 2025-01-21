@@ -56,6 +56,7 @@ public class Chatroom implements Serializable {
                 ", sender={" +
                 "memid=" + (sender != null ? sender.getMemid() : "0") +
                 ", name='" + (sender != null ? sender.getName() : "Adm") + '\'' +
+                ", mempic='" + (sender != null ? sender.getMempic() : "null") + '\'' +
                 '}' +
                 ", recipientId='" + recipientId + '\'' +
                 ", lastMessage='" + lastMessage + '\'' +

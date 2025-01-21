@@ -56,11 +56,15 @@ body {
 
 .message {
     margin-bottom: 1rem;
-    max-width: 70%;
+/*     max-width: 70%; */
+    max-width: none;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .message.sent {
     margin-left: auto;
+    justify-content: flex-end;
 }
 
 .message.received {
@@ -71,6 +75,9 @@ body {
     padding: 0.8rem 1rem;
     border-radius: 1rem;
     position: relative;
+    max-width: 70%;
+    display: inline-block;
+    word-break: break-word;
 }
 
 .sent .message-content {
@@ -206,26 +213,28 @@ body {
 	     * - 一週內顯示星期幾
 	     * - 更久以前顯示完整日期
 	     */
-	    function formatTime(timestamp) {
-	        const date = new Date(timestamp);
-	        const now = new Date();
-	        
-	        if (date.toDateString() === now.toDateString()) {
-	            return date.toLocaleTimeString([], { 
-	                hour: '2-digit', 
-	                minute: '2-digit' 
-	            });
-	        }
-	        
-	        const diffTime = Math.abs(now - date);
-	        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-	        if (diffDays < 7) {
-	            const days = ['日', '一', '二', '三', '四', '五', '六'];
-	            return `週${days[date.getDay()]}`;
-	        }
-	        
-	        return date.toLocaleDateString();
-	    }
+	     function formatTime(timestamp) {
+	         const date = new Date(timestamp);
+	         const now = new Date();
+	         
+	         if (date.toDateString() === now.toDateString()) {
+	             return date.toLocaleTimeString('zh-TW', { 
+	                 hour: '2-digit', 
+	                 minute: '2-digit', 
+	                 hour12: false  
+	                 // 這裡指定使用 24 小時制
+	             });
+	         }
+	         
+	         const diffTime = Math.abs(now - date);
+	         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+	         if (diffDays < 7) {
+	             const days = ['日', '一', '二', '三', '四', '五', '六'];
+	             return `週${days[date.getDay()]}`;
+	         }
+	         
+	         return date.toLocaleDateString();
+	     }
 
 	    /**
 	     * 建立 WebSocket 連接
@@ -267,49 +276,78 @@ body {
 	     * 處理接收到的新消息
 	     * 添加到聊天界面並滾動到底部
 	     */
-	    function onMessageReceived(payload) {
-	        try {
-	            const message = JSON.parse(payload.body);
-	            appendMessage(message);
-	            console.log(message);
-	            scrollToBottom();
-	            // 如果頁面可見，立即標記為已讀
-	            if (!document.hidden) {
-	                markMessagesAsRead();
-	            }
-	        } catch (error) {
-	            console.error('處理消息失敗:', error);
-	        }
-	    }
+	     function onMessageReceived(payload) {
+	    	    try {
+	    	    	console.log('收到的原始訊息:', payload.body);
+	    	        const rawMessage = JSON.parse(payload.body);
+	    	        console.log('rawMessage', rawMessage)
+	    	        
+	    	        const message = parseMessage(rawMessage);
 
+	    	        if (message) {
+	    	            appendMessage(message);
+	    	            scrollToBottom();
+	    	        }
+	    	    } catch (error) {
+	    	        console.error('處理消息失敗:', error);
+	    	    }
+	    	}
+
+	     function parseMessage(message) {
+	    	    try {
+	    	        const parsedMessage = {
+	    	        	content: message.content || '未知的訊息內容',
+	    	            senderName: message.senderName || (message.sender && message.sender.name) || '未知發送者',
+	    	            timestamp: message.timestamp || Date.now() // 使用當前時間作為後備
+	    	        };
+
+	    	        // 顯示解析後的訊息以便除錯
+	    	        console.log('解析後的訊息:', parsedMessage);
+	    	        return parsedMessage;
+	    	    } catch (error) {
+	    	        console.error('解析訊息時出現錯誤:', error);
+	    	        return null;
+	    	    }
+	    	}
+	    
 	    /**
 	     * 將新消息添加到聊天界面
 	     * @param {Object} message - 消息對象
 	     * 包含發送者判斷和 XSS 防護
 	     */
-	    function appendMessage(message) {
-	        const chatMessages = document.getElementById('chatMessages');
-	        if (!chatMessages) {
-	            console.error('找不到聊天訊息容器');
-	            return;
-	        }
+	     function appendMessage(message) {
+	    	    const chatMessages = document.getElementById('chatMessages');
+	    	    if (!chatMessages) {
+	    	        console.error('找不到聊天訊息容器');
+	    	        return;
+	    	    }
+	    	    
+	    	 // 確保訊息結構完整
+	    	    if (!message || !message.content || !message.timestamp || !message.senderName) {
+	    	        console.error('收到的訊息格式不完整:', message);
+	    	        return;
+	    	    }
 
-	        const messageDiv = document.createElement('div');
-	        // 判斷是否為管理員發送的消息
-	        const isAdmin = message.senderName === 'Adm' || message.senderName === admname;
-	        messageDiv.className = isAdmin ? 'message sent' : 'message received';
-	        
-	        // 創建消息內容，防止 XSS 攻擊
-	        const content = document.createElement('div');
-	        content.className = 'message-content';
-	        content.innerHTML = `
-	            <span class="message-text">${escapeHtml(message.content)}</span>
-	            <span class="message-time">${formatTime(message.timestamp)}</span>
-	        `;
-	        
-	        messageDiv.appendChild(content);
-	        chatMessages.appendChild(messageDiv);
-	    }
+	    	    const messageDiv = document.createElement('div');
+	    	    // 判斷訊息方向，管理員為 "sent"，會員為 "received"
+	    	    const isAdmin = message.senderName === 'Adm';
+	    	    messageDiv.className = isAdmin ? 'message sent' : 'message received';
+
+	    	    // 格式化時間戳
+	    	    const formattedTime = formatTime(message.timestamp);
+
+	    	    // 創建訊息內容
+	    	    const content = document.createElement('div');
+	    	    content.className = 'message-content';
+	    	    content.innerHTML = `
+	    	        <span class="message-text">${escapeHtml(message.content || '')}</span>
+	    	        <span class="message-time">${formattedTime}</span>
+	    	    `;
+
+	    	    messageDiv.appendChild(content);
+	    	    chatMessages.appendChild(messageDiv);
+	    	}
+
 
 	    /**
 	     * HTML 特殊字符轉義

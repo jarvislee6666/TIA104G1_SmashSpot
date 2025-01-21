@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>客服聊天室</title>
     <th:block th:replace="back-end/client/Header :: headContent" />
     <link rel="stylesheet" th:href="@{/css/client/Header.css}" />
     <link rel="stylesheet" th:href="@{/css/client/Footer.css}" />
     <link rel="stylesheet" th:href="@{/css/client/Sidebar.css}" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
 
@@ -22,8 +19,6 @@
 	--surface: #ffffff;
 	--text: #0f172a;
 	--border: #e2e8f0;
-	--header-height: 60px;
-	--footer-height: 80px;
 }
 
 body {
@@ -37,7 +32,7 @@ body {
 main {
 	flex: 1;
 	padding: 2rem 0;
-	margin-top: 5rem;
+	margin-top: 7rem;
 	margin-bottom: 2rem; /* 添加底部邊距 */
     display: flex;
     flex-direction: column;
@@ -64,11 +59,15 @@ main {
 
 .message {
 	margin-bottom: 1rem;
-	max-width: 70%;
+/* 	max-width: 70%; */
+	max-width: none; /* 移除最大寬度限制 */
+    display: flex; /* 使用 flex 布局 */
+    justify-content: flex-start; /* 左對齊 */
 }
 
 .message.sent {
-	margin-left: auto;
+ 	margin-left: auto; 
+	justify-content: flex-end; /* 發送的消息右對齊 */
 }
 
 .message.received {
@@ -80,6 +79,9 @@ main {
 	border-radius: 1rem;
 	position: relative;
 	word-wrap: break-word;
+	max-width: 70%;
+    display: inline-block;
+    word-break: break-word;
 }
 
 .sent .message-content {
@@ -90,6 +92,17 @@ main {
 .received .message-content {
 	background: var(--surface);
 	border: 1px solid var(--border);
+}
+
+.message-text {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    display: block;
 }
 
 .chat-input {
@@ -174,6 +187,50 @@ footer {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
+    /**
+     * HTML 特殊字符轉義
+     * 防止 XSS 攻擊
+     */
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+    
+    /**
+     * 格式化時間顯示
+     * @param {string} timestamp - ISO 格式的時間戳
+     * 根據時間距離現在的遠近，顯示不同格式：
+     * - 今天的消息顯示 HH:mm
+     * - 一週內顯示星期幾
+     * - 更久以前顯示完整日期
+     */
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        
+        if (date.toDateString() === now.toDateString()) {
+            return date.toLocaleTimeString('zh-TW', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false  
+                // 這裡指定使用 24 小時制
+            });
+        }
+        
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 7) {
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            return `週${days[date.getDay()]}`;
+        }
+        
+        return date.toLocaleDateString();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         // 初始化變數
         let stompClient = null;
@@ -249,12 +306,13 @@ footer {
 
             // 判斷訊息方向
             messageDiv.className = message.senderName === 'Adm' ? 'message received' : 'message sent';
+            
 
             // 創建訊息 HTML
             messageDiv.innerHTML = `
                 <div class="message-content">
-                    <span class="message-text">${message.content}</span>
-                    <span class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</span>
+            	 <span class="message-text">${message.content}</span>
+	            <span class="message-time">${formatTime(message.timestamp)}</span>
                 </div>`;
             chatMessages.appendChild(messageDiv);
         };
@@ -269,7 +327,7 @@ footer {
             if (content && stompClient && memId && memName) {
                 // 前端發送消息格式
                 const message = {
-                    content,
+                    content: content,
                     senderName: memName,
                     sender: {                    // 改用 sender 物件
                     	 memid: memId,
