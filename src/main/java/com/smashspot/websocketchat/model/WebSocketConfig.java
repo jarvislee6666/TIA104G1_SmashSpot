@@ -21,8 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class WebSocketConfig  implements WebSocketMessageBrokerConfigurer{
 
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/user");
-		config.enableSimpleBroker("/topic");
+		config.enableSimpleBroker("/queue", "/topic", "/user");
 		config.setApplicationDestinationPrefixes("/app");
 		config.setUserDestinationPrefix("/user");
 	}
