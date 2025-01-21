@@ -148,7 +148,8 @@
 					            th:data-image-url="@{'/adm/getProductImage/' + ${ordersVO.ordid}}">
 					     查看
 					   </button>
-                        <button class="btn btn-sm btn-outline-danger cancel-order" 
+                        <button class="btn btn-sm btn-outline-danger cancel-order"
+                        		th:if="${ordersVO.ordstaid == 2 || ordersVO.ordstaid == 3}"
 						        th:data-order-id="${ordersVO.ordid}"
 						        th:disabled="${ordersVO.ordstaid == 5}">
 						    取消
@@ -223,12 +224,12 @@
               </div>
 
               <div class="row mb-4">
-                <div class="col-md-4">
+                <div class="col-md-5">
                   <img src="" alt="Product" class="img-fluid border rounded" 
                   	   id="modalProductImage" style="max-width: 300px; max-height: 300px; 
                   	   object-fit: contain;"/>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-7">
                   <h6 class="fw-bold mb-3">商品資訊</h6>
                   <div class="d-flex justify-content-between mb-2">
                     <span>商品名稱：</span>
