@@ -79,13 +79,9 @@ public class ChatController {
         }
 
         // 保存訊息
-        ChatMessage savedMessage = chatMessageService.save(chatMessage);
+        chatMessageService.save(chatMessage);
 
         try {
-            // 將訊息序列化為 JSON
-            String messageJson = objectMapper.writeValueAsString(savedMessage);
-            System.out.println(messageJson);
-
             // 發送訊息給會員
             messagingTemplate.convertAndSendToUser(
                 chatMessage.getRecipientId(), // 接收者 ID
