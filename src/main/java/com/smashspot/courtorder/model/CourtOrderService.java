@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,8 +49,9 @@ public class CourtOrderService {
 	@Autowired
 	private StdmRepository stadiumRepository;
 	
+	
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private SimpMessagingTemplate SimpMessagingTemplate;
 
 	/**
 	 * 新增訂單 (只要傳 CourtOrderVO 進來即可)
@@ -96,6 +98,7 @@ public class CourtOrderService {
 
 			throw new RuntimeException("庫存不足: 場地已被訂滿");
 		}
+		
 
 	    // (6) 儲存訂單
 	    CourtOrderVO savedOrder = courtOrderRepository.save(newOrder);
@@ -107,9 +110,9 @@ public class CourtOrderService {
 	    return savedOrder;
 	}
 	
-	/**
-	 * 推播更新
-	 */
+//	/**
+//	 * 推播更新
+//	 */
 	private void broadcastReservationUpdate(Integer stdmId, Set<CourtOrderDetailVO> details) {
 	    // 先收集「這筆訂單所包含的」那些日期
 	    Set<Date> distinctDates = new HashSet<>();
@@ -138,7 +141,7 @@ public class CourtOrderService {
 	    }
 
 	    // ★ 重點：使用 simpMessagingTemplate 發送到 "/topic/reservation/{stdmId}" 
-	    this.simpMessagingTemplate.convertAndSend(
+	    this.SimpMessagingTemplate.convertAndSend(
 	        "/topic/reservation/" + stdmId,
 	        updateList  // 前端接收後，用這些資料更新畫面
 	    );

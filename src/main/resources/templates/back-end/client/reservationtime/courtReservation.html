@@ -1540,8 +1540,16 @@ function connectAndSubscribe(stdmId) {
         // 訂閱 topic
         const destination = `/topic/reservation/${stdmId}`;
         stompClient.subscribe(destination, function(message) {
-        	 window.location.reload();
-            });
+            const isModalOpen = document.querySelector('.modal.show') !== null;
+            if (isModalOpen) {
+                // 若有 Modal 開啟，就先標記「待重整」
+                window.needReloadAfterModalClose = true;
+                console.log("有 Modal 開啟，先不重整，改成等關閉後再重整。");
+            } else {
+                // 沒有任何 Modal 開啟 → 立即刷新頁面
+                window.location.reload();
+            }
+        });
         });
     ;
 }
