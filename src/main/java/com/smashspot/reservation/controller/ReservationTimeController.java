@@ -95,10 +95,7 @@ public class ReservationTimeController {
         LocalDate closingDate = lastDatesMap.get(stdmId);
         // 丟到 Model 裡
         model.addAttribute("closingDate", closingDate);
-        
 
-
-        
         model.addAttribute("stadiumVO", stadium);
         
         // 濾器/攔截器已確保使用者必須登入才能進到這裡

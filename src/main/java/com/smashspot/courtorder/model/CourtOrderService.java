@@ -6,11 +6,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +47,9 @@ public class CourtOrderService {
 	private ReservationTimeRepository reservationTimeRepository;
 	@Autowired
 	private StdmRepository stadiumRepository;
+	
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
 	/**
 	 * 新增訂單 (只要傳 CourtOrderVO 進來即可)
@@ -92,8 +97,81 @@ public class CourtOrderService {
 			throw new RuntimeException("庫存不足: 場地已被訂滿");
 		}
 
-		// 6) 最後存入資料庫 (因為 cascade=ALL，明細也會跟著存)
-		return courtOrderRepository.save(newOrder);
+	    // (6) 儲存訂單
+	    CourtOrderVO savedOrder = courtOrderRepository.save(newOrder);
+
+	    // (7) ★★★ 推播更新 ★★★
+	    // 盡量只推播「受影響」的那些日期，不要一次推播全部
+	    broadcastReservationUpdate(stdmId, details);
+
+	    return savedOrder;
+	}
+	
+	/**
+	 * 推播更新
+	 */
+	private void broadcastReservationUpdate(Integer stdmId, Set<CourtOrderDetailVO> details) {
+	    // 先收集「這筆訂單所包含的」那些日期
+	    Set<Date> distinctDates = new HashSet<>();
+	    for (CourtOrderDetailVO d : details) {
+	        distinctDates.add(d.getOrdDate());
+	    }
+
+	    // 為了簡化，我們可以一次推播「所有該場館的 reservationTime (週次)」給前端，
+	    // 或者只推播「特定日期」給前端，再由前端局部更新。
+	    // 這邊示範只推播「受影響的那幾天」對應 leftover/booked
+	    
+	    List<Map<String, Object>> updateList = new ArrayList<>();
+	    
+	    for (Date date : distinctDates) {
+	        // 從 DB 撈該日 reservationTime
+	        ReservationTimeVO rsvTime = reservationTimeRepository.findByStadiumIdAndDatesForUpdate(stdmId, date);
+	        if (rsvTime != null) {
+	            // 轉成一個 map
+	            Map<String, Object> map = new HashMap<>();
+	            map.put("date", date);                    // java.sql.Date
+	            map.put("rsvava", rsvTime.getRsvava());    // "x...x"
+	            map.put("booked", rsvTime.getBooked());    // "x...x"
+	            map.put("leftover", computeLeftover(rsvTime.getRsvava(), rsvTime.getBooked()));
+	            updateList.add(map);
+	        }
+	    }
+
+	    // ★ 重點：使用 simpMessagingTemplate 發送到 "/topic/reservation/{stdmId}" 
+	    this.simpMessagingTemplate.convertAndSend(
+	        "/topic/reservation/" + stdmId,
+	        updateList  // 前端接收後，用這些資料更新畫面
+	    );
+	}
+	
+	/**
+	 * 計算 leftover, 跟您原程式一樣
+	 */
+	private String computeLeftover(String rsvAva, String booked) {
+	    // ...
+	    if (rsvAva == null || booked == null) {
+	        return null;
+	    }
+	    if (rsvAva.length() != 12 || booked.length() != 12) {
+	        return null;
+	    }
+
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 0; i < 12; i++) {
+	        char ava = rsvAva.charAt(i);
+	        char bkd = booked.charAt(i);
+
+	        if (ava == 'x') {
+	            sb.append('x');
+	        } else {
+	            int valAva = ava - '0';
+	            int valBkd = bkd - '0';
+	            int leftover = valAva - valBkd;
+	            if (leftover < 0) leftover = 0;
+	            sb.append(leftover);
+	        }
+	    }
+	    return sb.toString();
 	}
 
 	/**
@@ -111,17 +189,19 @@ public class CourtOrderService {
 			// 找出對應 reservation_time
 			ReservationTimeVO rsvTime = reservationTimeRepository.findByStadiumIdAndDatesForUpdate(stdmId, ordDate);
 			
-//	        // 2) (為了測試) 強制停頓 N 秒
+			
+			
+	        // 2) (為了測試) 強制停頓 N 秒
 //	        try {
 //	            System.out.println("[Tx1] 已取得悲觀鎖，暫停 15 秒...");
 //	            Thread.sleep(15_000);
 //	        } catch (InterruptedException e) {
 //	            e.printStackTrace();
 //	        }
-//			if (rsvTime == null) {
-//				// 代表還沒有對應那天的資料，或查不到
-//				return false;
-//			}
+			if (rsvTime == null) {
+				// 代表還沒有對應那天的資料，或查不到
+				return false;
+			}
 
 			// 拿到 rsv_ava & booked
 			String rsvAva = rsvTime.getRsvava(); // e.g. "xxxx7777777x"
@@ -419,6 +499,7 @@ public class CourtOrderService {
 
 		// 6) 存回資料庫
 		courtOrderRepository.save(order);
+		
 	}
 
 	/**
