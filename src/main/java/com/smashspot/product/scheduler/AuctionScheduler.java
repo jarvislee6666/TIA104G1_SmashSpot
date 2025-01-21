@@ -17,7 +17,7 @@ public class AuctionScheduler {
     @Autowired
     private ProductService productService;
     
-    @Scheduled(fixedRate = 60000) // 每分鐘執行一次
+    @Scheduled(fixedRate = 2000) // 每2秒執行一次
     @Transactional
     public void checkAndUpdateExpiredAuctions() {
         // 獲取所有狀態為1(競標中)的商品
