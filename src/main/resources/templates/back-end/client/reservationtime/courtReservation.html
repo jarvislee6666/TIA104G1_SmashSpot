@@ -1514,6 +1514,125 @@ function removeFavorite(stadiumId, btnEl) {
 }
 </script>
 
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // 1) 取得 stadiumId
+    const stadiumInfo = document.getElementById('stadiumInfo');
+    const stadiumId = stadiumInfo.dataset.stdmid;
+
+    // 2) 初始化連線
+    connectAndSubscribe(stadiumId);
+});
+
+let stompClient = null;
+
+function connectAndSubscribe(stdmId) {
+    // 建立 SockJS
+    const socket = new SockJS('/ws');
+    stompClient = Stomp.over(socket);
+
+    // optional: 關掉 debug log
+    stompClient.debug = null;
+
+    stompClient.connect({}, function(frame) {
+        console.log('Connected: ' + frame);
+        
+        // 訂閱 topic
+        const destination = `/topic/reservation/${stdmId}`;
+        stompClient.subscribe(destination, function(message) {
+        	 window.location.reload();
+            });
+        });
+    ;
+}
+
+function updateLeftoverForDate(dateStr, leftoverStr) {
+    // leftoverStr 長度=12, e.g. "xxxx330210xx"
+    // 依您原本對應的 timeSlotMap: 
+    //    index=4 => '08:00-10:00'
+    //    index=5 => '10:00-12:00'
+    //    ...
+    //    index=10 => '20:00-22:00'
+    
+    // 1) 在頁面上找到所有該日期對應的 .court-cell
+    //    <div class="court-cell" data-date="2025-01-25" data-time="08:00-10:00" ...>
+    // 2) 取得 leftoverStr 中對應 index 的值 => e.g leftoverStr.charAt(4)
+    // 3) 依值(0~9或'x')，重繪其文字、樣式
+    //    e.g. '0' => "預約額滿", 'x' => "尚未開放", '3' => "充足"
+    //    依您原本 table 畫法
+
+    const allCells = document.querySelectorAll(`.court-cell[data-date="${dateStr}"]`);
+    allCells.forEach(cell => {
+       const timeSlot = cell.dataset.time; // "08:00-10:00"
+       // 取得對應 index
+       let idx = -1;
+       switch (timeSlot) {
+         case '08:00-10:00': idx = 4; break;
+         case '10:00-12:00': idx = 5; break;
+         case '12:00-14:00': idx = 6; break;
+         case '14:00-16:00': idx = 7; break;
+         case '16:00-18:00': idx = 8; break;
+         case '18:00-20:00': idx = 9; break;
+         case '20:00-22:00': idx = 10; break;
+         default: idx = -1; // maybe skip
+       }
+
+       if (idx === -1) {
+         return;
+       }
+
+       const leftoverChar = leftoverStr.charAt(idx); // 取得該位的字
+
+       // (A) 先把 cell 上的 'selected' 移除，避免使用者選到已滿
+       if (cell.classList.contains('selected')) {
+           // 依需求，看要不要保留
+           cell.classList.remove('selected');
+       }
+
+       // (B) 更新 cell.dataset.available
+       if (leftoverChar === 'x') {
+           cell.dataset.available = 'x';
+       } else {
+           cell.dataset.available = leftoverChar; // '0'~'9'
+       }
+
+       // (C) 根據 leftoverChar，更新文字、樣式
+       //    先清除原本的 status-xxxx class
+       cell.classList.remove('status-available','status-limited','status-full','status-unavailable');
+       
+       let infoHtml = '';
+       // 可能您原本 DOM 結構是 <div class="fw-bold">...</div> <small>...</small> ，
+       // 這裡示範最簡單法: 直接覆蓋
+       if (leftoverChar === 'x') {
+           cell.classList.add('status-unavailable');
+           infoHtml = `<div class="fw-bold">尚未開放</div>`;
+       } else {
+           const val = parseInt(leftoverChar, 10);
+           if (val <= 0) {
+               // 預約額滿
+               cell.classList.add('status-full');
+               infoHtml = `<div class="fw-bold">預約額滿</div><small>剩餘 0 場</small>`;
+           } else if (val <= 3) {
+               // 即將滿場
+               cell.classList.add('status-limited');
+               infoHtml = `<div class="fw-bold">即將滿場</div><small>剩餘 ${val} 場</small>`;
+           } else {
+               // 充足
+               cell.classList.add('status-available');
+               infoHtml = `<div class="fw-bold">充足</div><small>剩餘 ${val} 場</small>`;
+           }
+       }
+
+       cell.innerHTML = infoHtml;
+    });
+}
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
 	<!-- 請記得替換 YOUR_API_KEY 為您的 Google Maps API 金鑰 -->
 	<script
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBpeKJsYqFNvxDjFzALran62W4aP-PmJs&callback=initMap"></script>
