@@ -18,10 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smashspot.member.model.MemberService;
 import com.smashspot.member.model.MemberVO;
-import com.smashspot.stadium.model.StadiumVO;
 import com.smashspot.websocketchat.chat.ChatMessage;
 import com.smashspot.websocketchat.chat.ChatMessageService;
 import com.smashspot.websocketchat.chatroom.Chatroom;
@@ -39,7 +37,6 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatroomService chatroomService;
     private final MemberService memSvc;
-    private final ObjectMapper objectMapper = new ObjectMapper(); // 用於序列化 JSON
 
     
     /** 
