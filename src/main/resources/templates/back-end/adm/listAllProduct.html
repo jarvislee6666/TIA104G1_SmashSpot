@@ -116,13 +116,12 @@
 								                </span>
 											</td>
 											<td>
-												<form method="post" th:action="@{updateProductSta}"
+												<form method="post" th:if="${productVO.bidstaid == 1}" th:action="@{updateProductSta}"
 													style="margin-bottom: 0px;" class="takedown-form">
 													<button type="submit" value="下架" class="btn btn-sm btn-outline-secondary takedown-btn">下架</button> 
 													<input type="hidden" name="proid" th:value="${productVO.proid}">
 													<input type="hidden" name="bidstaid" value="3">
 												</form>
-
 											</td>
 										</tr>
 									</th:block>
