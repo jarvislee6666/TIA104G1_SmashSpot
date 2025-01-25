@@ -159,7 +159,7 @@ public class CourtOrderService {
 	        return null;
 	    }
 
-	    StringBuilder sb = new StringBuilder();
+	    StringBuffer sb = new StringBuffer();
 	    for (int i = 0; i < 12; i++) {
 	        char ava = rsvAva.charAt(i);
 	        char bkd = booked.charAt(i);
@@ -195,12 +195,12 @@ public class CourtOrderService {
 			
 			
 	        // 2) (為了測試) 強制停頓 N 秒
-//	        try {
-//	            System.out.println("[Tx1] 已取得悲觀鎖，暫停 15 秒...");
-//	            Thread.sleep(15_000);
-//	        } catch (InterruptedException e) {
-//	            e.printStackTrace();
-//	        }
+	        try {
+	            System.out.println("[Tx1] 已取得悲觀鎖，暫停 15 秒...");
+	            Thread.sleep(15_000);
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
 			if (rsvTime == null) {
 				// 代表還沒有對應那天的資料，或查不到
 				return false;

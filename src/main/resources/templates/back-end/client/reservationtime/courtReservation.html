@@ -515,7 +515,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -548,7 +548,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -581,7 +581,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -614,7 +614,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -647,7 +647,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -680,7 +680,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -713,7 +713,7 @@ body {
 													<div th:if="${!isExpired && !isFuture && available != 'x'}">
 														<div class="fw-bold"
 															th:text="${available > '3' ? '充足' : (available > '0' ? '即將滿場' : '預約額滿')}"></div>
-														<small th:text="'剩餘 ' + ${available} + ' 場'"></small>
+														<small th:text="'剩 ' + ${available} + ' 場'"></small>
 													</div>
 												</div>
 											</td>
@@ -1281,6 +1281,7 @@ body {
         .catch(err => {
             console.log('連線失敗', err);
             alert('預約失敗，請稍後再試！');
+            localStorage.removeItem("reservationCart");
         });
         
         
