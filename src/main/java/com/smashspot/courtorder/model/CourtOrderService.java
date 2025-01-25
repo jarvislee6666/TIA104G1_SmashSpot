@@ -160,6 +160,7 @@ public class CourtOrderService {
 	    }
 
 	    StringBuffer sb = new StringBuffer();
+	    
 	    for (int i = 0; i < 12; i++) {
 	        char ava = rsvAva.charAt(i);
 	        char bkd = booked.charAt(i);

@@ -1288,6 +1288,7 @@ body {
         // 7.3 清空前端已選時段 & 取消選取樣式
         selectedTimeSlots = [];
         updateBookingButton();
+        localStorage.removeItem("reservationCart");
         document.querySelectorAll('.court-cell.selected').forEach(cell => {
             cell.classList.remove('selected');
         });
